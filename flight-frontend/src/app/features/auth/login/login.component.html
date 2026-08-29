@@ -1,0 +1,85 @@
+<div class="min-h-screen bg-background font-body-md text-on-surface flex w-full">
+  <!-- Left Side: Airplane Window Photography Canvas -->
+  <div class="hidden lg:flex lg:flex-1 relative overflow-hidden bg-primary-container">
+    <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC7uk-PDJGZWI9sLOHyuuqxcmpaUap089GZYkJYMuTK_xF1CcjUzVxWlb277B4NulH5ZaGj2R9rG-of8ZsGWykkX2qx5j0AZFChXbnQXRIKE1-BGoTYLthaSPeFYLRzQHCoPkNNQs7PJepxnxCRqKkjSa8QJtvYdusr1Amz00TjNclcR_c0uJ5SdLYV7iCJZwQCRdg1RRTwQyak7sl9j4gmt5k8WFpZsduHZGwIub1mOK9PbnpA6FNl')"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/40 to-transparent"></div>
+    <div class="absolute bottom-12 left-12 text-on-primary max-w-md z-10">
+      <h1 class="font-display-lg text-display-lg font-bold mb-4 drop-shadow-md">Elevate your travel experience.</h1>
+      <p class="font-body-lg text-body-lg opacity-90 drop-shadow">Seamless booking, premium service, and clear skies ahead.</p>
+    </div>
+  </div>
+
+  <!-- Right Side: Login Form Canvas -->
+  <div class="flex-1 flex flex-col justify-center px-6 lg:px-20 xl:px-28 bg-surface py-2xl">
+    <div class="w-full max-w-md mx-auto">
+      <!-- Logo Header -->
+      <div class="mb-8 flex items-center gap-2">
+        <span class="material-symbols-outlined text-secondary text-3xl">flight_takeoff</span>
+        <span class="font-headline-md text-headline-md font-bold text-primary">SkyRoute</span>
+      </div>
+
+      <h2 class="font-headline-lg text-headline-lg font-bold text-primary mb-2">Welcome back</h2>
+      <p class="font-body-md text-body-md text-on-surface-variant mb-8">Please enter your details to sign in.</p>
+
+      @if (errorMessage) {
+        <div class="p-md rounded-lg bg-error-container text-on-error-container text-body-sm font-medium mb-md border border-error/20 flex items-center gap-2">
+          <span class="material-symbols-outlined text-[20px]">error</span>
+          <span>{{ errorMessage }}</span>
+        </div>
+      }
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
+        <div>
+          <label class="block font-label-md text-label-md font-semibold text-on-surface mb-1" for="email">Email</label>
+          <input 
+            type="email" 
+            id="email" 
+            formControlName="email" 
+            class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest shadow-sm focus:border-secondary focus:ring-1 focus:ring-secondary font-body-md text-body-md py-3 px-4 outline-none transition-all" 
+            placeholder="Enter your email" 
+          />
+          @if (loginForm.get('email')?.touched && loginForm.get('email')?.hasError('required')) {
+            <small class="text-error font-label-sm text-label-sm block mt-1">Email is required</small>
+          }
+          @if (loginForm.get('email')?.touched && loginForm.get('email')?.hasError('email')) {
+            <small class="text-error font-label-sm text-label-sm block mt-1">Please enter a valid email address</small>
+          }
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <label class="block font-label-md text-label-md font-semibold text-on-surface" for="password">Password</label>
+            <a routerLink="/forgot-password" class="font-label-md text-label-md text-secondary hover:text-on-secondary-fixed-variant font-semibold transition-colors">Forgot password?</a>
+          </div>
+          <input 
+            type="password" 
+            id="password" 
+            formControlName="password" 
+            class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest shadow-sm focus:border-secondary focus:ring-1 focus:ring-secondary font-body-md text-body-md py-3 px-4 outline-none transition-all" 
+            placeholder="••••••••" 
+          />
+          @if (loginForm.get('password')?.touched && loginForm.get('password')?.hasError('required')) {
+            <small class="text-error font-label-sm text-label-sm block mt-1">Password is required</small>
+          }
+        </div>
+
+        <div>
+          <button type="submit" class="w-full flex justify-center items-center gap-2 py-3 px-4 rounded-lg shadow-sm font-label-md text-label-md text-white bg-secondary hover:bg-secondary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary transition-all transform active:scale-[0.98] font-semibold" [disabled]="isLoading">
+            @if (isLoading) {
+              <span class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
+              <span>Signing in...</span>
+            } @else {
+              <span>Sign In</span>
+            }
+          </button>
+        </div>
+      </form>
+
+      <p class="mt-8 text-center font-body-md text-body-md text-on-surface-variant">
+        Don't have an account? 
+        <a routerLink="/register" class="font-label-md text-label-md text-secondary hover:text-on-secondary-fixed-variant font-semibold">Create account</a>
+      </p>
+    </div>
+  </div>
+</div>
+

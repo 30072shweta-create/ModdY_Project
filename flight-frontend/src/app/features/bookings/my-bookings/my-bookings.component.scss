@@ -1,0 +1,85 @@
+.my-bookings-page {
+  padding: 3rem 0;
+
+  .page-header {
+    margin-bottom: 2rem;
+    h2 { font-size: 1.85rem; font-weight: 800; color: var(--dark-surface); }
+    p { color: var(--text-muted); }
+  }
+
+  .loading-card, .empty-card {
+    text-align: center;
+    padding: 4rem 2rem;
+    .icon { font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem; }
+    h3 { font-weight: 700; margin-bottom: 0.5rem; }
+    p { color: var(--text-muted); margin-bottom: 1.5rem; }
+  }
+
+  .bookings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .booking-item-card {
+    cursor: pointer;
+    padding: 1.5rem;
+
+    .b-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-color);
+
+      .pnr-box {
+        display: flex;
+        flex-direction: column;
+        .lbl { font-size: 0.725rem; color: var(--text-muted); font-weight: 700; }
+        .pnr { font-size: 1.15rem; font-weight: 800; color: var(--primary); }
+      }
+
+      .status-badges {
+        display: flex;
+        gap: 0.5rem;
+      }
+    }
+
+    .b-body {
+      display: grid;
+      grid-template-columns: 1fr 2fr 1fr;
+      align-items: center;
+      padding: 1.25rem 0;
+
+      .lbl { font-size: 0.775rem; color: var(--text-muted); display: block; }
+      .val { font-size: 0.95rem; font-weight: 600; color: var(--dark-surface); }
+
+      .segments-info {
+        .seg-row {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          font-size: 1rem;
+          .flight-num { font-size: 0.825rem; color: var(--text-muted); }
+        }
+      }
+
+      .amount-info {
+        text-align: right;
+        .amount { font-size: 1.35rem; font-weight: 800; color: var(--dark-surface); }
+      }
+    }
+
+    .b-footer {
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border-color);
+      text-align: right;
+
+      .view-link {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--primary);
+      }
+    }
+  }
+}

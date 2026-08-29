@@ -1,0 +1,377 @@
+<!-- Hero Section with Deep Navy Overlay -->
+<section class="hero-section">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="material-symbols-outlined text-[18px]">verified</span>
+      Official SkyRoute Flight Booking
+    </div>
+    <h1 class="hero-title">Fly smarter. Travel better.</h1>
+    <p class="hero-subtitle">
+      Experience seamless booking, unparalleled comfort, and the clarity of the open sky. Elevate your journey with SkyRoute.
+    </p>
+  </div>
+
+  <!-- Prominent Flight Search Panel (Overlapping Hero) -->
+  <div class="search-widget-container">
+    <div class="search-card">
+      <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
+        
+        <!-- 1. Trip Type Segmented Control (Round Trip / One Way) -->
+        <div class="search-header">
+          <div class="trip-type-selector">
+            <button
+              type="button"
+              class="trip-btn"
+              [class.active]="isRoundTrip"
+              (click)="setTripType('roundTrip')"
+            >
+              <span class="radio-dot" [class.checked]="isRoundTrip"></span>
+              <span class="material-symbols-outlined text-[18px]">sync</span>
+              Round Trip
+            </button>
+            <button
+              type="button"
+              class="trip-btn"
+              [class.active]="!isRoundTrip"
+              (click)="setTripType('oneWay')"
+            >
+              <span class="radio-dot" [class.checked]="!isRoundTrip"></span>
+              <span class="material-symbols-outlined text-[18px]">trending_flat</span>
+              One Way
+            </button>
+          </div>
+          
+          <div class="header-tag">
+            <span class="material-symbols-outlined text-[16px]">flight_takeoff</span>
+            Search 250+ Global Routes
+          </div>
+        </div>
+
+        <!-- Date Validation Warning Banner -->
+        <div class="date-error-banner" *ngIf="dateError">
+          <span class="material-symbols-outlined">warning</span>
+          <span>{{ dateError }}</span>
+        </div>
+
+        <!-- 2. Main Search Form Grid -->
+        <div class="search-grid">
+          
+          <!-- FROM (Origin Airport) -->
+          <div class="form-card source-card">
+            <div class="card-label">
+              <span class="material-symbols-outlined text-secondary">flight_takeoff</span>
+              FROM
+            </div>
+            <select formControlName="source" class="airport-select">
+              <option value="" disabled>Select departure airport</option>
+              <option *ngFor="let ap of airports" [value]="ap.airportCode">
+                {{ ap.city }} ({{ ap.airportCode }}) - {{ ap.name || ap.airportName }}
+              </option>
+            </select>
+            <div class="airport-preview" *ngIf="searchForm.get('source')?.value as srcCode">
+              <span class="code-badge">{{ getSelectedAirportDetails(srcCode).code }}</span>
+              <span class="airport-name">{{ getSelectedAirportDetails(srcCode).name }}</span>
+            </div>
+          </div>
+
+          <!-- SWAP BUTTON -->
+          <div class="swap-container">
+            <button
+              type="button"
+              class="swap-btn"
+              (click)="swapAirports()"
+              title="Swap From and To airports"
+            >
+              <span class="material-symbols-outlined">swap_horiz</span>
+            </button>
+          </div>
+
+          <!-- TO (Destination Airport) -->
+          <div class="form-card dest-card">
+            <div class="card-label">
+              <span class="material-symbols-outlined text-secondary">flight_land</span>
+              TO
+            </div>
+            <select formControlName="destination" class="airport-select">
+              <option value="" disabled>Select arrival airport</option>
+              <option *ngFor="let ap of airports" [value]="ap.airportCode">
+                {{ ap.city }} ({{ ap.airportCode }}) - {{ ap.name || ap.airportName }}
+              </option>
+            </select>
+            <div class="airport-preview" *ngIf="searchForm.get('destination')?.value as destCode">
+              <span class="code-badge">{{ getSelectedAirportDetails(destCode).code }}</span>
+              <span class="airport-name">{{ getSelectedAirportDetails(destCode).name }}</span>
+            </div>
+          </div>
+
+          <!-- DEPARTURE DATE -->
+          <div class="form-card date-card">
+            <div class="card-label">
+              <span class="material-symbols-outlined text-secondary">calendar_today</span>
+              DEPARTURE
+            </div>
+            <input type="date" formControlName="date" class="date-input" />
+          </div>
+
+          <!-- RETURN DATE (Only shown when Round Trip is selected) -->
+          <div class="form-card date-card" *ngIf="isRoundTrip">
+            <div class="card-label">
+              <span class="material-symbols-outlined text-secondary">event_repeat</span>
+              RETURN
+            </div>
+            <input type="date" formControlName="returnDate" class="date-input" />
+          </div>
+
+          <!-- CABIN CLASS -->
+          <div class="form-card class-card">
+            <div class="card-label">
+              <span class="material-symbols-outlined text-secondary">airline_seat_recline_extra</span>
+              CLASS
+            </div>
+            <select formControlName="cabinClass" class="class-select">
+              <option value="ECONOMY">Economy</option>
+              <option value="PREMIUM_ECONOMY">Premium Econ</option>
+              <option value="BUSINESS">Business</option>
+              <option value="FIRST">First Class</option>
+            </select>
+          </div>
+
+          <!-- PASSENGERS STEPPER -->
+          <div class="form-card passenger-card">
+            <div class="card-label">
+              <span class="material-symbols-outlined text-secondary">group</span>
+              PASSENGERS
+            </div>
+            <div class="stepper-controls">
+              <button
+                type="button"
+                class="stepper-btn"
+                (click)="decrementPassengers()"
+                [disabled]="searchForm.get('passengers')?.value <= 1"
+              >-</button>
+              <span class="stepper-count">{{ searchForm.get('passengers')?.value }} Traveler{{ searchForm.get('passengers')?.value > 1 ? 's' : '' }}</span>
+              <button
+                type="button"
+                class="stepper-btn"
+                (click)="incrementPassengers()"
+                [disabled]="searchForm.get('passengers')?.value >= 9"
+              >+</button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 3. Primary Action Row -->
+        <div class="search-footer">
+          <div class="guarantee-text">
+            <span class="material-symbols-outlined text-emerald-600 text-[18px]">verified_user</span>
+            Best Rate Guaranteed &bull; Zero Hidden Fees
+          </div>
+          
+          <button
+            type="submit"
+            class="btn-search-primary"
+            [disabled]="isSearching"
+          >
+            <span class="spinner" *ngIf="isSearching"></span>
+            <span class="material-symbols-outlined" *ngIf="!isSearching">search</span>
+            <span>{{ isSearching ? 'Searching Flights...' : 'Search Flights' }}</span>
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- Trust & Benefits Highlight Banner -->
+<section class="trust-banner">
+  <div class="trust-container">
+    <div class="trust-item">
+      <div class="trust-icon"><span class="material-symbols-outlined">security</span></div>
+      <div>
+        <h4 class="trust-title">100% Secure Booking</h4>
+        <p class="trust-desc">Encrypted payments & instant confirmation</p>
+      </div>
+    </div>
+    
+    <div class="trust-item">
+      <div class="trust-icon"><span class="material-symbols-outlined">sell</span></div>
+      <div>
+        <h4 class="trust-title">Best Available Fares</h4>
+        <p class="trust-desc">Dynamic pricing and transparent rates</p>
+      </div>
+    </div>
+
+    <div class="trust-item">
+      <div class="trust-icon"><span class="material-symbols-outlined">flight_takeoff</span></div>
+      <div>
+        <h4 class="trust-title">Easy Flight Management</h4>
+        <p class="trust-desc">Cancel, upgrade, or change hassle-free</p>
+      </div>
+    </div>
+
+    <div class="trust-item">
+      <div class="trust-icon"><span class="material-symbols-outlined">headset_mic</span></div>
+      <div>
+        <h4 class="trust-title">24/7 Dedicated Support</h4>
+        <p class="trust-desc">Always here to assist your travel</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Popular Destinations Bento Grid -->
+<section class="destinations-section">
+  <div class="section-header">
+    <div>
+      <span class="section-tag">POPULAR ROUTES</span>
+      <h2 class="section-title">Trending Global Destinations</h2>
+      <p class="section-subtitle">Explore top-tier routes meticulously curated for business and leisure travelers.</p>
+    </div>
+  </div>
+
+  <div class="bento-grid">
+    <!-- Destination 1 (Featured Large) -->
+    <div class="bento-card bento-card--large">
+      <img class="card-img" alt="Tokyo, Japan" src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&q=80"/>
+      <div class="card-overlay"></div>
+      <div class="card-content">
+        <div class="card-header">
+          <span class="iata-tag">TYO &bull; TOKYO</span>
+          <span class="price-chip">From ₹48,500</span>
+        </div>
+        <div>
+          <h3 class="card-title">Tokyo, Japan</h3>
+          <p class="card-desc">Daily non-stop flights with premium inflight dining and entertainment.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Destination 2 -->
+    <div class="bento-card">
+      <img class="card-img" alt="Paris, France" src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=800&q=80"/>
+      <div class="card-overlay"></div>
+      <div class="card-content">
+        <span class="iata-tag">CDG &bull; PARIS</span>
+        <h3 class="card-title">Paris, France</h3>
+        <span class="price-link">Explore Fares &rarr;</span>
+      </div>
+    </div>
+
+    <!-- Destination 3 -->
+    <div class="bento-card">
+      <img class="card-img" alt="Maldives" src="https://images.unsplash.com/photo-1514282401047-d79a71a590e8?auto=format&fit=crop&w=800&q=80"/>
+      <div class="card-overlay"></div>
+      <div class="card-content">
+        <span class="iata-tag">MLE &bull; MALDIVES</span>
+        <h3 class="card-title">Malé, Maldives</h3>
+        <span class="price-link">Explore Fares &rarr;</span>
+      </div>
+    </div>
+
+    <!-- Destination 4 -->
+    <div class="bento-card">
+      <img class="card-img" alt="Dubai" src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=800&q=80"/>
+      <div class="card-overlay"></div>
+      <div class="card-content">
+        <span class="iata-tag">DXB &bull; DUBAI</span>
+        <h3 class="card-title">Dubai, UAE</h3>
+        <span class="price-link">Explore Fares &rarr;</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Flight Offers Section -->
+<section class="flights-section">
+  <div class="section-header">
+    <div>
+      <span class="section-tag">HAND-PICKED FARES</span>
+      <h2 class="section-title">Available Flight Offers</h2>
+      <p class="section-subtitle">Real-time competitive pricing from leading airline partners.</p>
+    </div>
+  </div>
+
+  <div *ngIf="featuredFlights.length > 0" class="flight-grid">
+    <div
+      *ngFor="let flight of featuredFlights"
+      class="flight-offer-card"
+      (click)="selectFlight(flight.flightId)"
+    >
+      <div class="offer-header">
+        <div class="airline-info">
+          <span class="material-symbols-outlined text-secondary">airlines</span>
+          <span class="airline-name">{{ flight.airlineName || flight.airlineCode }}</span>
+          <span class="flight-code">#{{ flight.flightNumber }}</span>
+        </div>
+        <span class="stop-badge" [class.direct]="flight.stops === 0">
+          {{ flight.stops === 0 ? 'Direct Flight' : flight.stops + ' Stop(s)' }}
+        </span>
+      </div>
+
+      <div class="offer-route">
+        <div class="route-point">
+          <div class="time">{{ flight.departureTs | date:'shortTime' }}</div>
+          <div class="airport">{{ flight.fromAirport }}</div>
+        </div>
+
+        <div class="route-line">
+          <span class="duration">{{ flight.durationMins || 120 }} mins</span>
+          <div class="line">
+            <span class="material-symbols-outlined plane-icon">flight</span>
+          </div>
+        </div>
+
+        <div class="route-point">
+          <div class="time">{{ flight.arrivalTs | date:'shortTime' }}</div>
+          <div class="airport">{{ flight.toAirport }}</div>
+        </div>
+      </div>
+
+      <div class="offer-footer">
+        <div>
+          <span class="fare-label">Fares starting from</span>
+          <span class="fare-price">₹{{ flight.basePrice | number:'1.0-0' }}</span>
+        </div>
+        <button class="btn-select">Select Flight &rarr;</button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="featuredFlights.length === 0" class="empty-flights">
+    <span class="material-symbols-outlined text-[48px] text-slate-400">flight_takeoff</span>
+    <p>Perform a flight search above to view real-time scheduled flight availability.</p>
+  </div>
+</section>
+
+<!-- About Section -->
+<section id="about" class="info-section bg-slate-50">
+  <div class="info-container">
+    <div class="info-text">
+      <span class="section-tag">ABOUT SKYROUTE</span>
+      <h2 class="section-title">Elevating Modern Air Travel</h2>
+      <p class="section-subtitle">
+        SkyRoute is a next-generation flight reservation platform engineered for speed, clarity, and reliability.
+        Whether you are booking transcontinental corporate travel or a weekend getaway, our system provides real-time route optimization, transparent fare calculations, and instant ticket confirmations.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Help Section -->
+<section id="help" class="info-section bg-white border-t border-slate-200">
+  <div class="info-container">
+    <div class="info-text">
+      <span class="section-tag">HELP & SUPPORT</span>
+      <h2 class="section-title">We Are Here to Assist Your Journey</h2>
+      <p class="section-subtitle">
+        Need help managing a booking, updating passenger details, or checking baggage policies?
+        Our 24/7 passenger assistance center is ready to ensure your journey is effortless from takeoff to touchdown.
+      </p>
+    </div>
+  </div>
+</section>

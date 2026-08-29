@@ -1,0 +1,129 @@
+<div class="admin-layout">
+  <app-admin-sidebar></app-admin-sidebar>
+
+  <main class="admin-main">
+    <header class="admin-header">
+      <div>
+        <h1 class="admin-header__title">Airline Management</h1>
+        <p class="admin-header__subtitle">Manage registered partner airlines and carrier codes</p>
+      </div>
+      <div class="admin-header__actions">
+        <button class="btn btn--secondary btn--sm" (click)="loadAirlines()" [disabled]="isLoading">
+          <span class="material-symbols-outlined">refresh</span>
+          Refresh
+        </button>
+      </div>
+    </header>
+
+    <!-- Alerts -->
+    <div class="admin-alert admin-alert--error" *ngIf="errorMessage">
+      <span class="material-symbols-outlined">error</span>
+      <span>{{ errorMessage }}</span>
+      <button class="admin-alert__close" (click)="errorMessage = ''">&times;</button>
+    </div>
+
+    <div class="admin-alert admin-alert--success" *ngIf="successMessage">
+      <span class="material-symbols-outlined">check_circle</span>
+      <span>{{ successMessage }}</span>
+      <button class="admin-alert__close" (click)="successMessage = ''">&times;</button>
+    </div>
+
+    <div class="admin-loading" *ngIf="isLoading">
+      <div class="admin-loading__spinner"></div>
+      <span>Loading airlines...</span>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="toolbar__search">
+        <span class="material-symbols-outlined toolbar__icon">search</span>
+        <input type="text" [(ngModel)]="search" placeholder="Search airlines..." class="form-control" />
+      </div>
+      <button class="btn btn--primary" (click)="openAddModal()">
+        <span class="material-symbols-outlined">add</span>
+        Add Airline
+      </button>
+    </div>
+
+    <!-- Table -->
+    <div class="card">
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Airline Code</th>
+              <th>Airline Name</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let a of filteredAirlines">
+              <td><strong>{{ a.airlineCode }}</strong></td>
+              <td>{{ a.airlineName }}</td>
+              <td>
+                <div class="action-buttons">
+                  <button class="btn-icon" (click)="openEditModal(a)" title="Edit Airline">
+                    <span class="material-symbols-outlined">edit</span>
+                  </button>
+                  <button class="btn-icon btn-icon--danger" (click)="confirmDelete(a)" title="Delete Airline">
+                    <span class="material-symbols-outlined">delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="filteredAirlines.length === 0">
+              <td colspan="3" class="empty-state">No airlines found.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Add/Edit Modal -->
+  <div class="modal-backdrop" *ngIf="showModal">
+    <form class="modal" [formGroup]="airlineForm" (ngSubmit)="submitAirline()">
+      <div class="modal__header">
+        <h3>{{ editingCode ? 'Edit Airline' : 'Add Airline' }}</h3>
+        <button type="button" class="modal__close" (click)="closeModal()">&times;</button>
+      </div>
+      <div class="modal__body">
+        <div class="form-group">
+          <label>Airline Code *</label>
+          <input type="text" formControlName="airlineCode" class="form-control" [readOnly]="!!editingCode" placeholder="e.g. AI" />
+          <div class="form-error" *ngIf="airlineForm.get('airlineCode')?.touched && airlineForm.get('airlineCode')?.invalid">
+            Airline code is required (max 10 chars).
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Airline Name *</label>
+          <input type="text" formControlName="airlineName" class="form-control" placeholder="e.g. Air India" />
+          <div class="form-error" *ngIf="airlineForm.get('airlineName')?.touched && airlineForm.get('airlineName')?.invalid">
+            Airline name is required.
+          </div>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button type="button" class="btn btn--secondary" (click)="closeModal()">Cancel</button>
+        <button type="submit" class="btn btn--primary" [disabled]="isLoading">Save Airline</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Delete Confirm Modal -->
+  <div class="modal-backdrop" *ngIf="confirmModal.show">
+    <div class="modal modal--sm">
+      <div class="modal__header modal__header--danger">
+        <h3>{{ confirmModal.title }}</h3>
+        <button class="modal__close" (click)="confirmModal.show = false">&times;</button>
+      </div>
+      <div class="modal__body">
+        <p>{{ confirmModal.message }}</p>
+      </div>
+      <div class="modal__footer">
+        <button type="button" class="btn btn--secondary" (click)="confirmModal.show = false">Cancel</button>
+        <button type="button" class="btn btn--danger" (click)="confirmModal.onConfirm()">Delete Airline</button>
+      </div>
+    </div>
+  </div>
+</div>

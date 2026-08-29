@@ -1,0 +1,87 @@
+<div class="min-h-screen bg-background font-body-md text-on-surface py-2xl">
+  <div class="max-w-container-max mx-auto px-md md:px-lg">
+    
+    <div class="mb-xl flex justify-between items-end border-b border-outline-variant/30 pb-md">
+      <div>
+        <h1 class="font-display-lg text-display-lg font-bold text-primary mb-1">My Flight Bookings</h1>
+        <p class="font-body-md text-body-md text-on-surface-variant">View upcoming trips, manage reservations, and view digital boarding passes.</p>
+      </div>
+      <a routerLink="/" class="bg-secondary text-on-secondary px-lg py-sm rounded-lg font-label-md text-label-md font-semibold hover:opacity-90 transition-all flex items-center gap-2 shadow-sm">
+        <span class="material-symbols-outlined text-[18px]">add</span>
+        Book New Flight
+      </a>
+    </div>
+
+    @if (isLoading) {
+      <div class="bg-surface-container-lowest rounded-xl p-3xl flight-card-shadow border border-outline-variant/50 flex flex-col items-center justify-center py-2xl text-center">
+        <span class="material-symbols-outlined text-[48px] text-secondary animate-spin mb-md">progress_activity</span>
+        <p class="font-body-md text-body-md text-on-surface-variant">Loading your bookings...</p>
+      </div>
+    } @else if (errorMessage) {
+      <div class="p-md rounded-lg bg-error-container text-on-error-container font-medium border border-error/20 flex items-center gap-2">
+        <span class="material-symbols-outlined text-[20px]">error</span>
+        <span>{{ errorMessage }}</span>
+      </div>
+    } @else if (bookings.length === 0) {
+      <div class="bg-surface-container-lowest rounded-xl p-3xl flight-card-shadow border border-outline-variant/50 flex flex-col items-center justify-center text-center py-2xl">
+        <span class="material-symbols-outlined text-[64px] text-outline mb-md">confirmation_number</span>
+        <h3 class="font-headline-md text-headline-md font-bold text-primary mb-sm">No Bookings Found</h3>
+        <p class="text-body-md text-on-surface-variant mb-lg max-w-[400px]">You haven't booked any flights yet. Start searching for your next trip!</p>
+        <a routerLink="/" class="bg-secondary text-on-secondary px-lg py-md rounded-lg font-label-md text-label-md font-semibold hover:opacity-90">Find Flights</a>
+      </div>
+    } @else {
+      <div class="grid grid-cols-1 gap-lg">
+        @for (b of bookings; track b.bookingId) {
+          <div class="bg-surface-container-lowest rounded-xl p-lg flight-card-shadow border border-outline-variant/50 flight-card-hover transition-all duration-300 cursor-pointer" (click)="viewBooking(b.bookingId)">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-outline-variant/30 pb-md gap-md mb-md">
+              <div class="flex items-center gap-md">
+                <div class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined text-secondary text-[24px]">confirmation_number</span>
+                </div>
+                <div>
+                  <span class="text-label-sm font-label-sm text-on-surface-variant block uppercase font-medium">PNR / Booking Reference</span>
+                  <span class="font-headline-md text-headline-md font-bold text-primary tracking-wider">{{ b.bookingCode }}</span>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-sm">
+                <span class="px-3 py-1 rounded-full text-label-sm font-label-sm font-bold uppercase" [class.bg-[#DCFCE7]]="b.status === 'CONFIRMED'" [class.text-[#166534]]="b.status === 'CONFIRMED'" [class.bg-surface-container-high]="b.status === 'PENDING'" [class.bg-error-container]="b.status === 'CANCELLED'" [class.text-on-error-container]="b.status === 'CANCELLED'">
+                  {{ b.status }}
+                </span>
+                <span class="px-3 py-1 rounded-full text-label-sm font-label-sm font-bold uppercase" [class.bg-secondary-fixed]="b.paymentStatus === 'PAID'" [class.text-on-secondary-fixed-variant]="b.paymentStatus === 'PAID'" [class.bg-error-container]="b.paymentStatus === 'FAILED'">
+                  {{ b.paymentStatus }}
+                </span>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-md items-center py-xs">
+              <div class="md:col-span-8 space-y-sm">
+                @for (seg of b.segments; track seg.segmentId) {
+                  <div class="flex items-center gap-md">
+                    <span class="font-headline-md text-headline-md font-bold text-primary">{{ seg.fromAirport }} ✈ {{ seg.toAirport }}</span>
+                    <span class="text-body-sm text-on-surface-variant font-medium">({{ seg.airlineName }} #{{ seg.flightNumber }})</span>
+                  </div>
+                }
+                <div class="text-body-sm text-on-surface-variant">Booked on {{ b.bookingTs | date:'mediumDate' }}</div>
+              </div>
+
+              <div class="md:col-span-4 flex justify-between md:justify-end items-center gap-lg border-t md:border-t-0 border-outline-variant/30 pt-md md:pt-0">
+                <div class="text-right">
+                  <span class="text-body-sm text-on-surface-variant block text-xs">Total Amount</span>
+                  <span class="font-headline-md text-headline-md font-bold text-primary">₹{{ b.totalAmount | number:'1.0-0' }}</span>
+                </div>
+                <button class="bg-surface text-primary border border-outline-variant px-md py-sm rounded-lg font-label-md text-label-md hover:bg-surface-container-low transition-colors flex items-center gap-1 font-semibold">
+                  <span>View Details</span>
+                  <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        }
+      </div>
+    }
+
+  </div>
+</div>
+

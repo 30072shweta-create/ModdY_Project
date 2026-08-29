@@ -1,0 +1,129 @@
+<div class="admin-layout">
+  <app-admin-sidebar></app-admin-sidebar>
+
+  <main class="admin-main">
+    <header class="admin-header">
+      <div>
+        <h1 class="admin-header__title">Payment Management</h1>
+        <p class="admin-header__subtitle">View, track, and monitor customer payment transactions and gateway records</p>
+      </div>
+    </header>
+
+    <!-- Alerts -->
+    <div class="admin-alert admin-alert--error" *ngIf="errorMessage">
+      <span class="material-symbols-outlined">error</span>
+      <span>{{ errorMessage }}</span>
+      <button class="admin-alert__close" (click)="errorMessage = ''">&times;</button>
+    </div>
+
+    <!-- Loading State -->
+    <div class="admin-loading" *ngIf="isLoading">
+      <div class="admin-loading__spinner"></div>
+      <span>Loading payments...</span>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="toolbar__search">
+        <span class="material-symbols-outlined toolbar__icon">search</span>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search by payment ID, booking ID, or transaction ref..."
+          [(ngModel)]="search"
+        />
+      </div>
+
+      <div class="filter-group">
+        <select class="form-control" [(ngModel)]="statusFilter">
+          <option value="ALL">All Payment Statuses</option>
+          <option value="PAID">PAID</option>
+          <option value="PENDING">PENDING</option>
+          <option value="FAILED">FAILED</option>
+          <option value="REFUNDED">REFUNDED</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="card">
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Booking ID</th>
+              <th>Method</th>
+              <th>Amount</th>
+              <th>Transaction Ref / Gateway ID</th>
+              <th>Paid / Created Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of filteredPayments">
+              <td>#{{ p.paymentId }}</td>
+              <td>
+                <strong class="code-badge">Booking #{{ p.bookingId }}</strong>
+              </td>
+              <td>{{ p.paymentMethod }}</td>
+              <td>
+                <strong>{{ p.amount | currency:(p.currency || 'USD') }}</strong>
+              </td>
+              <td>
+                <span class="code-badge" *ngIf="p.transactionRef || p.razorpayPaymentId">
+                  {{ p.transactionRef || p.razorpayPaymentId }}
+                </span>
+                <span *ngIf="!p.transactionRef && !p.razorpayPaymentId">-</span>
+              </td>
+              <td>{{ (p.paidAt || p.createdAt) | date:'medium' }}</td>
+              <td>
+                <span class="badge" [class.badge--completed]="p.status === 'PAID'" [class.badge--cancelled]="p.status === 'FAILED' || p.status === 'REFUNDED'">
+                  {{ p.status }}
+                </span>
+              </td>
+              <td>
+                <button class="btn btn--secondary btn--sm" (click)="viewPaymentDetails(p)">
+                  <span class="material-symbols-outlined">visibility</span>
+                  Details
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="filteredPayments.length === 0">
+              <td colspan="8" class="empty-state">No payment records found.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Detail Modal -->
+    <div class="modal-backdrop" *ngIf="showDetailModal && selectedPayment">
+      <div class="modal">
+        <div class="modal__header">
+          <h3>Payment Details — #{{ selectedPayment.paymentId }}</h3>
+          <button type="button" class="modal__close" (click)="closeDetailModal()">&times;</button>
+        </div>
+        <div class="modal__body">
+          <div class="detail-list">
+            <div class="detail-item"><strong>Payment ID:</strong> #{{ selectedPayment.paymentId }}</div>
+            <div class="detail-item"><strong>Booking ID:</strong> #{{ selectedPayment.bookingId }}</div>
+            <div class="detail-item"><strong>Payment Method:</strong> {{ selectedPayment.paymentMethod }}</div>
+            <div class="detail-item"><strong>Amount:</strong> {{ selectedPayment.amount | currency:(selectedPayment.currency || 'USD') }}</div>
+            <div class="detail-item"><strong>Currency:</strong> {{ selectedPayment.currency || 'USD' }}</div>
+            <div class="detail-item"><strong>Payment Status:</strong> {{ selectedPayment.status }}</div>
+            <div class="detail-item" *ngIf="selectedPayment.razorpayOrderId"><strong>Razorpay Order ID:</strong> {{ selectedPayment.razorpayOrderId }}</div>
+            <div class="detail-item" *ngIf="selectedPayment.razorpayPaymentId"><strong>Razorpay Payment ID:</strong> {{ selectedPayment.razorpayPaymentId }}</div>
+            <div class="detail-item" *ngIf="selectedPayment.transactionRef"><strong>Transaction Ref:</strong> {{ selectedPayment.transactionRef }}</div>
+            <div class="detail-item" *ngIf="selectedPayment.paidAt"><strong>Paid At:</strong> {{ selectedPayment.paidAt | date:'medium' }}</div>
+            <div class="detail-item" *ngIf="selectedPayment.createdAt"><strong>Created At:</strong> {{ selectedPayment.createdAt | date:'medium' }}</div>
+          </div>
+        </div>
+        <div class="modal__footer">
+          <button type="button" class="btn btn--secondary" (click)="closeDetailModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

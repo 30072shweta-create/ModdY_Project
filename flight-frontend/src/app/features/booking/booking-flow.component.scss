@@ -1,0 +1,285 @@
+.booking-flow-page {
+  padding: 2.5rem 0 4rem 0;
+
+  .booking-step-card {
+    padding: 2.25rem;
+
+    .card-header-box {
+      margin-bottom: 2rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border-color);
+
+      &.flex-between {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      h2 {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: var(--dark-surface);
+      }
+
+      p {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+      }
+    }
+
+    .lock-timer-box {
+      background: var(--warning-bg);
+      border: 1px solid #FCD34D;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+
+      .lbl { font-size: 0.725rem; color: #92400E; font-weight: 600; }
+      .timer { font-size: 1.2rem; font-weight: 800; color: #B45309; }
+    }
+  }
+
+  .passenger-card {
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    background: var(--light-bg);
+
+    .passenger-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+
+      h4 {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--dark-surface);
+      }
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 1rem;
+
+      .span-2 {
+        grid-column: span 2;
+      }
+    }
+  }
+
+  .step-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+  }
+
+  /* Seat Map Grid */
+  .seat-selection-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 2rem;
+
+    .passenger-selector-box {
+      background: var(--light-bg);
+      padding: 1.25rem;
+      border-radius: var(--radius-md);
+
+      h4 {
+        font-size: 0.95rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+      }
+
+      .p-seat-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.75rem;
+
+        .name { font-size: 0.875rem; font-weight: 600; }
+        .seat-badge {
+          font-size: 0.75rem;
+          background: #E2E8F0;
+          padding: 0.2rem 0.6rem;
+          border-radius: 9999px;
+
+          &.assigned {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 700;
+          }
+        }
+      }
+    }
+
+    .seat-map-grid {
+      text-align: center;
+      padding: 2rem;
+
+      .cockpit-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        letter-spacing: 0.1em;
+        margin-bottom: 1.5rem;
+      }
+
+      .seats-container {
+        display: grid;
+        grid-template-columns: repeat(6, 42px);
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 2rem;
+      }
+
+      .seat-btn {
+        height: 42px;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+        background: #ffffff;
+        font-weight: 700;
+        font-size: 0.8rem;
+        color: var(--text-main);
+
+        &.selected {
+          background: var(--primary);
+          color: white;
+          border-color: var(--primary);
+        }
+
+        &.locked {
+          background: #E2E8F0;
+          color: #94A3B8;
+          cursor: not-allowed;
+        }
+
+        &:hover:not(:disabled) {
+          border-color: var(--primary);
+        }
+      }
+
+      .seat-legend {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        font-size: 0.8rem;
+
+        .legend-item {
+          display: flex;
+          align-items: center;
+          gap: 0.4rem;
+
+          .box {
+            width: 14px;
+            height: 14px;
+            border-radius: 3px;
+            &.available { background: #ffffff; border: 1px solid var(--border-color); }
+            &.selected { background: var(--primary); }
+            &.locked { background: #E2E8F0; }
+          }
+        }
+      }
+    }
+  }
+
+  /* Addons */
+  .addons-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+
+    .addon-card {
+      text-align: center;
+      padding: 1.75rem;
+
+      .icon { font-size: 2.25rem; margin-bottom: 0.75rem; }
+      h4 { font-weight: 700; margin-bottom: 0.35rem; }
+      p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; }
+      .price { display: block; font-weight: 800; color: var(--primary); font-size: 1.1rem; margin-bottom: 0.75rem; }
+    }
+  }
+
+  /* Payment Layout */
+  .payment-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+
+    .coupon-card {
+      h4 { font-weight: 700; margin-bottom: 1rem; }
+      .coupon-input-group {
+        display: flex;
+        gap: 0.5rem;
+      }
+    }
+
+    .fare-summary-card {
+      h4 { font-weight: 700; margin-bottom: 1.25rem; }
+
+      .fare-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.85rem;
+        font-size: 0.925rem;
+
+        &.discount { color: var(--success); font-weight: 600; }
+        &.total {
+          padding-top: 1rem;
+          border-top: 2px solid var(--border-color);
+          font-weight: 800;
+          font-size: 1.2rem;
+          color: var(--dark-surface);
+        }
+      }
+
+      .btn-pay {
+        margin-top: 1.5rem;
+        padding: 0.85rem;
+        font-size: 1.05rem;
+      }
+    }
+  }
+
+  /* Confirmation */
+  .confirmation-card {
+    padding: 4rem 2rem;
+
+    .success-icon { font-size: 4rem; margin-bottom: 1rem; }
+    h2 { font-size: 2.25rem; font-weight: 800; color: var(--dark-surface); margin-bottom: 0.5rem; }
+    .pnr { font-size: 1.1rem; color: var(--primary); margin-bottom: 1.5rem; }
+
+    .ticket-box {
+      max-width: 440px;
+      margin: 0 auto 2rem auto;
+      text-align: left;
+      padding: 1.5rem;
+
+      h4 { margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-color); }
+      p { font-size: 0.9rem; margin-bottom: 0.4rem; }
+    }
+
+    .confirmation-actions {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .booking-flow-page {
+    .seat-selection-layout, .payment-layout {
+      grid-template-columns: 1fr;
+    }
+    .passenger-card .form-grid {
+      grid-template-columns: 1fr;
+      .span-2 { grid-column: span 1; }
+    }
+  }
+}

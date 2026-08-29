@@ -1,0 +1,202 @@
+<div class="admin-layout">
+  <app-admin-sidebar></app-admin-sidebar>
+
+  <main class="admin-main">
+    <header class="admin-header">
+      <div>
+        <h1 class="admin-header__title">Pricing Rules Management</h1>
+        <p class="admin-header__subtitle">Manage dynamic surge pricing, weekend markups, and seasonal promotional adjustments</p>
+      </div>
+      <button class="btn btn--primary" (click)="openAddModal()">
+        <span class="material-symbols-outlined">add</span>
+        Add Pricing Rule
+      </button>
+    </header>
+
+    <!-- Alerts -->
+    <div class="admin-alert admin-alert--error" *ngIf="errorMessage">
+      <span class="material-symbols-outlined">error</span>
+      <span>{{ errorMessage }}</span>
+      <button class="admin-alert__close" (click)="errorMessage = ''">&times;</button>
+    </div>
+
+    <div class="admin-alert admin-alert--success" *ngIf="successMessage">
+      <span class="material-symbols-outlined">check_circle</span>
+      <span>{{ successMessage }}</span>
+      <button class="admin-alert__close" (click)="successMessage = ''">&times;</button>
+    </div>
+
+    <!-- Loading State -->
+    <div class="admin-loading" *ngIf="isLoading">
+      <div class="admin-loading__spinner"></div>
+      <span>Loading pricing rules...</span>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="toolbar__search">
+        <span class="material-symbols-outlined toolbar__icon">search</span>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search pricing rules..."
+          [(ngModel)]="search"
+        />
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="card">
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Rule Name</th>
+              <th>Rule Type</th>
+              <th>Adjustment Type</th>
+              <th>Adjustment Value</th>
+              <th>Priority</th>
+              <th>Validity</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let rule of filteredRules">
+              <td>#{{ rule.ruleId }}</td>
+              <td>
+                <strong>{{ rule.name }}</strong>
+              </td>
+              <td>
+                <span class="rule-badge">{{ rule.ruleType }}</span>
+              </td>
+              <td>{{ rule.adjustmentType }}</td>
+              <td>
+                <span [class.text-danger]="rule.adjustmentValue < 0" [class.text-success]="rule.adjustmentValue > 0">
+                  {{ rule.adjustmentValue > 0 ? '+' : '' }}{{ rule.adjustmentType === 'PERCENTAGE' ? rule.adjustmentValue + '%' : (rule.adjustmentValue | currency) }}
+                </span>
+              </td>
+              <td>{{ rule.priority || 1 }}</td>
+              <td>
+                <small *ngIf="rule.effectiveFrom || rule.effectiveTo">
+                  {{ rule.effectiveFrom | date:'shortDate' }} - {{ rule.effectiveTo | date:'shortDate' }}
+                </small>
+                <span *ngIf="!rule.effectiveFrom && !rule.effectiveTo">Always Applicable</span>
+              </td>
+              <td>
+                <span class="badge" [class.badge--completed]="rule.active" [class.badge--cancelled]="!rule.active">
+                  {{ rule.active ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td>
+                <div class="action-buttons">
+                  <button class="btn-icon" (click)="openEditModal(rule)" title="Edit">
+                    <span class="material-symbols-outlined">edit</span>
+                  </button>
+                  <button class="btn-icon btn-icon--danger" (click)="confirmDelete(rule)" title="Delete">
+                    <span class="material-symbols-outlined">delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="filteredRules.length === 0">
+              <td colspan="9" class="empty-state">No pricing rules found.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div class="modal-backdrop" *ngIf="showModal">
+      <form class="modal" [formGroup]="ruleForm" (ngSubmit)="submitRule()">
+        <div class="modal__header">
+          <h3>{{ editingId ? 'Edit Pricing Rule' : 'Add Pricing Rule' }}</h3>
+          <button type="button" class="modal__close" (click)="closeModal()">&times;</button>
+        </div>
+        <div class="modal__body">
+          <div class="form-group">
+            <label>Rule Name *</label>
+            <input type="text" class="form-control" formControlName="name" placeholder="e.g. Weekend Surge (+15%)" />
+            <div class="error-text" *ngIf="ruleForm.get('name')?.touched && ruleForm.get('name')?.invalid">
+              Rule name is required.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Rule Type *</label>
+            <select class="form-control" formControlName="ruleType">
+              <option value="WEEKEND">WEEKEND</option>
+              <option value="HOLIDAY">HOLIDAY</option>
+              <option value="SEASONAL">SEASONAL</option>
+              <option value="PROMOTION">PROMOTION</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Adjustment Type *</label>
+            <select class="form-control" formControlName="adjustmentType">
+              <option value="PERCENTAGE">PERCENTAGE (%)</option>
+              <option value="FIXED">FIXED AMOUNT ($)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Adjustment Value *</label>
+            <input type="number" class="form-control" formControlName="adjustmentValue" step="0.01" placeholder="e.g. 15 for +15%, -10 for -10%" />
+            <div class="error-text" *ngIf="ruleForm.get('adjustmentValue')?.touched && ruleForm.get('adjustmentValue')?.invalid">
+              Adjustment value is required.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Effective From</label>
+            <input type="date" class="form-control" formControlName="effectiveFrom" />
+          </div>
+
+          <div class="form-group">
+            <label>Effective Until</label>
+            <input type="date" class="form-control" formControlName="effectiveTo" />
+          </div>
+
+          <div class="form-group">
+            <label>Priority</label>
+            <input type="number" class="form-control" formControlName="priority" />
+          </div>
+
+          <div class="form-group checkbox-group">
+            <label>
+              <input type="checkbox" formControlName="active" />
+              Active Rule
+            </label>
+          </div>
+        </div>
+
+        <div class="modal__footer">
+          <button type="button" class="btn btn--secondary" (click)="closeModal()">Cancel</button>
+          <button type="submit" class="btn btn--primary" [disabled]="isLoading">
+            {{ editingId ? 'Update Rule' : 'Save Rule' }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Confirm Delete Modal -->
+    <div class="modal-backdrop" *ngIf="confirmModal.show">
+      <div class="modal">
+        <div class="modal__header modal__header--danger">
+          <h3>{{ confirmModal.title }}</h3>
+          <button type="button" class="modal__close" (click)="confirmModal.show = false">&times;</button>
+        </div>
+        <div class="modal__body">
+          <p>{{ confirmModal.message }}</p>
+        </div>
+        <div class="modal__footer">
+          <button type="button" class="btn btn--secondary" (click)="confirmModal.show = false">Cancel</button>
+          <button type="button" class="btn btn--danger" (click)="confirmModal.onConfirm()">Delete</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

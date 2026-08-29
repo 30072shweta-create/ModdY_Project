@@ -1,0 +1,828 @@
+$navy-dark: #0f172a;
+$navy-primary: #1e3a8a;
+$blue-primary: #2563eb;
+$blue-hover: #1d4ed8;
+$blue-light: #eff6ff;
+$bg-slate: #f8fafc;
+$text-dark: #0f172a;
+$text-muted: #64748b;
+$border-light: #e2e8f0;
+$shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.1), 0 10px 10px -5px rgba(15, 23, 42, 0.04);
+$shadow-card: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23, 42, 0.05);
+
+:host {
+  display: block;
+  background-color: $bg-slate;
+  color: $text-dark;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* ==========================================================================
+   1. HERO SECTION (Deep Navy Overlay)
+   ========================================================================== */
+
+.hero-section {
+  position: relative;
+  min-height: 440px;
+  padding: 56px 24px 110px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  overflow: visible;
+  background-color: $navy-dark;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD2XpwY0Seq4PpdIlWqWB__nx3d2VneBeaZFDe0LwAQnvpHtNgTGWao5SuyvNz5XugBaixZ5RkKTVMr68uaW9_rcMRDNOwAXPqv7xjZmAGFRxnsVQiCs-UwwJfGJg35sejaRO3gjzywkFUD_tyNqTo4udLgzsAjrKPZn7YEH6VHY-YjMCEB5yhFEJ3E3FzZ13y5Oj46EMKLUh9GuBY3i2XLWjJ32uAgcR74lPC5eCuwZisqhICJXPaE');
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.88) 0%, rgba(30, 58, 138, 0.78) 100%);
+  z-index: 1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  letter-spacing: 0.5px;
+}
+
+.hero-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 3rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 12px 0;
+  line-height: 1.15;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
+  @media (max-width: 768px) {
+    font-size: 2.2rem;
+  }
+}
+
+.hero-subtitle {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 650px;
+  margin: 0 auto;
+  line-height: 1.6;
+
+  @media (max-width: 768px) {
+    font-size: 0.95rem;
+  }
+}
+
+/* ==========================================================================
+   2. PROMINENT FLIGHT SEARCH PANEL
+   ========================================================================== */
+
+.search-widget-container {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 1140px;
+  margin: -70px auto 0 auto;
+  padding: 0 16px;
+}
+
+.search-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: $shadow-xl;
+  border: 1px solid $border-light;
+  padding: 24px 28px;
+}
+
+.search-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.trip-type-selector {
+  display: inline-flex;
+  background: #f1f5f9;
+  padding: 4px;
+  border-radius: 30px;
+  border: 1px solid $border-light;
+}
+
+.trip-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 24px;
+  border: none;
+  background: transparent;
+  color: $text-muted;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &.active {
+    background: #ffffff;
+    color: $blue-primary;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  }
+}
+
+.radio-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #cbd5e1;
+  display: inline-block;
+  transition: all 0.2s ease;
+
+  &.checked {
+    border-color: $blue-primary;
+    background-color: $blue-primary;
+    box-shadow: inset 0 0 0 2px #ffffff;
+  }
+}
+
+.header-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: $navy-primary;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: $blue-light;
+  padding: 6px 14px;
+  border-radius: 20px;
+}
+
+.date-error-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* Form Controls Grid */
+
+.search-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 12px;
+  align-items: center;
+
+  @media (max-width: 991px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-card {
+  background: #f8fafc;
+  border: 1px solid $border-light;
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:focus-within {
+    border-color: $blue-primary;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    background: #ffffff;
+  }
+}
+
+.source-card { grid-column: span 5; }
+.swap-container { grid-column: span 1; display: flex; justify-content: center; align-items: center; }
+.dest-card { grid-column: span 6; }
+
+.date-card { grid-column: span 3; }
+.class-card { grid-column: span 3; }
+.passenger-card { grid-column: span 3; }
+
+@media (max-width: 991px) {
+  .source-card, .dest-card, .date-card, .class-card, .passenger-card {
+    grid-column: span 12 !important;
+  }
+  .swap-container {
+    grid-column: span 12;
+    margin: 4px 0;
+  }
+}
+
+.card-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: $text-muted;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.airport-select, .class-select {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: $text-dark;
+  outline: none;
+  cursor: pointer;
+  padding: 2px 0;
+}
+
+.airport-preview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+.code-badge {
+  background: $navy-primary;
+  color: #ffffff;
+  font-family: monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.airport-name {
+  font-size: 0.75rem;
+  color: $text-muted;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.swap-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid $border-light;
+  color: $blue-primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: $blue-light;
+    transform: rotate(180deg);
+  }
+}
+
+.date-input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: $text-dark;
+  outline: none;
+  padding: 2px 0;
+}
+
+/* Stepper Controls for Passengers */
+
+.stepper-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 2px;
+}
+
+.stepper-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid $border-light;
+  background: #ffffff;
+  color: $text-dark;
+  font-size: 1.1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: $blue-light;
+    color: $blue-primary;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.stepper-count {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: $text-dark;
+}
+
+/* Search Footer & Button */
+
+.search-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.guarantee-text {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: $text-muted;
+  font-weight: 500;
+}
+
+.btn-search-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: $blue-primary;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 36px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    background: $blue-hover;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.45);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #ffffff;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ==========================================================================
+   3. TRUST & BENEFITS BANNER
+   ========================================================================== */
+
+.trust-banner {
+  padding: 48px 24px 32px 24px;
+  max-width: 1140px;
+  margin: 0 auto;
+}
+
+.trust-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+
+  @media (max-width: 991px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 576px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.trust-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: #ffffff;
+  border: 1px solid $border-light;
+  padding: 18px 20px;
+  border-radius: 12px;
+  box-shadow: $shadow-card;
+}
+
+.trust-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: $blue-light;
+  color: $blue-primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  .material-symbols-outlined { font-size: 22px; }
+}
+
+.trust-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: $navy-dark;
+  margin: 0 0 4px 0;
+}
+
+.trust-desc {
+  font-size: 0.8rem;
+  color: $text-muted;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* ==========================================================================
+   4. POPULAR DESTINATIONS BENTO GRID
+   ========================================================================== */
+
+.destinations-section {
+  padding: 40px 24px 48px 24px;
+  max-width: 1140px;
+  margin: 0 auto;
+}
+
+.section-header {
+  margin-bottom: 28px;
+}
+
+.section-tag {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: $blue-primary;
+  letter-spacing: 1px;
+}
+
+.section-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: $navy-dark;
+  margin: 4px 0 6px 0;
+}
+
+.section-subtitle {
+  font-size: 0.95rem;
+  color: $text-muted;
+  margin: 0;
+}
+
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 240px;
+  gap: 16px;
+
+  @media (max-width: 991px) {
+    grid-template-columns: 1fr;
+    grid-auto-rows: 220px;
+  }
+}
+
+.bento-card {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: $shadow-card;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $shadow-xl;
+
+    .card-img { transform: scale(1.05); }
+  }
+
+  &--large {
+    grid-column: span 2;
+    grid-row: span 2;
+
+    @media (max-width: 991px) {
+      grid-column: span 1;
+      grid-row: span 1;
+    }
+  }
+}
+
+.card-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(15, 23, 42, 0.85) 0%, rgba(15, 23, 42, 0.1) 60%);
+}
+
+.card-content {
+  position: absolute;
+  inset: 0;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: #ffffff;
+  z-index: 2;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.iata-tag {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(4px);
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.price-chip {
+  background: #ffffff;
+  color: $navy-dark;
+  font-size: 0.85rem;
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.card-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+}
+
+.card-desc {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0;
+}
+
+.price-link {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   5. FEATURED FLIGHT OFFERS SECTION
+   ========================================================================== */
+
+.flights-section {
+  padding: 20px 24px 60px 24px;
+  max-width: 1140px;
+  margin: 0 auto;
+}
+
+.flight-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.flight-offer-card {
+  background: #ffffff;
+  border: 1px solid $border-light;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: $shadow-card;
+  cursor: pointer;
+  transition: all 0.25s ease;
+
+  &:hover {
+    border-color: $blue-primary;
+    transform: translateY(-2px);
+    box-shadow: $shadow-xl;
+
+    .btn-select { background: $blue-primary; color: #ffffff; }
+  }
+}
+
+.offer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px solid $border-light;
+}
+
+.airline-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.airline-name {
+  font-weight: 700;
+  color: $navy-dark;
+  font-size: 0.95rem;
+}
+
+.flight-code {
+  font-size: 0.8rem;
+  color: $text-muted;
+}
+
+.stop-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: #f1f5f9;
+  color: $text-muted;
+  padding: 3px 8px;
+  border-radius: 4px;
+
+  &.direct {
+    background: #d1fae5;
+    color: #047857;
+  }
+}
+
+.offer-route {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+}
+
+.route-point {
+  text-align: center;
+
+  .time {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: $navy-dark;
+  }
+
+  .airport {
+    font-size: 0.85rem;
+    color: $text-muted;
+    font-weight: 600;
+  }
+}
+
+.route-line {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 16px;
+
+  .duration {
+    font-size: 0.75rem;
+    color: $text-muted;
+    margin-bottom: 4px;
+  }
+
+  .line {
+    width: 100%;
+    height: 1px;
+    background: $border-light;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .plane-icon {
+    font-size: 16px;
+    color: $blue-primary;
+    background: #ffffff;
+    padding: 0 4px;
+  }
+}
+
+.offer-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 12px;
+  border-top: 1px solid $border-light;
+}
+
+.fare-label {
+  display: block;
+  font-size: 0.75rem;
+  color: $text-muted;
+}
+
+.fare-price {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: $navy-dark;
+}
+
+.btn-select {
+  background: $blue-light;
+  color: $blue-primary;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.empty-flights {
+  text-align: center;
+  padding: 48px;
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid $border-light;
+  color: $text-muted;
+}
+
+/* ==========================================================================
+   6. ABOUT & HELP SECTIONS
+   ========================================================================== */
+
+.info-section {
+  padding: 56px 24px;
+}
+
+.info-container {
+  max-width: 1140px;
+  margin: 0 auto;
+}
+
+.info-text {
+  max-width: 800px;
+}

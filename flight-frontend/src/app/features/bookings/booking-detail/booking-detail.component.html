@@ -1,0 +1,107 @@
+<div class="booking-detail-page">
+  <div class="container">
+    @if (isLoading) {
+      <div class="card loading-card">
+        <p>Loading ticket details...</p>
+      </div>
+    } @else if (errorMessage) {
+      <div class="alert alert-danger">{{ errorMessage }}</div>
+    } @else if (booking) {
+      <div class="card ticket-card">
+        <div class="ticket-header">
+          <div>
+            <span class="pnr-label">Booking PNR / Code</span>
+            <h2>{{ booking.bookingCode }}</h2>
+          </div>
+          <div class="badges">
+            <span class="badge" [class.badge-success]="booking.status === 'CONFIRMED'" [class.badge-danger]="booking.status === 'CANCELLED'">
+              {{ booking.status }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Segments -->
+        <div class="ticket-section">
+          <h3>Flight Details</h3>
+          @for (seg of booking.segments; track seg.segmentId) {
+            <div class="segment-card card">
+              <div class="seg-header">
+                <span class="airline">{{ seg.airlineName }} ({{ seg.flightNumber }})</span>
+                <span class="cabin">{{ seg.cabinClass }} Class</span>
+              </div>
+              <div class="route-box">
+                <div class="ap">
+                  <span class="code">{{ seg.fromAirport }}</span>
+                  <span class="time">{{ seg.departureTs | date:'medium' }}</span>
+                </div>
+                <div class="arrow">✈</div>
+                <div class="ap text-right">
+                  <span class="code">{{ seg.toAirport }}</span>
+                  <span class="time">{{ seg.arrivalTs | date:'medium' }}</span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Passengers & Seats -->
+        <div class="ticket-section">
+          <h3>Passengers & Assigned Seats</h3>
+          <div class="passengers-list">
+            @for (p of passengers; track p.passengerId) {
+              <div class="p-item card">
+                <div class="p-info">
+                  <span class="p-name">{{ p.firstName }} {{ p.lastName }}</span>
+                  <span class="p-sub">Age: {{ p.age }} • Gender: {{ p.gender }}</span>
+                </div>
+                <div class="seat-tag">
+                  Seat: <strong>{{ p.seatNumber || 'Auto-Allocated' }}</strong>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Financial Breakdown -->
+        <div class="ticket-section">
+          <h3>Payment Summary</h3>
+          <div class="summary-box">
+            <p><strong>Payment Status:</strong> {{ booking.paymentStatus }}</p>
+            <p><strong>Total Amount Paid:</strong> ₹{{ booking.totalAmount | number:'1.0-0' }}</p>
+            <p><strong>Booking Timestamp:</strong> {{ booking.bookingTs | date:'medium' }}</p>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="ticket-actions">
+          <a routerLink="/my-bookings" class="btn btn-outline">Back to My Bookings</a>
+          @if (booking.status === 'CONFIRMED') {
+            <button class="btn btn-danger" (click)="openCancelModal()">Cancel Booking</button>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Cancel Modal -->
+    @if (showCancelModal) {
+      <div class="modal-backdrop">
+        <div class="card modal-card">
+          <h3>Cancel Booking {{ booking?.bookingCode }}</h3>
+          <p>Are you sure you want to cancel this flight booking? Refund policy will apply.</p>
+
+          <div class="form-group">
+            <label>Reason for Cancellation</label>
+            <textarea [(ngModel)]="cancelReason" class="form-control" rows="3"></textarea>
+          </div>
+
+          <div class="modal-actions">
+            <button class="btn btn-outline" (click)="closeCancelModal()">Keep Booking</button>
+            <button class="btn btn-danger" (click)="cancelBooking()" [disabled]="isCancelling">
+              {{ isCancelling ? 'Cancelling...' : 'Confirm Cancellation' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>

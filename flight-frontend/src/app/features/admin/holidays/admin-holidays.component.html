@@ -1,0 +1,150 @@
+<div class="admin-layout">
+  <app-admin-sidebar></app-admin-sidebar>
+
+  <main class="admin-main">
+    <header class="admin-header">
+      <div>
+        <h1 class="admin-header__title">Holiday Management</h1>
+        <p class="admin-header__subtitle">Manage national and seasonal holiday pricing calendars</p>
+      </div>
+      <button class="btn btn--primary" (click)="openAddModal()">
+        <span class="material-symbols-outlined">add</span>
+        Add Holiday
+      </button>
+    </header>
+
+    <!-- Alerts -->
+    <div class="admin-alert admin-alert--error" *ngIf="errorMessage">
+      <span class="material-symbols-outlined">error</span>
+      <span>{{ errorMessage }}</span>
+      <button class="admin-alert__close" (click)="errorMessage = ''">&times;</button>
+    </div>
+
+    <div class="admin-alert admin-alert--success" *ngIf="successMessage">
+      <span class="material-symbols-outlined">check_circle</span>
+      <span>{{ successMessage }}</span>
+      <button class="admin-alert__close" (click)="successMessage = ''">&times;</button>
+    </div>
+
+    <!-- Loading State -->
+    <div class="admin-loading" *ngIf="isLoading">
+      <div class="admin-loading__spinner"></div>
+      <span>Loading holidays...</span>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="toolbar__search">
+        <span class="material-symbols-outlined toolbar__icon">search</span>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search holidays..."
+          [(ngModel)]="search"
+        />
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="card">
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Holiday Name</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let holiday of filteredHolidays">
+              <td>#{{ holiday.holidayId }}</td>
+              <td>
+                <strong>{{ holiday.name }}</strong>
+              </td>
+              <td>{{ holiday.holidayDate | date:'mediumDate' }}</td>
+              <td>
+                <span class="badge" [class.badge--completed]="holiday.active" [class.badge--cancelled]="!holiday.active">
+                  {{ holiday.active ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td>
+                <div class="action-buttons">
+                  <button class="btn-icon" (click)="openEditModal(holiday)" title="Edit">
+                    <span class="material-symbols-outlined">edit</span>
+                  </button>
+                  <button class="btn-icon btn-icon--danger" (click)="confirmDelete(holiday)" title="Delete">
+                    <span class="material-symbols-outlined">delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="filteredHolidays.length === 0">
+              <td colspan="5" class="empty-state">No holidays found.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div class="modal-backdrop" *ngIf="showModal">
+      <form class="modal" [formGroup]="holidayForm" (ngSubmit)="submitHoliday()">
+        <div class="modal__header">
+          <h3>{{ editingId ? 'Edit Holiday' : 'Add Holiday' }}</h3>
+          <button type="button" class="modal__close" (click)="closeModal()">&times;</button>
+        </div>
+        <div class="modal__body">
+          <div class="form-group">
+            <label>Holiday Name *</label>
+            <input type="text" class="form-control" formControlName="name" placeholder="e.g. New Year's Day" />
+            <div class="error-text" *ngIf="holidayForm.get('name')?.touched && holidayForm.get('name')?.invalid">
+              Holiday name is required.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Holiday Date *</label>
+            <input type="date" class="form-control" formControlName="holidayDate" />
+            <div class="error-text" *ngIf="holidayForm.get('holidayDate')?.touched && holidayForm.get('holidayDate')?.invalid">
+              Holiday date is required.
+            </div>
+          </div>
+
+          <div class="form-group checkbox-group">
+            <label>
+              <input type="checkbox" formControlName="active" />
+              Active Holiday
+            </label>
+          </div>
+        </div>
+
+        <div class="modal__footer">
+          <button type="button" class="btn btn--secondary" (click)="closeModal()">Cancel</button>
+          <button type="submit" class="btn btn--primary" [disabled]="isLoading">
+            {{ editingId ? 'Update Holiday' : 'Save Holiday' }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Confirm Delete Modal -->
+    <div class="modal-backdrop" *ngIf="confirmModal.show">
+      <div class="modal">
+        <div class="modal__header modal__header--danger">
+          <h3>{{ confirmModal.title }}</h3>
+          <button type="button" class="modal__close" (click)="confirmModal.show = false">&times;</button>
+        </div>
+        <div class="modal__body">
+          <p>{{ confirmModal.message }}</p>
+        </div>
+        <div class="modal__footer">
+          <button type="button" class="btn btn--secondary" (click)="confirmModal.show = false">Cancel</button>
+          <button type="button" class="btn btn--danger" (click)="confirmModal.onConfirm()">Delete</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

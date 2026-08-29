@@ -1,0 +1,149 @@
+<header class="navbar" [class.navbar--scrolled]="isScrolled">
+  <div class="navbar__container">
+    <!-- Brand Logo -->
+    <a routerLink="/" class="navbar__brand" (click)="closeMobileMenu()">
+      <span class="material-symbols-outlined navbar__brand-icon">flight_takeoff</span>
+      <span class="navbar__brand-text">SkyRoute</span>
+    </a>
+
+    <!-- Desktop Navigation (center) -->
+    <nav class="navbar__nav-desktop">
+      <a routerLink="/flights"
+         routerLinkActive="navbar__link--active"
+         [routerLinkActiveOptions]="{exact: false}"
+         class="navbar__link">Flights</a>
+      <a routerLink="/my-bookings"
+         routerLinkActive="navbar__link--active"
+         class="navbar__link">Manage Booking</a>
+      <a routerLink="/notifications"
+         routerLinkActive="navbar__link--active"
+         class="navbar__link"
+         *ngIf="authService.isAuthenticated()">Notifications</a>
+      <a class="navbar__link" (click)="scrollToAbout()">About</a>
+      <a class="navbar__link" (click)="scrollToHelp()">Help</a>
+    </nav>
+
+    <!-- Desktop Right Actions -->
+    <div class="navbar__actions-desktop">
+      <!-- Search Icon -->
+      <a routerLink="/search" class="navbar__icon-btn" aria-label="Search flights">
+        <span class="material-symbols-outlined">search</span>
+      </a>
+
+      <!-- Notification Bell -->
+      <a routerLink="/notifications" class="navbar__icon-btn" aria-label="Notifications" *ngIf="authService.isAuthenticated()">
+        <span class="material-symbols-outlined">notifications</span>
+      </a>
+
+      <!-- Unauthenticated: Login & Sign Up -->
+      <ng-container *ngIf="!authService.isAuthenticated()">
+        <a routerLink="/login" class="navbar__btn navbar__btn--outlined">Login</a>
+        <a routerLink="/register" class="navbar__btn navbar__btn--filled">Sign Up</a>
+      </ng-container>
+
+      <!-- Authenticated: User Info & Logout -->
+      <ng-container *ngIf="authService.isAuthenticated()">
+        <!-- Admin Badge -->
+        <a routerLink="/admin" class="navbar__admin-chip" *ngIf="authService.isAdmin()">
+          <span class="material-symbols-outlined" style="font-size: 16px;">admin_panel_settings</span>
+          Admin Console
+        </a>
+
+        <!-- User Profile -->
+        <a routerLink="/profile" class="navbar__user-pill">
+          <div class="navbar__avatar">
+            {{ authService.currentUser()?.firstName?.charAt(0) || 'U' }}
+          </div>
+          <span class="navbar__user-name">{{ authService.currentUser()?.firstName }}</span>
+        </a>
+
+        <!-- Logout -->
+        <button class="navbar__btn navbar__btn--outlined navbar__btn--logout" (click)="logout()">
+          Logout
+        </button>
+      </ng-container>
+    </div>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="navbar__mobile-toggle" (click)="toggleMobileMenu()" aria-label="Toggle navigation">
+      <span class="material-symbols-outlined">{{ isMobileMenuOpen ? 'close' : 'menu' }}</span>
+    </button>
+  </div>
+
+  <!-- Mobile Dropdown Menu -->
+  <div class="navbar__mobile-menu" [class.navbar__mobile-menu--open]="isMobileMenuOpen">
+    <nav class="navbar__mobile-nav">
+      <a routerLink="/flights"
+         routerLinkActive="navbar__mobile-link--active"
+         [routerLinkActiveOptions]="{exact: false}"
+         class="navbar__mobile-link" (click)="closeMobileMenu()">
+        <span class="material-symbols-outlined">flight</span>
+        Flights
+      </a>
+      <a routerLink="/my-bookings"
+         routerLinkActive="navbar__mobile-link--active"
+         class="navbar__mobile-link" (click)="closeMobileMenu()">
+        <span class="material-symbols-outlined">confirmation_number</span>
+        Manage Booking
+      </a>
+      <a routerLink="/notifications"
+         routerLinkActive="navbar__mobile-link--active"
+         class="navbar__mobile-link" (click)="closeMobileMenu()"
+         *ngIf="authService.isAuthenticated()">
+        <span class="material-symbols-outlined">notifications</span>
+        Notifications
+      </a>
+      <a routerLink="/profile"
+         routerLinkActive="navbar__mobile-link--active"
+         class="navbar__mobile-link" (click)="closeMobileMenu()"
+         *ngIf="authService.isAuthenticated()">
+        <span class="material-symbols-outlined">person</span>
+        Profile
+      </a>
+      <a class="navbar__mobile-link" (click)="scrollToAbout(); closeMobileMenu()">
+        <span class="material-symbols-outlined">info</span>
+        About
+      </a>
+      <a class="navbar__mobile-link" (click)="scrollToHelp(); closeMobileMenu()">
+        <span class="material-symbols-outlined">help</span>
+        Help
+      </a>
+
+      <!-- Admin in mobile -->
+      <a routerLink="/admin"
+         routerLinkActive="navbar__mobile-link--active"
+         class="navbar__mobile-link" (click)="closeMobileMenu()"
+         *ngIf="authService.isAuthenticated() && authService.isAdmin()">
+        <span class="material-symbols-outlined">admin_panel_settings</span>
+        Admin Console
+      </a>
+
+      <!-- Mobile Auth Section -->
+      <div class="navbar__mobile-auth">
+        <ng-container *ngIf="!authService.isAuthenticated()">
+          <a routerLink="/login" class="navbar__btn navbar__btn--outlined navbar__btn--full" (click)="closeMobileMenu()">Login</a>
+          <a routerLink="/register" class="navbar__btn navbar__btn--filled navbar__btn--full" (click)="closeMobileMenu()">Sign Up</a>
+        </ng-container>
+
+        <ng-container *ngIf="authService.isAuthenticated()">
+          <div class="navbar__mobile-user-info">
+            <div class="navbar__avatar navbar__avatar--lg">
+              {{ authService.currentUser()?.firstName?.charAt(0) || 'U' }}
+            </div>
+            <div class="navbar__mobile-user-details">
+              <span class="navbar__mobile-user-name">{{ authService.currentUser()?.firstName }} {{ authService.currentUser()?.lastName }}</span>
+              <span class="navbar__mobile-user-email">{{ authService.currentUser()?.email }}</span>
+            </div>
+          </div>
+          <button class="navbar__btn navbar__btn--outlined navbar__btn--full navbar__btn--logout" (click)="logout(); closeMobileMenu()">
+            <span class="material-symbols-outlined" style="font-size: 18px;">logout</span>
+            Logout
+          </button>
+        </ng-container>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<!-- Spacer to prevent content from hiding behind fixed navbar -->
+<div class="navbar__spacer"></div>

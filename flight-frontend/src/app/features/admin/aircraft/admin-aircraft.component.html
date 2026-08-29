@@ -1,0 +1,150 @@
+<div class="admin-layout">
+  <app-admin-sidebar></app-admin-sidebar>
+
+  <main class="admin-main">
+    <header class="admin-header">
+      <div>
+        <h1 class="admin-header__title">Aircraft Management</h1>
+        <p class="admin-header__subtitle">Manage airplane fleet models and seat capacities</p>
+      </div>
+      <div class="admin-header__actions">
+        <button class="btn btn--secondary btn--sm" (click)="loadAircraft()" [disabled]="isLoading">
+          <span class="material-symbols-outlined">refresh</span>
+          Refresh
+        </button>
+      </div>
+    </header>
+
+    <!-- Alerts -->
+    <div class="admin-alert admin-alert--error" *ngIf="errorMessage">
+      <span class="material-symbols-outlined">error</span>
+      <span>{{ errorMessage }}</span>
+      <button class="admin-alert__close" (click)="errorMessage = ''">&times;</button>
+    </div>
+
+    <div class="admin-alert admin-alert--success" *ngIf="successMessage">
+      <span class="material-symbols-outlined">check_circle</span>
+      <span>{{ successMessage }}</span>
+      <button class="admin-alert__close" (click)="successMessage = ''">&times;</button>
+    </div>
+
+    <div class="admin-loading" *ngIf="isLoading">
+      <div class="admin-loading__spinner"></div>
+      <span>Loading aircraft fleet...</span>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="toolbar__search">
+        <span class="material-symbols-outlined toolbar__icon">search</span>
+        <input type="text" [(ngModel)]="search" placeholder="Search by code, model, manufacturer..."
+          class="form-control" />
+      </div>
+      <button class="btn btn--primary" (click)="openAddModal()">
+        <span class="material-symbols-outlined">add</span>
+        Add Aircraft
+      </button>
+    </div>
+
+    <!-- Table -->
+    <div class="card">
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Aircraft Code</th>
+              <th>Model</th>
+              <th>Manufacturer</th>
+              <th>Seat Capacity</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let ac of filteredAircraft">
+              <td>#{{ ac.aircraftId }}</td>
+              <td><strong>{{ ac.aircraftCode }}</strong></td>
+              <td>{{ ac.model }}</td>
+              <td>{{ ac.manufacturer || 'N/A' }}</td>
+              <td>{{ ac.totalSeatCapacity || 180 }} seats</td>
+              <td>
+                <span class="badge" [class.badge--completed]="ac.active !== false"
+                  [class.badge--cancelled]="ac.active === false">
+                  {{ ac.active !== false ? 'ACTIVE' : 'INACTIVE' }}
+                </span>
+              </td>
+              <td>
+                <div class="action-buttons">
+                  <button class="btn-icon" (click)="openEditModal(ac)" title="Edit Aircraft">
+                    <span class="material-symbols-outlined">edit</span>
+                  </button>
+                  <button class="btn-icon btn-icon--danger" (click)="confirmDeactivate(ac)" title="Deactivate Aircraft">
+                    <span class="material-symbols-outlined">block</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="filteredAircraft.length === 0">
+              <td colspan="7" class="empty-state">No aircraft found.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Add/Edit Modal -->
+  <div class="modal-backdrop" *ngIf="showModal">
+    <form class="modal" [formGroup]="aircraftForm" (ngSubmit)="submitAircraft()">
+      <div class="modal__header">
+        <h3>{{ editingId ? 'Edit Aircraft' : 'Add Aircraft' }}</h3>
+        <button type="button" class="modal__close" (click)="closeModal()">&times;</button>
+      </div>
+      <div class="modal__body">
+        <div class="form-group">
+          <label>Aircraft Code *</label>
+          <input type="text" formControlName="aircraftCode" class="form-control" placeholder="e.g. A320-NEO" />
+        </div>
+        <div class="form-group">
+          <label>Model *</label>
+          <input type="text" formControlName="model" class="form-control" placeholder="e.g. Airbus A320" />
+        </div>
+        <div class="form-group">
+          <label>Manufacturer</label>
+          <input type="text" formControlName="manufacturer" class="form-control" placeholder="e.g. Airbus" />
+        </div>
+        <div class="form-group">
+          <label>Total Seat Capacity *</label>
+          <input type="number" formControlName="totalSeatCapacity" class="form-control" min="1" />
+        </div>
+        <div class="form-group checkbox-group">
+          <label>
+            <input type="checkbox" formControlName="active" /> Active Aircraft
+          </label>
+        </div>
+      </div>
+      <div class="modal__footer">
+        <button type="button" class="btn btn--secondary" (click)="closeModal()">Cancel</button>
+        <button type="submit" class="btn btn--primary" [disabled]="isLoading">Save Aircraft</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Deactivate Confirm Modal -->
+  <div class="modal-backdrop" *ngIf="confirmModal.show">
+    <div class="modal modal--sm">
+      <div class="modal__header modal__header--danger">
+        <h3>{{ confirmModal.title }}</h3>
+        <button class="modal__close" (click)="confirmModal.show = false">&times;</button>
+      </div>
+      <div class="modal__body">
+        <p>{{ confirmModal.message }}</p>
+      </div>
+      <div class="modal__footer">
+        <button type="button" class="btn btn--secondary" (click)="confirmModal.show = false">Cancel</button>
+        <button type="button" class="btn btn--danger" (click)="confirmModal.onConfirm()">Deactivate Aircraft</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,517 @@
+<div class="min-h-screen bg-background font-body-md text-on-surface py-2xl">
+  <div class="max-w-container-max mx-auto px-md md:px-lg">
+    
+    <!-- Top Step Indicator Header -->
+    <div class="flex items-center justify-center gap-md font-label-md text-label-md mb-xl flex-wrap">
+      <div class="flex items-center gap-2" [class.text-primary]="currentStep === 'passengers'" [class.font-bold]="currentStep === 'passengers'" [class.text-on-surface-variant]="currentStep !== 'passengers'">
+        <div class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-label-sm" [class.bg-primary]="currentStep === 'passengers'" [class.text-on-primary]="currentStep === 'passengers'" [class.bg-surface-container-highest]="currentStep !== 'passengers'">1</div>
+        <span>Passenger Details</span>
+      </div>
+      <div class="h-[1px] w-8 bg-outline-variant hidden sm:block"></div>
+
+      <div class="flex items-center gap-2" [class.text-primary]="currentStep === 'seats'" [class.font-bold]="currentStep === 'seats'" [class.text-on-surface-variant]="currentStep !== 'seats'">
+        <div class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-label-sm" [class.bg-primary]="currentStep === 'seats'" [class.text-on-primary]="currentStep === 'seats'" [class.bg-surface-container-highest]="currentStep !== 'seats'">2</div>
+        <span>Seat Selection</span>
+      </div>
+      <div class="h-[1px] w-8 bg-outline-variant hidden sm:block"></div>
+
+      <div class="flex items-center gap-2" [class.text-primary]="currentStep === 'addons' || currentStep === 'payment'" [class.font-bold]="currentStep === 'payment'" [class.text-on-surface-variant]="currentStep !== 'payment'">
+        <div class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-label-sm" [class.bg-primary]="currentStep === 'payment'" [class.text-on-primary]="currentStep === 'payment'" [class.bg-surface-container-highest]="currentStep !== 'payment'">3</div>
+        <span>Payment & Fare</span>
+      </div>
+    </div>
+
+    @if (errorMessage) {
+      <div class="p-md rounded-lg bg-error-container text-on-error-container font-medium border border-error/20 flex items-center gap-2 mb-lg">
+        <span class="material-symbols-outlined text-[20px]">error</span>
+        <span>{{ errorMessage }}</span>
+      </div>
+    }
+
+    <!-- STEP 1: PASSENGERS FORM -->
+    @if (currentStep === 'passengers') {
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+        <div class="lg:col-span-8 space-y-lg">
+          <div class="bg-surface-container-lowest rounded-xl flight-card-shadow p-lg border border-outline-variant/50">
+            <div class="mb-lg border-b border-outline-variant/30 pb-md">
+              <h2 class="font-headline-lg text-headline-lg font-bold text-primary">Passenger Information</h2>
+              <p class="font-body-md text-body-md text-on-surface-variant">Please ensure the names match your government-issued ID exactly.</p>
+            </div>
+
+            <form [formGroup]="passengerForm" (ngSubmit)="submitPassengers()" class="space-y-lg">
+              <div formArrayName="passengers" class="space-y-lg">
+                @for (pGroup of passengerFormArray.controls; track $index; let i = $index) {
+                  <div [formGroupName]="i" class="bg-surface p-lg rounded-xl border border-outline-variant/50 space-y-md">
+                    <div class="flex justify-between items-center border-b border-outline-variant/30 pb-2">
+                      <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-secondary text-[20px]">person</span>
+                        <h4 class="font-headline-md text-headline-md font-bold text-primary text-base">Adult {{ i + 1 }} (Primary Contact)</h4>
+                      </div>
+                      @if (passengerFormArray.length > 1) {
+                        <button type="button" class="text-error font-label-md text-label-md hover:underline font-semibold" (click)="removePassengerField(i)">Remove</button>
+                      }
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+                      <div>
+                        <label class="block font-label-md text-label-md font-semibold text-on-surface mb-1">First Name</label>
+                        <input type="text" formControlName="firstName" class="input-base" placeholder="e.g. Jane" />
+                      </div>
+                      <div>
+                        <label class="block font-label-md text-label-md font-semibold text-on-surface mb-1">Last Name</label>
+                        <input type="text" formControlName="lastName" class="input-base" placeholder="e.g. Doe" />
+                      </div>
+                      <div>
+                        <label class="block font-label-md text-label-md font-semibold text-on-surface mb-1">Age</label>
+                        <input type="number" formControlName="age" min="1" class="input-base" />
+                      </div>
+                      <div>
+                        <label class="block font-label-md text-label-md font-semibold text-on-surface mb-1">Gender</label>
+                        <select formControlName="gender" class="input-base">
+                          <option value="MALE">Male</option>
+                          <option value="FEMALE">Female</option>
+                          <option value="OTHER">Other</option>
+                        </select>
+                      </div>
+                      <div class="md:col-span-2">
+                        <label class="block font-label-md text-label-md font-semibold text-on-surface mb-1">Passport / ID Number</label>
+                        <input type="text" formControlName="passportNumber" class="input-base" placeholder="A12345678" />
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+
+              <div class="flex flex-col sm:flex-row justify-between items-center gap-md pt-md border-t border-outline-variant/30">
+                <button type="button" class="bg-surface text-primary border border-outline-variant px-lg py-sm rounded-lg font-label-md text-label-md font-semibold hover:bg-surface-container-low transition-colors w-full sm:w-auto" (click)="addPassengerField()">
+                  + Add Another Passenger
+                </button>
+                <button type="submit" class="bg-secondary text-on-secondary px-xl py-md rounded-lg font-label-md text-label-md font-semibold hover:opacity-90 transition-all active:scale-[0.98] flex items-center justify-center gap-2 shadow-sm w-full sm:w-auto" [disabled]="isLoading">
+                  <span>{{ isLoading ? 'Saving Details...' : 'Continue to Seat Selection' }}</span>
+                  <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Right Summary Card -->
+        <div class="lg:col-span-4 space-y-lg">
+          <div class="bg-surface-container-lowest rounded-xl flight-card-shadow p-lg border border-outline-variant/50 sticky top-[90px]">
+            <h3 class="font-headline-md text-headline-md font-bold text-primary border-b border-outline-variant/30 pb-sm mb-md">Flight Summary</h3>
+            @if (flight) {
+              <div class="space-y-sm font-body-md text-body-md text-on-surface-variant">
+                <div class="font-label-md text-label-md font-bold text-primary">{{ flight.fromAirport }} ✈ {{ flight.toAirport }}</div>
+                <div class="text-body-sm">{{ flight.airlineName }} #{{ flight.flightNumber }}</div>
+                <div class="text-body-sm">{{ flight.departureTs | date:'mediumDate' }} • {{ flight.departureTs | date:'shortTime' }}</div>
+                <div class="border-t border-outline-variant/30 pt-sm flex justify-between font-bold text-primary">
+                  <span>Base Price</span>
+                  <span>₹{{ flight.basePrice | number:'1.0-0' }}</span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- STEP 2: SEAT SELECTION & REDIS TIMER -->
+    @if (currentStep === 'seats') {
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+        <div class="lg:col-span-8 space-y-lg">
+          <div class="bg-surface-container-lowest rounded-xl flight-card-shadow p-lg border border-outline-variant/50">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-md border-b border-outline-variant/30 pb-md mb-lg">
+              <div>
+                <h2 class="font-headline-lg text-headline-lg font-bold text-primary mb-1">Select Your Seats</h2>
+                <p class="text-on-surface-variant font-body-sm text-body-sm">
+                  Seats held temporarily with Redis atomic locks (10 min TTL) • Flight #{{ flight?.flightNumber || flightId }}
+                </p>
+              </div>
+              <div class="bg-blue-50 border border-blue-200 px-md py-sm rounded-xl text-right flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[20px]">timer</span>
+                <div>
+                  <span class="font-label-sm text-label-sm text-slate-500 uppercase tracking-wider block font-semibold">Hold Time Remaining</span>
+                  <span class="font-headline-md text-headline-md font-bold text-primary font-mono">
+                    {{ Math.floor(remainingTimeSeconds / 60) }}:{{ (remainingTimeSeconds % 60) < 10 ? '0' : '' }}{{ remainingTimeSeconds % 60 }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Passenger Selector Tabs -->
+            <div class="mb-lg">
+              <label class="block font-label-md text-label-md font-bold text-primary mb-sm">
+                Selecting seat for:
+              </label>
+              <div class="flex flex-wrap gap-sm">
+                @for (p of passengers; track p.passengerId; let idx = $index) {
+                  <button
+                    type="button"
+                    (click)="selectPassengerTab(idx)"
+                    class="px-md py-sm rounded-lg border font-label-md text-label-md font-semibold flex items-center gap-2 transition-all"
+                    [class.bg-primary]="activePassengerIndex === idx"
+                    [class.text-white]="activePassengerIndex === idx"
+                    [class.border-primary]="activePassengerIndex === idx"
+                    [class.bg-surface]="activePassengerIndex !== idx"
+                    [class.text-on-surface]="activePassengerIndex !== idx"
+                    [class.border-outline-variant]="activePassengerIndex !== idx"
+                  >
+                    <span>👤 {{ p.firstName }} {{ p.lastName }}</span>
+                    @if (selectedSeatsMap.has(p.passengerId)) {
+                      <span class="bg-emerald-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">
+                        Seat {{ selectedSeatsMap.get(p.passengerId) }}
+                      </span>
+                    } @else {
+                      <span class="bg-amber-100 text-amber-800 text-xs px-2 py-0.5 rounded-full font-bold">
+                        Select Seat
+                      </span>
+                    }
+                  </button>
+                }
+              </div>
+            </div>
+
+            <!-- Seat Legend -->
+            <div class="flex flex-wrap gap-md justify-center font-label-sm text-label-sm text-on-surface-variant mb-lg bg-slate-50 p-md rounded-xl border border-slate-200">
+              <div class="flex items-center gap-2">
+                <div class="w-5 h-5 border-2 border-slate-300 bg-white rounded"></div>
+                <span class="font-medium text-slate-700">Available</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="w-5 h-5 bg-blue-600 border-2 border-blue-700 rounded text-white text-[10px] flex items-center justify-center font-bold">✓</div>
+                <span class="font-medium text-slate-700">Selected (Your Hold)</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="w-5 h-5 bg-amber-100 border-2 border-amber-300 rounded text-amber-700 text-[10px] flex items-center justify-center font-bold">🔒</div>
+                <span class="font-medium text-slate-700">Held by Another Traveler</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="w-5 h-5 bg-slate-300 border-2 border-slate-400 rounded text-slate-600 text-[10px] flex items-center justify-center font-bold">✕</div>
+                <span class="font-medium text-slate-700">Booked</span>
+              </div>
+            </div>
+
+            <!-- Aircraft Fuselage Seat Grid -->
+            <div class="relative w-full max-w-[460px] mx-auto bg-slate-50 rounded-[3rem] border-2 border-slate-300 p-lg pb-xl shadow-inner my-lg">
+              <div class="text-center font-label-sm text-slate-400 uppercase tracking-widest pt-2 mb-4 font-bold">
+                ✈ Cockpit / Front of Aircraft
+              </div>
+              
+              <!-- Column Letter Header -->
+              <div class="grid grid-cols-7 text-center font-bold text-slate-500 text-xs mb-3 px-2">
+                <div>A</div>
+                <div>B</div>
+                <div>C</div>
+                <div class="text-slate-300 font-normal">Aisle</div>
+                <div>D</div>
+                <div>E</div>
+                <div>F</div>
+              </div>
+
+              <!-- Seat Rows -->
+              <div class="space-y-2">
+                @for (r of [1,2,3,4,5,6,7,8,9,10]; track r) {
+                  <div class="grid grid-cols-7 gap-1 items-center text-center px-1">
+                    @for (c of ['A','B','C','AISLE','D','E','F']; track c) {
+                      @if (c === 'AISLE') {
+                        <div class="text-[10px] font-bold text-slate-400 select-none">{{ r }}</div>
+                      } @else {
+                        @let sNum = r + c;
+                        @let seatObj = getSeatByNum(sNum);
+                        @if (seatObj) {
+                          <button
+                            type="button"
+                            (click)="handleSeatClick(seatObj)"
+                            [disabled]="(seatObj.isOccupied && !seatObj.isMine) || isLockingSeat"
+                            title="{{ seatObj.isMine ? 'Your Seat ' + sNum : seatObj.isOccupied ? 'Seat ' + sNum + ' is Unavailable' : 'Click to select Seat ' + sNum }}"
+                            class="h-10 rounded-md font-bold text-xs flex items-center justify-center transition-all cursor-pointer select-none touch-manipulation shadow-sm disabled:cursor-not-allowed disabled:opacity-80"
+                            [class.animate-pulse]="seatObj.isPending"
+                            [class.bg-white]="!seatObj.isSelected && !seatObj.isOccupied && !seatObj.isPending"
+                            [class.border-2]="true"
+                            [class.border-slate-300]="!seatObj.isSelected && !seatObj.isOccupied && !seatObj.isPending"
+                            [class.text-slate-700]="!seatObj.isSelected && !seatObj.isOccupied && !seatObj.isPending"
+                            [class.hover:border-blue-500]="!seatObj.isSelected && !seatObj.isOccupied && !seatObj.isPending"
+                            [class.hover:bg-blue-50]="!seatObj.isSelected && !seatObj.isOccupied && !seatObj.isPending"
+                            
+                            [class.bg-blue-600]="seatObj.isSelected && seatObj.isMine"
+                            [class.border-blue-700]="seatObj.isSelected && seatObj.isMine"
+                            [class.text-white]="seatObj.isSelected && seatObj.isMine"
+                            [class.ring-2]="seatObj.isSelected && seatObj.isMine"
+                            [class.ring-blue-400]="seatObj.isSelected && seatObj.isMine"
+
+                            [class.bg-amber-100]="seatObj.isLocked && !seatObj.isMine"
+                            [class.border-amber-300]="seatObj.isLocked && !seatObj.isMine"
+                            [class.text-amber-800]="seatObj.isLocked && !seatObj.isMine"
+
+                            [class.bg-slate-300]="seatObj.isOccupied && !seatObj.isLocked && !seatObj.isMine"
+                            [class.border-slate-400]="seatObj.isOccupied && !seatObj.isLocked && !seatObj.isMine"
+                            [class.text-slate-600]="seatObj.isOccupied && !seatObj.isLocked && !seatObj.isMine"
+                          >
+                            @if (seatObj.isPending) {
+                              ⏳ {{ sNum }}
+                            } @else if (seatObj.isSelected && seatObj.isMine) {
+                              ✓ {{ sNum }}
+                            } @else if (seatObj.isLocked && !seatObj.isMine) {
+                              🔒
+                            } @else if (seatObj.isOccupied && !seatObj.isMine) {
+                              ✕
+                            } @else {
+                              {{ sNum }}
+                            }
+                          </button>
+                        }
+                      }
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+
+            <div class="flex justify-between items-center pt-md border-t border-outline-variant/30">
+              <button
+                type="button"
+                class="bg-surface text-primary border border-outline-variant px-lg py-sm rounded-lg font-label-md text-label-md font-semibold hover:bg-surface-container-low"
+                (click)="currentStep = 'passengers'"
+              >
+                ← Back to Passenger Details
+              </button>
+              <button
+                type="button"
+                class="bg-secondary text-on-secondary px-xl py-md rounded-lg font-label-md text-label-md font-semibold hover:opacity-90 transition-all active:scale-[0.98] shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                [disabled]="assignedSeatsCount < requiredSeatsCount || isLoading || isLockingSeat"
+                (click)="proceedToAddons()"
+              >
+                <span>
+                  {{ assignedSeatsCount >= requiredSeatsCount
+                    ? 'Continue to Add-ons ➔'
+                    : 'Please Select Seats (' + assignedSeatsCount + '/' + requiredSeatsCount + ')' }}
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Summary Sidebar -->
+        <div class="lg:col-span-4 space-y-lg">
+          <div class="bg-surface-container-lowest rounded-xl flight-card-shadow p-lg border border-outline-variant/50 sticky top-[90px]">
+            <h3 class="font-headline-md text-headline-md font-bold text-primary border-b border-outline-variant/30 pb-sm mb-md">
+              Selected Seat Map
+            </h3>
+            <div class="space-y-sm">
+              @for (p of passengers; track p.passengerId) {
+                <div class="flex justify-between items-center p-md bg-surface rounded-xl border border-outline-variant/40">
+                  <div>
+                    <span class="font-semibold text-primary block text-sm">{{ p.firstName }} {{ p.lastName }}</span>
+                    <span class="text-xs text-slate-500">Age: {{ p.age || 25 }} • {{ p.gender || 'MALE' }}</span>
+                  </div>
+                  <div>
+                    @if (selectedSeatsMap.has(p.passengerId)) {
+                      <span class="bg-blue-600 text-white text-xs px-3 py-1 rounded-full font-bold shadow-sm">
+                        Seat {{ selectedSeatsMap.get(p.passengerId) }}
+                      </span>
+                    } @else {
+                      <span class="bg-amber-100 text-amber-800 text-xs px-3 py-1 rounded-full font-bold">
+                        Unassigned
+                      </span>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+
+            <div class="mt-md pt-md border-t border-slate-200">
+              <div class="text-xs text-slate-500 flex items-center gap-1">
+                <span class="material-symbols-outlined text-[16px]">info</span>
+                <span>Seats {{ selectedSeatsMap.size }} / {{ passengers.length }} assigned</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- STEP 3: ADD-ONS -->
+    @if (currentStep === 'addons') {
+      <div class="max-w-3xl mx-auto bg-surface-container-lowest rounded-xl flight-card-shadow p-lg border border-outline-variant/50">
+        <h2 class="font-headline-lg text-headline-lg font-bold text-primary mb-2">Select Add-ons & Baggage</h2>
+        <p class="font-body-md text-body-md text-on-surface-variant mb-lg">Customize your trip with extra baggage, gourmet meals, and insurance.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-md mb-xl">
+          <div class="bg-surface p-lg rounded-xl border border-outline-variant/50 flex flex-col justify-between space-y-md">
+            <div>
+              <span class="material-symbols-outlined text-secondary text-3xl mb-xs">luggage</span>
+              <h4 class="font-headline-md text-headline-md font-bold text-primary text-base">Extra Baggage</h4>
+              <p class="text-body-sm text-on-surface-variant mt-1">Add 10 kg extra check-in baggage</p>
+            </div>
+            <div class="flex justify-between items-center pt-md border-t border-outline-variant/30">
+              <span class="font-bold text-primary">+ ₹1,200</span>
+              <input type="checkbox" [(ngModel)]="extraBaggageSelected" class="w-5 h-5 rounded text-secondary focus:ring-secondary cursor-pointer" />
+            </div>
+          </div>
+
+          <div class="bg-surface p-lg rounded-xl border border-outline-variant/50 flex flex-col justify-between space-y-md">
+            <div>
+              <span class="material-symbols-outlined text-secondary text-3xl mb-xs">restaurant</span>
+              <h4 class="font-headline-md text-headline-md font-bold text-primary text-base">Gourmet Meal</h4>
+              <p class="text-body-sm text-on-surface-variant mt-1">Hot chef meal + complimentary drink</p>
+            </div>
+            <div class="flex justify-between items-center pt-md border-t border-outline-variant/30">
+              <span class="font-bold text-primary">+ ₹450</span>
+              <input type="checkbox" [(ngModel)]="gourmetMealSelected" class="w-5 h-5 rounded text-secondary focus:ring-secondary cursor-pointer" />
+            </div>
+          </div>
+
+          <div class="bg-surface p-lg rounded-xl border border-outline-variant/50 flex flex-col justify-between space-y-md">
+            <div>
+              <span class="material-symbols-outlined text-secondary text-3xl mb-xs">verified_user</span>
+              <h4 class="font-headline-md text-headline-md font-bold text-primary text-base">Travel Insurance</h4>
+              <p class="text-body-sm text-on-surface-variant mt-1">Flight delay & medical coverage</p>
+            </div>
+            <div class="flex justify-between items-center pt-md border-t border-outline-variant/30">
+              <span class="font-bold text-primary">+ ₹299</span>
+              <input type="checkbox" [(ngModel)]="travelInsuranceSelected" class="w-5 h-5 rounded text-secondary focus:ring-secondary cursor-pointer" />
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-between items-center border-t border-outline-variant/30 pt-md">
+          <button type="button" class="bg-surface text-primary border border-outline-variant px-lg py-sm rounded-lg font-label-md text-label-md font-semibold hover:bg-surface-container-low" (click)="currentStep = 'seats'">Back</button>
+          <button type="button" class="bg-secondary text-on-secondary px-xl py-md rounded-lg font-label-md text-label-md font-semibold hover:opacity-90 transition-all active:scale-[0.98] shadow-sm" (click)="proceedToPayment()">Continue to Payment ➔</button>
+        </div>
+      </div>
+    }
+
+    <!-- STEP 4: FARE BREAKDOWN & RAZORPAY PAYMENT -->
+    @if (currentStep === 'payment') {
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+        <div class="lg:col-span-8 space-y-lg">
+          
+          <!-- Coupon Code Box -->
+          <div class="bg-surface-container-lowest rounded-xl flight-card-shadow p-lg border border-outline-variant/50">
+            <h3 class="font-headline-md text-headline-md font-bold text-primary mb-sm">Promotional Coupon Code</h3>
+            <div class="flex gap-md max-w-md">
+              <input type="text" [(ngModel)]="couponCode" placeholder="e.g. FLYHIGH20" class="input-base" />
+              <button type="button" class="bg-surface text-primary border border-outline-variant px-lg py-sm rounded-lg font-label-md text-label-md font-semibold hover:bg-surface-container-low transition-colors" (click)="applyCoupon()">Apply</button>
+            </div>
+            @if (couponMessage) {
+              <small class="block mt-2 font-label-sm text-label-sm font-semibold" [class.text-[#166534]]="isCouponValid" [class.text-error]="!isCouponValid">{{ couponMessage }}</small>
+            }
+          </div>
+
+          <!-- Razorpay Payment Details Card -->
+          <div class="bg-surface-container-lowest rounded-xl flight-card-shadow p-lg border border-outline-variant/50">
+            <div class="flex items-center gap-2 mb-md">
+              <span class="material-symbols-outlined text-secondary text-2xl">lock</span>
+              <h3 class="font-headline-md text-headline-md font-bold text-primary">Razorpay Secure Checkout</h3>
+            </div>
+            <p class="font-body-md text-body-md text-on-surface-variant mb-lg">Payments are encrypted and processed securely via Razorpay PCI-DSS compliance.</p>
+
+            <button type="button" class="w-full bg-secondary text-on-secondary py-md px-xl rounded-lg font-label-md text-label-md font-semibold hover:opacity-90 transition-all active:scale-[0.98] shadow-sm flex items-center justify-center gap-2 text-base disabled:opacity-50 disabled:cursor-not-allowed" (click)="initiatePayment()" [disabled]="isLoading || !fareBreakdown">
+              <span class="material-symbols-outlined text-[20px]">credit_card</span>
+              <span>{{ isLoading ? 'Processing...' : 'Pay with Razorpay 💳' }}</span>
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Right Summary Column -->
+        <div class="lg:col-span-4 space-y-lg">
+          @if (fareBreakdown) {
+            <div class="bg-surface-container-lowest rounded-xl flight-card-shadow p-lg border border-outline-variant/50 sticky top-[90px]">
+              <h3 class="font-headline-md text-headline-md font-bold text-primary border-b border-outline-variant/30 pb-sm mb-md">Payment Summary</h3>
+              
+              <div class="space-y-sm font-body-md text-body-md text-on-surface-variant mb-md">
+                <div class="flex justify-between">
+                  <span>Base Fare ({{ passengers.length }} Passenger{{ passengers.length > 1 ? 's' : '' }})</span>
+                  <span class="font-semibold text-primary">₹{{ fareBreakdown.baseFare | number:'1.0-0' }}</span>
+                </div>
+                
+                <div class="flex justify-between text-body-sm">
+                  <span>Taxes & Fees</span>
+                  <span>₹{{ (fareBreakdown.taxAmount || ((fareBreakdown.tax || 0) + (fareBreakdown.airportFee || 0) + (fareBreakdown.convenienceFee || 0))) | number:'1.0-0' }}</span>
+                </div>
+
+                @if (fareBreakdown.extraBaggageFee && fareBreakdown.extraBaggageFee > 0) {
+                  <div class="flex justify-between text-body-sm text-slate-700 font-medium">
+                    <span>Extra Baggage</span>
+                    <span>+ ₹{{ fareBreakdown.extraBaggageFee | number:'1.0-0' }}</span>
+                  </div>
+                }
+
+                @if (fareBreakdown.gourmetMealFee && fareBreakdown.gourmetMealFee > 0) {
+                  <div class="flex justify-between text-body-sm text-slate-700 font-medium">
+                    <span>Gourmet Meal</span>
+                    <span>+ ₹{{ fareBreakdown.gourmetMealFee | number:'1.0-0' }}</span>
+                  </div>
+                }
+
+                @if (fareBreakdown.travelInsuranceFee && fareBreakdown.travelInsuranceFee > 0) {
+                  <div class="flex justify-between text-body-sm text-slate-700 font-medium">
+                    <span>Travel Insurance</span>
+                    <span>+ ₹{{ fareBreakdown.travelInsuranceFee | number:'1.0-0' }}</span>
+                  </div>
+                }
+
+                @if ((fareBreakdown.couponDiscount && fareBreakdown.couponDiscount > 0) || (fareBreakdown.discountAmount && fareBreakdown.discountAmount > 0)) {
+                  <div class="flex justify-between text-[#166534] font-semibold text-body-sm">
+                    <span>Coupon Discount</span>
+                    <span>- ₹{{ (fareBreakdown.couponDiscount || fareBreakdown.discountAmount || 0) | number:'1.0-0' }}</span>
+                  </div>
+                }
+              </div>
+
+              <div class="flex justify-between items-center border-t border-outline-variant pt-md mb-lg">
+                <span class="font-headline-md text-headline-md font-bold text-on-surface">Total Amount</span>
+                <span class="font-headline-lg text-headline-lg font-bold text-primary">
+                  ₹{{ (fareBreakdown.totalFare || fareBreakdown.finalPrice || 0) | number:'1.0-0' }}
+                </span>
+              </div>
+            </div>
+          } @else if (isLoading) {
+            <div class="bg-surface-container-lowest rounded-xl flight-card-shadow p-lg border border-outline-variant/50 text-center font-medium text-slate-500">
+              Calculating final fare...
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- STEP 5: BOOKING CONFIRMATION -->
+    @if (currentStep === 'confirmation') {
+      <div class="max-w-2xl mx-auto bg-surface-container-lowest rounded-xl flight-card-shadow p-2xl border border-[#DCFCE7] text-center space-y-lg relative overflow-hidden">
+        <div class="w-16 h-16 rounded-full bg-[#DCFCE7] text-[#166534] flex items-center justify-center mx-auto">
+          <span class="material-symbols-outlined text-[36px]">check_circle</span>
+        </div>
+        
+        <div>
+          <h2 class="font-headline-lg text-headline-lg font-bold text-primary mb-1">Booking Confirmed!</h2>
+          <p class="font-body-md text-body-md text-on-surface-variant">Booking PNR: <strong class="text-primary font-bold tracking-widest">{{ booking?.bookingCode }}</strong></p>
+        </div>
+
+        <p class="font-body-sm text-body-sm text-on-surface-variant max-w-md mx-auto">Your payment was verified successfully on the backend and your ticket has been issued.</p>
+
+        <div class="bg-surface p-md rounded-xl border border-outline-variant/30 text-left space-y-sm font-body-sm text-body-sm">
+          <div class="flex justify-between border-b border-outline-variant/20 pb-xs">
+            <span class="text-on-surface-variant font-medium">Route:</span>
+            <span class="font-bold text-primary">{{ flight?.fromAirport }} ✈ {{ flight?.toAirport }}</span>
+          </div>
+          <div class="flex justify-between border-b border-outline-variant/20 pb-xs">
+            <span class="text-on-surface-variant font-medium">Flight:</span>
+            <span class="font-bold text-primary">{{ flight?.airlineCode }} #{{ flight?.flightNumber }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-on-surface-variant font-medium">Passengers:</span>
+            <span class="font-bold text-primary">{{ passengers.length }}</span>
+          </div>
+        </div>
+
+        <div class="flex justify-center gap-md pt-md">
+          <a routerLink="/my-bookings" class="bg-secondary text-on-secondary px-xl py-md rounded-lg font-label-md text-label-md font-semibold hover:opacity-90 transition-all shadow-sm">View My Bookings</a>
+          <a routerLink="/" class="bg-surface text-primary border border-outline-variant px-xl py-md rounded-lg font-label-md text-label-md font-semibold hover:bg-surface-container-low transition-colors">Back to Home</a>
+        </div>
+      </div>
+    }
+
+  </div>
+</div>
+

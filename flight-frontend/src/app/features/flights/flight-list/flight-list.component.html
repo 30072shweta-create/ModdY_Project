@@ -1,0 +1,179 @@
+<div class="min-h-screen bg-background font-body-md text-on-surface py-xl">
+  <div class="max-w-container-max mx-auto px-md md:px-lg flex flex-col gap-lg">
+    
+    <!-- Search Summary Header -->
+    <div class="bg-surface-container-lowest p-lg rounded-xl flight-card-shadow border border-outline-variant/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-md">
+      <div>
+        <h1 class="font-display-lg text-display-lg md:text-[32px] md:leading-[40px] text-primary mb-xs font-bold flex items-center gap-2">
+          <span>{{ filterForm.value.source || 'All Origins' }}</span>
+          <span class="material-symbols-outlined text-outline">arrow_right_alt</span> 
+          <span>{{ filterForm.value.destination || 'All Destinations' }}</span>
+        </h1>
+        <p class="text-on-surface-variant font-body-md text-body-md flex items-center gap-2">
+          @if (filterForm.value.date) { <span>{{ filterForm.value.date | date:'mediumDate' }}</span> }
+          @if (flightsPage) { <span>• {{ flightsPage.totalElements }} flights available</span> }
+        </p>
+      </div>
+
+      <div class="flex items-center gap-sm">
+        <a routerLink="/" class="bg-surface text-primary border border-outline-variant px-md py-sm rounded-lg hover:bg-surface-container-low transition-colors font-label-md text-label-md flex items-center gap-2 font-semibold">
+          <span class="material-symbols-outlined text-[18px]">search</span>
+          Modify Search
+        </a>
+      </div>
+    </div>
+
+    <!-- Layout: Filters Sidebar + Results List -->
+    <div class="flex flex-col lg:flex-row gap-xl items-start">
+      
+      <!-- Filter Sidebar -->
+      <aside class="w-full lg:w-[280px] shrink-0 bg-surface-container-lowest p-lg rounded-xl border border-outline-variant/50 flight-card-shadow sticky top-[90px]">
+        <h3 class="font-headline-md text-headline-md font-bold mb-md text-primary border-b border-outline-variant/30 pb-2">Filters</h3>
+        
+        <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="space-y-lg">
+          <!-- Stops Filter -->
+          <div>
+            <label for="stops" class="font-label-md text-label-md font-semibold text-on-surface-variant block mb-2">Stops</label>
+            <select id="stops" formControlName="stops" class="w-full border border-outline-variant rounded-lg font-body-md text-body-md py-2 px-3 focus:border-secondary focus:ring-1 focus:ring-secondary outline-none bg-surface" (change)="applyFilters()">
+              <option value="">Any Stops</option>
+              <option value="0">Direct (Non-stop)</option>
+              <option value="1">1 Stop</option>
+              <option value="2">2+ Stops</option>
+            </select>
+          </div>
+
+          <!-- Airline Filter -->
+          <div>
+            <label for="airline" class="font-label-md text-label-md font-semibold text-on-surface-variant block mb-2">Airlines</label>
+            <select id="airline" formControlName="airline" class="w-full border border-outline-variant rounded-lg font-body-md text-body-md py-2 px-3 focus:border-secondary focus:ring-1 focus:ring-secondary outline-none bg-surface" (change)="applyFilters()">
+              <option value="">All Airlines</option>
+              @for (al of airlines; track al.airlineCode) {
+                <option [value]="al.airlineCode">{{ al.airlineName }} ({{ al.airlineCode }})</option>
+              }
+            </select>
+          </div>
+
+          <!-- Price Range Slider -->
+          <div>
+            <div class="flex justify-between items-center mb-2">
+              <label for="maxPrice" class="font-label-md text-label-md font-semibold text-on-surface-variant">Max Price</label>
+              <span class="font-label-md text-label-md font-bold text-primary">₹{{ filterForm.value.maxPrice | number:'1.0-0' }}</span>
+            </div>
+            <input type="range" id="maxPrice" formControlName="maxPrice" min="1000" max="100000" step="1000" class="w-full accent-secondary" (change)="applyFilters()" />
+            <div class="flex justify-between text-body-sm text-on-surface-variant mt-1 text-xs">
+              <span>₹1,000</span>
+              <span>₹100,000+</span>
+            </div>
+          </div>
+        </form>
+      </aside>
+
+      <!-- Main Results Column -->
+      <main class="flex-1 w-full min-w-0 flex flex-col gap-lg">
+        
+        <!-- Sort By Bar -->
+        <div class="flex items-center justify-between border-b border-outline-variant/50 pb-sm bg-surface-container-lowest p-md rounded-xl border">
+          <div class="flex items-center gap-2">
+            <span class="font-label-md text-label-md font-semibold text-on-surface-variant">Sort By:</span>
+            <select id="sortSelect" class="border border-outline-variant rounded-lg py-1.5 px-3 font-label-md text-label-md focus:border-secondary outline-none bg-surface" (change)="onSortChange($event)">
+              <option value="basePrice_ASC">Cheapest First</option>
+              <option value="basePrice_DESC">Highest Price</option>
+              <option value="departureTs_ASC">Earliest Departure</option>
+              <option value="durationMins_ASC">Fastest Duration</option>
+            </select>
+          </div>
+          @if (flightsPage) {
+            <span class="text-body-sm text-on-surface-variant font-medium">{{ flightsPage.totalElements }} results</span>
+          }
+        </div>
+
+        <!-- Flight Results List -->
+        @if (isLoading) {
+          <div class="bg-surface-container-lowest rounded-xl p-3xl flight-card-shadow border border-outline-variant/50 flex flex-col items-center justify-center py-2xl text-center">
+            <span class="material-symbols-outlined text-[48px] text-secondary animate-spin mb-md">progress_activity</span>
+            <p class="font-body-md text-body-md text-on-surface-variant">Searching best flights for you...</p>
+          </div>
+        } @else if (errorMessage) {
+          <div class="p-md rounded-lg bg-error-container text-on-error-container font-medium border border-error/20 flex items-center gap-2">
+            <span class="material-symbols-outlined text-[20px]">error</span>
+            <span>{{ errorMessage }}</span>
+          </div>
+        } @else if (!flightsPage || flightsPage.content.length === 0) {
+          <div class="bg-surface-container-lowest rounded-xl p-3xl flight-card-shadow border border-outline-variant/50 flex flex-col items-center justify-center text-center py-2xl">
+            <span class="material-symbols-outlined text-[64px] text-outline mb-md">flight_off</span>
+            <h3 class="font-headline-md text-headline-md font-bold text-primary mb-sm">No flights found</h3>
+            <p class="text-body-md text-on-surface-variant mb-lg max-w-[400px]">We couldn't find any flights matching your search criteria. Try modifying your filters or travel date.</p>
+            <a routerLink="/" class="bg-surface text-primary border border-outline-variant px-lg py-sm rounded-lg hover:bg-surface-container-low transition-colors font-label-md text-label-md font-semibold">Clear All Filters</a>
+          </div>
+        } @else {
+          <div class="flex flex-col gap-md">
+            @for (flight of flightsPage.content; track flight.flightId) {
+              <div class="bg-surface-container-lowest rounded-xl p-lg flight-card-shadow border border-outline-variant/50 flight-card-hover transition-all duration-300 flex flex-col md:flex-row gap-lg items-center justify-between">
+                
+                <!-- Airline Info -->
+                <div class="flex items-center gap-md w-full md:w-auto md:min-w-[180px]">
+                  <div class="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-secondary text-[24px]">airlines</span>
+                  </div>
+                  <div>
+                    <div class="font-label-md text-label-md font-bold text-primary">{{ flight.airlineName }}</div>
+                    <div class="text-body-sm text-on-surface-variant font-medium">#{{ flight.flightNumber }} • {{ flight.aircraftModel || 'Boeing 787' }}</div>
+                  </div>
+                </div>
+
+                <!-- Flight Departure & Arrival Info -->
+                <div class="flex-1 w-full flex items-center justify-between gap-md relative px-md">
+                  <div class="text-center">
+                    <div class="font-headline-md text-headline-md font-bold text-primary">{{ flight.departureTs | date:'shortTime' }}</div>
+                    <div class="text-body-sm text-on-surface-variant font-semibold">{{ flight.fromAirport }}</div>
+                  </div>
+
+                  <div class="flex-1 flex flex-col items-center relative px-md">
+                    <div class="text-body-sm text-on-surface-variant mb-xs">{{ flight.durationMins }} mins</div>
+                    <div class="w-full h-[1px] bg-outline-variant relative flex items-center justify-center">
+                      <div class="w-2 h-2 rounded-full bg-outline-variant absolute left-0"></div>
+                      <span class="material-symbols-outlined text-secondary text-[16px] bg-surface-container-lowest px-1">flight</span>
+                      <div class="w-2 h-2 rounded-full border-2 border-outline-variant bg-surface-container-lowest absolute right-0"></div>
+                    </div>
+                    <div class="text-label-sm font-label-sm text-[#166534] bg-[#DCFCE7] px-2 py-0.5 rounded font-semibold mt-1">
+                      {{ flight.stops === 0 ? 'Direct' : flight.stops + ' Stop' }}
+                    </div>
+                  </div>
+
+                  <div class="text-center">
+                    <div class="font-headline-md text-headline-md font-bold text-primary">{{ flight.arrivalTs | date:'shortTime' }}</div>
+                    <div class="text-body-sm text-on-surface-variant font-semibold">{{ flight.toAirport }}</div>
+                  </div>
+                </div>
+
+                <!-- Pricing & Actions -->
+                <div class="w-full md:w-auto md:min-w-[160px] md:border-l border-outline-variant/50 md:pl-lg flex flex-row md:flex-col items-center justify-between md:justify-center gap-sm">
+                  <div class="text-right md:text-center">
+                    <div class="font-headline-md text-headline-md font-bold text-primary">₹{{ flight.basePrice | number:'1.0-0' }}</div>
+                    <div class="text-body-sm text-on-surface-variant text-xs font-medium">{{ flight.availableSeats }} seats left</div>
+                  </div>
+                  <div class="flex gap-2 w-full md:w-auto">
+                    <button class="bg-surface text-primary border border-outline-variant px-md py-sm rounded-lg font-label-md text-label-md hover:bg-surface-container-low transition-colors font-semibold" (click)="selectFlight(flight.flightId)">Details</button>
+                    <button class="bg-secondary text-on-secondary px-lg py-sm rounded-lg font-label-md text-label-md hover:opacity-90 transition-opacity active:scale-[0.98] shadow-sm font-semibold" (click)="startBooking(flight.flightId)">Select</button>
+                  </div>
+                </div>
+
+              </div>
+            }
+          </div>
+
+          <!-- Pagination Bar -->
+          @if (flightsPage.totalPages > 1) {
+            <div class="flex justify-between items-center bg-surface-container-lowest p-md rounded-xl border border-outline-variant/50 mt-md">
+              <button class="bg-surface text-primary border border-outline-variant px-md py-sm rounded-lg font-label-md text-label-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-container-low font-semibold" [disabled]="flightsPage.first" (click)="changePage(flightsPage.number - 1)">Previous</button>
+              <span class="font-body-md text-body-md text-on-surface-variant font-medium">Page {{ flightsPage.number + 1 }} of {{ flightsPage.totalPages }}</span>
+              <button class="bg-surface text-primary border border-outline-variant px-md py-sm rounded-lg font-label-md text-label-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-surface-container-low font-semibold" [disabled]="flightsPage.last" (click)="changePage(flightsPage.number + 1)">Next</button>
+            </div>
+          }
+        }
+      </main>
+
+    </div>
+  </div>
+</div>
+

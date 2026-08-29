@@ -1,0 +1,414 @@
+// ============================================================
+// SkyRoute Navbar — Premium Airline Design
+// Matches reference: white bg, centered nav, right auth buttons
+// ============================================================
+
+$navbar-height: 64px;
+$blue-primary: #0058be;
+$blue-hover: #004a9e;
+$text-dark: #1e293b;
+$text-muted: #64748b;
+$border-light: #e2e8f0;
+$white: #ffffff;
+$surface-hover: #f1f5f9;
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  height: $navbar-height;
+  background: $white;
+  border-bottom: 1px solid $border-light;
+  transition: box-shadow 0.3s ease, background-color 0.3s ease;
+
+  &--scrolled {
+    box-shadow: 0 1px 12px rgba(0, 0, 0, 0.08);
+  }
+}
+
+.navbar__container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+// ---- Brand ----
+.navbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.navbar__brand-icon {
+  font-size: 26px;
+  color: $blue-primary;
+  transition: transform 0.3s ease;
+
+  .navbar__brand:hover & {
+    transform: rotate(12deg);
+  }
+}
+
+.navbar__brand-text {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: $text-dark;
+  letter-spacing: -0.01em;
+}
+
+// ---- Desktop Navigation (center) ----
+.navbar__nav-desktop {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navbar__link {
+  position: relative;
+  padding: 6px 16px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: $text-muted;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: color 0.2s ease, background-color 0.2s ease;
+  cursor: pointer;
+  white-space: nowrap;
+
+  &:hover {
+    color: $text-dark;
+    background-color: $surface-hover;
+  }
+
+  &--active {
+    color: $blue-primary;
+    font-weight: 600;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -19px; // align to bottom of navbar
+      left: 16px;
+      right: 16px;
+      height: 2.5px;
+      background: $blue-primary;
+      border-radius: 2px;
+    }
+  }
+}
+
+// ---- Desktop Right Actions ----
+.navbar__actions-desktop {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.navbar__icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  color: $text-muted;
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  cursor: pointer;
+
+  .material-symbols-outlined {
+    font-size: 22px;
+  }
+
+  &:hover {
+    background-color: $surface-hover;
+    color: $text-dark;
+  }
+}
+
+// ---- Buttons ----
+.navbar__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 8px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  border: none;
+  font-family: inherit;
+  line-height: 1.3;
+
+  &--outlined {
+    background: $white;
+    color: $text-dark;
+    border: 1.5px solid $border-light;
+
+    &:hover {
+      border-color: $blue-primary;
+      color: $blue-primary;
+      background: rgba($blue-primary, 0.04);
+    }
+  }
+
+  &--filled {
+    background: $blue-primary;
+    color: $white;
+
+    &:hover {
+      background: $blue-hover;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba($blue-primary, 0.3);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  &--logout {
+    &:hover {
+      border-color: #ef4444;
+      color: #ef4444;
+      background: rgba(239, 68, 68, 0.06);
+    }
+  }
+
+  &--full {
+    width: 100%;
+  }
+}
+
+// ---- Admin Chip ----
+.navbar__admin-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: $blue-primary;
+  background: rgba($blue-primary, 0.08);
+  border: 1px solid rgba($blue-primary, 0.2);
+  border-radius: 9999px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba($blue-primary, 0.14);
+    border-color: rgba($blue-primary, 0.35);
+  }
+}
+
+// ---- User Pill ----
+.navbar__user-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px 4px 4px;
+  border-radius: 9999px;
+  background: $surface-hover;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+
+  &:hover {
+    background: darken($surface-hover, 4%);
+  }
+}
+
+.navbar__avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: $blue-primary;
+  color: $white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+
+  &--lg {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+}
+
+.navbar__user-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: $text-dark;
+}
+
+// ---- Mobile Toggle ----
+.navbar__mobile-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: $text-dark;
+  transition: background-color 0.2s ease;
+
+  .material-symbols-outlined {
+    font-size: 26px;
+  }
+
+  &:hover {
+    background-color: $surface-hover;
+  }
+}
+
+// ---- Mobile Menu ----
+.navbar__mobile-menu {
+  display: none;
+  position: fixed;
+  top: $navbar-height;
+  left: 0;
+  right: 0;
+  background: $white;
+  border-bottom: 1px solid $border-light;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  max-height: calc(100vh - #{$navbar-height});
+  overflow-y: auto;
+  transform: translateY(-10px);
+  opacity: 0;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+  z-index: 999;
+
+  &--open {
+    display: block;
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.navbar__mobile-nav {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 16px;
+}
+
+.navbar__mobile-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: $text-muted;
+  text-decoration: none;
+  border-radius: 10px;
+  transition: all 0.15s ease;
+  cursor: pointer;
+
+  .material-symbols-outlined {
+    font-size: 22px;
+    color: inherit;
+  }
+
+  &:hover {
+    background: $surface-hover;
+    color: $text-dark;
+  }
+
+  &--active {
+    color: $blue-primary;
+    background: rgba($blue-primary, 0.06);
+    font-weight: 600;
+  }
+}
+
+.navbar__mobile-auth {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 12px;
+  margin-top: 8px;
+  border-top: 1px solid $border-light;
+}
+
+.navbar__mobile-user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.navbar__mobile-user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.navbar__mobile-user-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: $text-dark;
+}
+
+.navbar__mobile-user-email {
+  font-size: 0.8rem;
+  color: $text-muted;
+}
+
+// ---- Spacer ----
+.navbar__spacer {
+  height: $navbar-height;
+  width: 100%;
+}
+
+// ============================================================
+// RESPONSIVE
+// ============================================================
+@media (max-width: 1024px) {
+  .navbar__nav-desktop {
+    gap: 2px;
+  }
+
+  .navbar__link {
+    padding: 6px 10px;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar__nav-desktop {
+    display: none;
+  }
+
+  .navbar__actions-desktop {
+    display: none;
+  }
+
+  .navbar__mobile-toggle {
+    display: flex;
+  }
+}
+
+@media (min-width: 769px) {
+  .navbar__mobile-menu {
+    display: none !important;
+  }
+}

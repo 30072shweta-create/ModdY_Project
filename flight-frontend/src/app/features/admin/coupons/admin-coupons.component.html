@@ -1,0 +1,200 @@
+<div class="admin-layout">
+  <app-admin-sidebar></app-admin-sidebar>
+
+  <main class="admin-main">
+    <header class="admin-header">
+      <div>
+        <h1 class="admin-header__title">Coupon Management</h1>
+        <p class="admin-header__subtitle">Manage promotional coupon codes, discounts, validity, and usage limits</p>
+      </div>
+      <button class="btn btn--primary" (click)="openAddModal()">
+        <span class="material-symbols-outlined">add</span>
+        Add Coupon
+      </button>
+    </header>
+
+    <!-- Alerts -->
+    <div class="admin-alert admin-alert--error" *ngIf="errorMessage">
+      <span class="material-symbols-outlined">error</span>
+      <span>{{ errorMessage }}</span>
+      <button class="admin-alert__close" (click)="errorMessage = ''">&times;</button>
+    </div>
+
+    <div class="admin-alert admin-alert--success" *ngIf="successMessage">
+      <span class="material-symbols-outlined">check_circle</span>
+      <span>{{ successMessage }}</span>
+      <button class="admin-alert__close" (click)="successMessage = ''">&times;</button>
+    </div>
+
+    <!-- Loading State -->
+    <div class="admin-loading" *ngIf="isLoading">
+      <div class="admin-loading__spinner"></div>
+      <span>Loading coupons...</span>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="toolbar__search">
+        <span class="material-symbols-outlined toolbar__icon">search</span>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search coupons..."
+          [(ngModel)]="search"
+        />
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="card">
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Coupon Code</th>
+              <th>Discount Type</th>
+              <th>Discount Value</th>
+              <th>Min Spend</th>
+              <th>Max Discount</th>
+              <th>Validity</th>
+              <th>Usage Limit</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let coupon of filteredCoupons">
+              <td>#{{ coupon.couponId }}</td>
+              <td>
+                <strong class="code-badge">{{ coupon.couponCode }}</strong>
+              </td>
+              <td>{{ coupon.discountType }}</td>
+              <td>
+                {{ coupon.discountType === 'PERCENTAGE' ? coupon.discountValue + '%' : (coupon.discountValue | currency) }}
+              </td>
+              <td>{{ coupon.minimumBookingAmount ? (coupon.minimumBookingAmount | currency) : '-' }}</td>
+              <td>{{ coupon.maximumDiscount ? (coupon.maximumDiscount | currency) : '-' }}</td>
+              <td>
+                <small *ngIf="coupon.validFrom || coupon.validTo">
+                  {{ coupon.validFrom | date:'shortDate' }} - {{ coupon.validTo | date:'shortDate' }}
+                </small>
+                <span *ngIf="!coupon.validFrom && !coupon.validTo">Always Valid</span>
+              </td>
+              <td>{{ coupon.usedCount || 0 }} / {{ coupon.usageLimit || '&infin;' }}</td>
+              <td>
+                <span class="badge" [class.badge--completed]="coupon.active" [class.badge--cancelled]="!coupon.active">
+                  {{ coupon.active ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td>
+                <div class="action-buttons">
+                  <button class="btn-icon" (click)="openEditModal(coupon)" title="Edit">
+                    <span class="material-symbols-outlined">edit</span>
+                  </button>
+                  <button class="btn-icon btn-icon--danger" (click)="confirmDelete(coupon)" title="Delete">
+                    <span class="material-symbols-outlined">delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="filteredCoupons.length === 0">
+              <td colspan="10" class="empty-state">No coupons found.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div class="modal-backdrop" *ngIf="showModal">
+      <form class="modal" [formGroup]="couponForm" (ngSubmit)="submitCoupon()">
+        <div class="modal__header">
+          <h3>{{ editingId ? 'Edit Coupon' : 'Add Coupon' }}</h3>
+          <button type="button" class="modal__close" (click)="closeModal()">&times;</button>
+        </div>
+        <div class="modal__body">
+          <div class="form-group">
+            <label>Coupon Code *</label>
+            <input type="text" class="form-control" formControlName="couponCode" placeholder="e.g. FLY2026" style="text-transform: uppercase;" />
+            <div class="error-text" *ngIf="couponForm.get('couponCode')?.touched && couponForm.get('couponCode')?.invalid">
+              Coupon code is required.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Discount Type *</label>
+            <select class="form-control" formControlName="discountType">
+              <option value="PERCENTAGE">PERCENTAGE (%)</option>
+              <option value="FIXED">FIXED AMOUNT ($)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Discount Value *</label>
+            <input type="number" class="form-control" formControlName="discountValue" step="0.01" />
+            <div class="error-text" *ngIf="couponForm.get('discountValue')?.touched && couponForm.get('discountValue')?.invalid">
+              Valid discount value is required.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Minimum Booking Amount</label>
+            <input type="number" class="form-control" formControlName="minimumBookingAmount" step="0.01" />
+          </div>
+
+          <div class="form-group">
+            <label>Maximum Discount Amount</label>
+            <input type="number" class="form-control" formControlName="maximumDiscount" step="0.01" />
+          </div>
+
+          <div class="form-group">
+            <label>Valid From</label>
+            <input type="date" class="form-control" formControlName="validFrom" />
+          </div>
+
+          <div class="form-group">
+            <label>Valid Until</label>
+            <input type="date" class="form-control" formControlName="validTo" />
+          </div>
+
+          <div class="form-group">
+            <label>Usage Limit</label>
+            <input type="number" class="form-control" formControlName="usageLimit" />
+          </div>
+
+          <div class="form-group checkbox-group">
+            <label>
+              <input type="checkbox" formControlName="active" />
+              Active Coupon
+            </label>
+          </div>
+        </div>
+
+        <div class="modal__footer">
+          <button type="button" class="btn btn--secondary" (click)="closeModal()">Cancel</button>
+          <button type="submit" class="btn btn--primary" [disabled]="isLoading">
+            {{ editingId ? 'Update Coupon' : 'Save Coupon' }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Confirm Delete Modal -->
+    <div class="modal-backdrop" *ngIf="confirmModal.show">
+      <div class="modal">
+        <div class="modal__header modal__header--danger">
+          <h3>{{ confirmModal.title }}</h3>
+          <button type="button" class="modal__close" (click)="confirmModal.show = false">&times;</button>
+        </div>
+        <div class="modal__body">
+          <p>{{ confirmModal.message }}</p>
+        </div>
+        <div class="modal__footer">
+          <button type="button" class="btn btn--secondary" (click)="confirmModal.show = false">Cancel</button>
+          <button type="button" class="btn btn--danger" (click)="confirmModal.onConfirm()">Delete</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

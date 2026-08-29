@@ -1,0 +1,174 @@
+<div class="admin-layout">
+  <app-admin-sidebar></app-admin-sidebar>
+
+  <main class="admin-main">
+    <header class="admin-header">
+      <div>
+        <h1 class="admin-header__title">Dashboard Overview</h1>
+        <p class="admin-header__subtitle">Real-time SkyRoute flight management metrics & operations</p>
+      </div>
+      <div class="admin-header__actions">
+        <button class="btn btn--secondary btn--sm" (click)="loadDashboardData()" [disabled]="isLoading">
+          <span class="material-symbols-outlined">refresh</span>
+          Refresh Data
+        </button>
+        <div class="admin-header__user">
+          <div class="admin-header__avatar">
+            {{ authService.currentUser()?.firstName?.charAt(0) || 'A' }}
+          </div>
+          <div class="admin-header__user-info">
+            <span class="admin-header__user-name">{{ authService.currentUser()?.firstName }} {{ authService.currentUser()?.lastName }}</span>
+            <span class="admin-header__user-role">Administrator</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Alert Banner -->
+    <div class="admin-alert admin-alert--error" *ngIf="errorMessage">
+      <span class="material-symbols-outlined">error</span>
+      <span>{{ errorMessage }}</span>
+      <button class="admin-alert__close" (click)="errorMessage = ''">&times;</button>
+    </div>
+
+    <!-- Loading Bar -->
+    <div class="admin-loading" *ngIf="isLoading">
+      <div class="admin-loading__spinner"></div>
+      <span>Loading dashboard data...</span>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="stats-grid">
+      <div class="stat-card" routerLink="/admin/flights">
+        <div class="stat-card__icon stat-card__icon--blue">
+          <span class="material-symbols-outlined">flight</span>
+        </div>
+        <div class="stat-card__content">
+          <span class="stat-card__label">Total Flights</span>
+          <span class="stat-card__value">{{ totalFlightsCount }}</span>
+          <span class="stat-card__sub">{{ activeFlightsCount }} Active / Scheduled</span>
+        </div>
+      </div>
+
+      <div class="stat-card" routerLink="/admin/airlines">
+        <div class="stat-card__icon stat-card__icon--purple">
+          <span class="material-symbols-outlined">airlines</span>
+        </div>
+        <div class="stat-card__content">
+          <span class="stat-card__label">Total Airlines</span>
+          <span class="stat-card__value">{{ airlinesCount }}</span>
+          <span class="stat-card__sub">Partner Carriers</span>
+        </div>
+      </div>
+
+      <div class="stat-card" routerLink="/admin/airports">
+        <div class="stat-card__icon stat-card__icon--indigo">
+          <span class="material-symbols-outlined">connecting_airports</span>
+        </div>
+        <div class="stat-card__content">
+          <span class="stat-card__label">Total Airports</span>
+          <span class="stat-card__value">{{ airportsCount }}</span>
+          <span class="stat-card__sub">Destinations</span>
+        </div>
+      </div>
+
+      <div class="stat-card" routerLink="/admin/aircraft">
+        <div class="stat-card__icon stat-card__icon--cyan">
+          <span class="material-symbols-outlined">flight_land</span>
+        </div>
+        <div class="stat-card__content">
+          <span class="stat-card__label">Total Aircraft</span>
+          <span class="stat-card__value">{{ aircraftCount }}</span>
+          <span class="stat-card__sub">Fleet Size</span>
+        </div>
+      </div>
+
+      <div class="stat-card" routerLink="/admin/bookings">
+        <div class="stat-card__icon stat-card__icon--emerald">
+          <span class="material-symbols-outlined">confirmation_number</span>
+        </div>
+        <div class="stat-card__content">
+          <span class="stat-card__label">Total Bookings</span>
+          <span class="stat-card__value">{{ bookings.length }}</span>
+          <span class="stat-card__sub">System Bookings</span>
+        </div>
+      </div>
+
+      <div class="stat-card" routerLink="/admin/payments">
+        <div class="stat-card__icon stat-card__icon--amber">
+          <span class="material-symbols-outlined">payments</span>
+        </div>
+        <div class="stat-card__content">
+          <span class="stat-card__label">Total Revenue</span>
+          <span class="stat-card__value">₹{{ totalRevenue | number:'1.2-2' }}</span>
+          <span class="stat-card__sub">Successful Payments</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Glance Tables -->
+    <div class="dashboard-grid">
+      <div class="card">
+        <div class="card__header">
+          <h3>Recent Flights</h3>
+          <a routerLink="/admin/flights" class="btn btn--text btn--sm">View All Flights</a>
+        </div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Flight No</th>
+                <th>Route</th>
+                <th>Departure</th>
+                <th>Base Price</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let f of flights | slice:0:5">
+                <td><strong>{{ f.flightNumber }}</strong></td>
+                <td>{{ f.fromAirport }} ➔ {{ f.toAirport }}</td>
+                <td>{{ f.departureTs | date:'short' }}</td>
+                <td>₹{{ f.basePrice }}</td>
+                <td><span class="badge badge--{{ f.status | lowercase }}">{{ f.status }}</span></td>
+              </tr>
+              <tr *ngIf="flights.length === 0">
+                <td colspan="5" class="empty-state">No flights available.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card__header">
+          <h3>Recent Bookings</h3>
+          <a routerLink="/admin/bookings" class="btn btn--text btn--sm">View All Bookings</a>
+        </div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Booking Code</th>
+                <th>User ID</th>
+                <th>Amount</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let b of bookings | slice:0:5">
+                <td><strong>{{ b.bookingCode }}</strong></td>
+                <td>User #{{ b.userId }}</td>
+                <td>₹{{ b.totalAmount }}</td>
+                <td><span class="badge badge--{{ b.status | lowercase }}">{{ b.status }}</span></td>
+              </tr>
+              <tr *ngIf="bookings.length === 0">
+                <td colspan="4" class="empty-state">No bookings found.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

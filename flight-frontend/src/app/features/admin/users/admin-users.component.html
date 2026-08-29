@@ -1,0 +1,128 @@
+<div class="admin-layout">
+  <app-admin-sidebar></app-admin-sidebar>
+
+  <main class="admin-main">
+    <header class="admin-header">
+      <div>
+        <h1 class="admin-header__title">User Management</h1>
+        <p class="admin-header__subtitle">Manage user accounts, roles, authorities, and verification status</p>
+      </div>
+    </header>
+
+    <!-- Alerts -->
+    <div class="admin-alert admin-alert--error" *ngIf="errorMessage">
+      <span class="material-symbols-outlined">error</span>
+      <span>{{ errorMessage }}</span>
+      <button class="admin-alert__close" (click)="errorMessage = ''">&times;</button>
+    </div>
+
+    <div class="admin-alert admin-alert--success" *ngIf="successMessage">
+      <span class="material-symbols-outlined">check_circle</span>
+      <span>{{ successMessage }}</span>
+      <button class="admin-alert__close" (click)="successMessage = ''">&times;</button>
+    </div>
+
+    <!-- Loading State -->
+    <div class="admin-loading" *ngIf="isLoading">
+      <div class="admin-loading__spinner"></div>
+      <span>Loading users...</span>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="toolbar__search">
+        <span class="material-symbols-outlined toolbar__icon">search</span>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search by name, email, or user ID..."
+          [(ngModel)]="search"
+        />
+      </div>
+
+      <div class="filter-group">
+        <select class="form-control" [(ngModel)]="roleFilter">
+          <option value="ALL">All Roles</option>
+          <option value="ROLE_USER">ROLE_USER</option>
+          <option value="ROLE_ADMIN">ROLE_ADMIN</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="card">
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Full Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Verification Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let u of filteredUsers">
+              <td>#{{ u.userId }}</td>
+              <td>
+                <strong>{{ u.firstName }} {{ u.lastName }}</strong>
+              </td>
+              <td>{{ u.email }}</td>
+              <td>
+                <span class="badge" [class.badge--admin]="u.role === 'ROLE_ADMIN'" [class.badge--user]="u.role === 'ROLE_USER'">
+                  {{ u.role }}
+                </span>
+              </td>
+              <td>
+                <span class="badge" [class.badge--completed]="u.emailVerified" [class.badge--cancelled]="!u.emailVerified">
+                  {{ u.emailVerified ? 'Verified' : 'Unverified' }}
+                </span>
+              </td>
+              <td>
+                <button class="btn btn--secondary btn--sm" (click)="openEditModal(u)">
+                  <span class="material-symbols-outlined">manage_accounts</span>
+                  Edit Role/Status
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="filteredUsers.length === 0">
+              <td colspan="6" class="empty-state">No users found.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div class="modal-backdrop" *ngIf="showEditModal && selectedUser">
+      <form class="modal" (ngSubmit)="submitUserUpdate()">
+        <div class="modal__header">
+          <h3>Manage User — {{ selectedUser.email }}</h3>
+          <button type="button" class="modal__close" (click)="closeEditModal()">&times;</button>
+        </div>
+        <div class="modal__body">
+          <div class="form-group">
+            <label>User Role</label>
+            <select class="form-control" [(ngModel)]="editRole" name="editRole">
+              <option value="ROLE_USER">ROLE_USER (Customer)</option>
+              <option value="ROLE_ADMIN">ROLE_ADMIN (Administrator)</option>
+            </select>
+          </div>
+
+          <div class="form-group checkbox-group">
+            <label>
+              <input type="checkbox" [(ngModel)]="editVerified" name="editVerified" />
+              Email Verified
+            </label>
+          </div>
+        </div>
+        <div class="modal__footer">
+          <button type="button" class="btn btn--secondary" (click)="closeEditModal()">Cancel</button>
+          <button type="submit" class="btn btn--primary" [disabled]="isLoading">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>

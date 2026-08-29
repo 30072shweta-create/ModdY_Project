@@ -1,0 +1,148 @@
+<div class="min-h-screen bg-background font-body-md text-on-surface py-2xl">
+  <div class="max-w-container-max mx-auto px-md md:px-lg">
+    
+    @if (isLoading) {
+      <div class="bg-surface-container-lowest rounded-xl p-3xl flight-card-shadow border border-outline-variant/50 flex flex-col items-center justify-center py-2xl text-center">
+        <span class="material-symbols-outlined text-[48px] text-secondary animate-spin mb-md">progress_activity</span>
+        <p class="font-body-md text-body-md text-on-surface-variant">Loading flight breakdown...</p>
+      </div>
+    } @else if (errorMessage) {
+      <div class="p-md rounded-lg bg-error-container text-on-error-container font-medium border border-error/20 flex items-center gap-2">
+        <span class="material-symbols-outlined text-[20px]">error</span>
+        <span>{{ errorMessage }}</span>
+      </div>
+    } @else if (flight) {
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+        
+        <!-- Left Column: Flight Summary & Amenities -->
+        <div class="lg:col-span-8 space-y-lg">
+          
+          <div class="bg-surface-container-lowest rounded-xl flight-card-shadow p-lg border border-outline-variant/50">
+            <div class="flex justify-between items-start border-b border-outline-variant/30 pb-md mb-lg">
+              <div>
+                <span class="inline-block px-2.5 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed-variant text-label-sm font-label-sm font-bold uppercase mb-2">{{ flight.status }}</span>
+                <h1 class="font-headline-lg text-headline-lg font-bold text-primary">{{ flight.airlineName }} ({{ flight.flightNumber }})</h1>
+                <p class="font-body-md text-body-md text-on-surface-variant flex items-center gap-2 mt-1">
+                  <span>{{ flight.fromAirport }}</span>
+                  <span class="material-symbols-outlined text-[18px]">flight_takeoff</span>
+                  <span>{{ flight.toAirport }}</span>
+                </p>
+              </div>
+              <div class="text-right">
+                <span class="font-label-sm text-label-sm text-on-surface-variant block uppercase font-medium">Base Fare</span>
+                <span class="font-headline-lg text-headline-lg font-bold text-primary">₹{{ flight.basePrice | number:'1.0-0' }}</span>
+              </div>
+            </div>
+
+            <!-- Schedule Breakdown -->
+            <div class="bg-surface-container-low p-md rounded-xl space-y-md mb-lg">
+              <h3 class="font-headline-md text-headline-md font-bold text-primary text-base">Schedule & Duration</h3>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-md items-center text-center">
+                <div class="bg-surface-container-lowest p-sm rounded-lg border border-outline-variant/30">
+                  <span class="text-label-sm font-label-sm text-on-surface-variant block font-medium">Departure</span>
+                  <span class="font-headline-md text-headline-md font-bold text-primary block my-1">{{ flight.departureTs | date:'shortTime' }}</span>
+                  <span class="text-body-sm text-on-surface-variant block font-medium">{{ flight.departureTs | date:'mediumDate' }}</span>
+                  <span class="text-label-sm font-label-sm text-secondary font-bold">{{ flight.fromAirport }}</span>
+                </div>
+
+                <div class="flex flex-col items-center">
+                  <span class="text-body-sm text-on-surface-variant font-medium mb-1">{{ flight.durationMins }} Mins</span>
+                  <div class="w-full h-[1px] bg-outline-variant relative flex items-center justify-center">
+                    <span class="material-symbols-outlined text-secondary text-[18px] bg-surface-container-low px-1">flight</span>
+                  </div>
+                  <span class="text-label-sm font-label-sm text-[#166534] bg-[#DCFCE7] px-2 py-0.5 rounded font-semibold mt-2">
+                    {{ flight.stops === 0 ? 'Non-stop Flight' : flight.stops + ' Stop' }}
+                  </span>
+                </div>
+
+                <div class="bg-surface-container-lowest p-sm rounded-lg border border-outline-variant/30">
+                  <span class="text-label-sm font-label-sm text-on-surface-variant block font-medium">Arrival</span>
+                  <span class="font-headline-md text-headline-md font-bold text-primary block my-1">{{ flight.arrivalTs | date:'shortTime' }}</span>
+                  <span class="text-body-sm text-on-surface-variant block font-medium">{{ flight.arrivalTs | date:'mediumDate' }}</span>
+                  <span class="text-label-sm font-label-sm text-secondary font-bold">{{ flight.toAirport }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Aircraft Information -->
+            @if (aircraft) {
+              <div class="border-t border-outline-variant/30 pt-md mb-lg">
+                <h3 class="font-headline-md text-headline-md font-bold text-primary text-base mb-md">Aircraft Configuration</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-md">
+                  <div class="bg-surface-container-low p-sm rounded-lg">
+                    <span class="text-label-sm font-label-sm text-on-surface-variant block">Model</span>
+                    <span class="font-label-md text-label-md font-bold text-primary">{{ aircraft.model }}</span>
+                  </div>
+                  <div class="bg-surface-container-low p-sm rounded-lg">
+                    <span class="text-label-sm font-label-sm text-on-surface-variant block">Capacity</span>
+                    <span class="font-label-md text-label-md font-bold text-primary">{{ aircraft.totalSeats }} Seats</span>
+                  </div>
+                  <div class="bg-surface-container-low p-sm rounded-lg">
+                    <span class="text-label-sm font-label-sm text-on-surface-variant block">Economy Seats</span>
+                    <span class="font-label-md text-label-md font-bold text-primary">{{ aircraft.economySeats }}</span>
+                  </div>
+                  <div class="bg-surface-container-low p-sm rounded-lg">
+                    <span class="text-label-sm font-label-sm text-on-surface-variant block">Business Seats</span>
+                    <span class="font-label-md text-label-md font-bold text-primary">{{ aircraft.businessSeats }}</span>
+                  </div>
+                </div>
+              </div>
+            }
+
+            <!-- Amenities -->
+            <div class="border-t border-outline-variant/30 pt-md">
+              <h3 class="font-headline-md text-headline-md font-bold text-primary text-base mb-sm">In-flight Amenities & Baggage</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-sm font-body-sm text-body-sm text-on-surface-variant">
+                <div class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary text-[18px]">luggage</span> 7 kg Cabin Baggage Included</div>
+                <div class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary text-[18px]">cases</span> 15 kg Check-in Baggage Included</div>
+                <div class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary text-[18px]">restaurant</span> In-flight Meals Available</div>
+                <div class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary text-[18px]">power</span> USB & Power Outlets at Seat</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Right Column: Price & Proceed CTA -->
+        <div class="lg:col-span-4 space-y-lg">
+          <div class="bg-surface-container-lowest rounded-xl flight-card-shadow p-lg border border-outline-variant/50 sticky top-[90px]">
+            <h3 class="font-headline-md text-headline-md font-bold text-primary border-b border-outline-variant/30 pb-sm mb-md">Fare Summary</h3>
+            
+            <div class="space-y-sm font-body-md text-body-md text-on-surface-variant mb-md">
+              <div class="flex justify-between">
+                <span>Base Fare</span>
+                <span class="font-semibold text-primary">₹{{ flight.basePrice | number:'1.0-0' }}</span>
+              </div>
+              <div class="flex justify-between text-body-sm">
+                <span>Taxes & Fees</span>
+                <span>Included</span>
+              </div>
+              <div class="flex justify-between text-body-sm">
+                <span>Available Seats</span>
+                <span class="text-[#166534] font-semibold">{{ flight.availableSeats }} Left</span>
+              </div>
+            </div>
+
+            <div class="flex justify-between items-center border-t border-outline-variant pt-md mb-lg">
+              <span class="font-headline-md text-headline-md font-bold text-on-surface">Total Price</span>
+              <span class="font-headline-lg text-headline-lg font-bold text-primary">₹{{ flight.basePrice | number:'1.0-0' }}</span>
+            </div>
+
+            <div class="space-y-sm">
+              <button class="w-full bg-secondary text-on-secondary py-md px-lg rounded-lg font-label-md text-label-md font-semibold hover:opacity-90 transition-all active:scale-[0.98] flex items-center justify-center gap-2 shadow-sm" (click)="proceedToBooking()">
+                <span>Proceed to Passenger Info</span>
+                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+              </button>
+              
+              <a routerLink="/flights" class="w-full bg-surface text-primary border border-outline-variant py-sm px-lg rounded-lg font-label-md text-label-md font-semibold hover:bg-surface-container-low transition-colors block text-center">
+                Back to Search Results
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    }
+  </div>
+</div>
+

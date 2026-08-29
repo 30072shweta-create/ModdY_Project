@@ -1,0 +1,169 @@
+<div class="admin-layout">
+  <app-admin-sidebar></app-admin-sidebar>
+
+  <main class="admin-main">
+    <header class="admin-header">
+      <div>
+        <h1 class="admin-header__title">Notification Management</h1>
+        <p class="admin-header__subtitle">Send, monitor, and manage system and customer notifications</p>
+      </div>
+      <button class="btn btn--primary" (click)="openAddModal()">
+        <span class="material-symbols-outlined">send</span>
+        Send Notification
+      </button>
+    </header>
+
+    <!-- Alerts -->
+    <div class="admin-alert admin-alert--error" *ngIf="errorMessage">
+      <span class="material-symbols-outlined">error</span>
+      <span>{{ errorMessage }}</span>
+      <button class="admin-alert__close" (click)="errorMessage = ''">&times;</button>
+    </div>
+
+    <div class="admin-alert admin-alert--success" *ngIf="successMessage">
+      <span class="material-symbols-outlined">check_circle</span>
+      <span>{{ successMessage }}</span>
+      <button class="admin-alert__close" (click)="successMessage = ''">&times;</button>
+    </div>
+
+    <!-- Loading State -->
+    <div class="admin-loading" *ngIf="isLoading">
+      <div class="admin-loading__spinner"></div>
+      <span>Loading notifications...</span>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="toolbar__search">
+        <span class="material-symbols-outlined toolbar__icon">search</span>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search by email, message, or type..."
+          [(ngModel)]="search"
+        />
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="card">
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Recipient Email</th>
+              <th>Type</th>
+              <th>Message</th>
+              <th>Booking ID</th>
+              <th>Sent Time</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let n of filteredNotifications">
+              <td>#{{ n.notificationId }}</td>
+              <td>
+                <strong>{{ n.recipientEmail }}</strong>
+              </td>
+              <td>
+                <span class="type-badge">{{ n.type }}</span>
+              </td>
+              <td class="message-cell">{{ n.message }}</td>
+              <td>{{ n.bookingId ? '#' + n.bookingId : '-' }}</td>
+              <td>{{ n.sentAt | date:'medium' }}</td>
+              <td>
+                <span class="badge" [class.badge--completed]="n.read" [class.badge--cancelled]="!n.read">
+                  {{ n.read ? 'Read' : 'Unread' }}
+                </span>
+              </td>
+              <td>
+                <button class="btn-icon btn-icon--danger" (click)="confirmDelete(n)" title="Delete">
+                  <span class="material-symbols-outlined">delete</span>
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="filteredNotifications.length === 0">
+              <td colspan="8" class="empty-state">No notification records found.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Add Modal -->
+    <div class="modal-backdrop" *ngIf="showModal">
+      <form class="modal" [formGroup]="notificationForm" (ngSubmit)="submitNotification()">
+        <div class="modal__header">
+          <h3>Send New Notification</h3>
+          <button type="button" class="modal__close" (click)="closeModal()">&times;</button>
+        </div>
+        <div class="modal__body">
+          <div class="form-group">
+            <label>Select Target User *</label>
+            <select class="form-control" formControlName="userId" (change)="onUserSelect($event)">
+              <option value="" disabled>-- Select User --</option>
+              <option *ngFor="let u of usersList" [value]="u.userId">
+                {{ u.firstName }} {{ u.lastName }} ({{ u.email }})
+              </option>
+            </select>
+            <div class="error-text" *ngIf="notificationForm.get('userId')?.touched && notificationForm.get('userId')?.invalid">
+              Target user is required.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Recipient Email *</label>
+            <input type="email" class="form-control" formControlName="recipientEmail" />
+          </div>
+
+          <div class="form-group">
+            <label>Notification Type *</label>
+            <select class="form-control" formControlName="type">
+              <option value="SYSTEM_ALERT">SYSTEM ALERT</option>
+              <option value="BOOKING_CONFIRMATION">BOOKING CONFIRMATION</option>
+              <option value="FLIGHT_DELAY">FLIGHT DELAY</option>
+              <option value="PROMOTIONAL">PROMOTIONAL</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Associated Booking ID (Optional)</label>
+            <input type="number" class="form-control" formControlName="bookingId" placeholder="e.g. 101" />
+          </div>
+
+          <div class="form-group">
+            <label>Notification Message *</label>
+            <textarea class="form-control" formControlName="message" rows="4" placeholder="Enter message contents..."></textarea>
+            <div class="error-text" *ngIf="notificationForm.get('message')?.touched && notificationForm.get('message')?.invalid">
+              Message content is required.
+            </div>
+          </div>
+        </div>
+
+        <div class="modal__footer">
+          <button type="button" class="btn btn--secondary" (click)="closeModal()">Cancel</button>
+          <button type="submit" class="btn btn--primary" [disabled]="isLoading">Send Notification</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Confirm Delete Modal -->
+    <div class="modal-backdrop" *ngIf="confirmModal.show">
+      <div class="modal">
+        <div class="modal__header modal__header--danger">
+          <h3>{{ confirmModal.title }}</h3>
+          <button type="button" class="modal__close" (click)="confirmModal.show = false">&times;</button>
+        </div>
+        <div class="modal__body">
+          <p>{{ confirmModal.message }}</p>
+        </div>
+        <div class="modal__footer">
+          <button type="button" class="btn btn--secondary" (click)="confirmModal.show = false">Cancel</button>
+          <button type="button" class="btn btn--danger" (click)="confirmModal.onConfirm()">Delete</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
