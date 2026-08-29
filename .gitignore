@@ -1,0 +1,18 @@
+# Backend
+flight_backend/.env
+flight_backend/target/
+flight_backend/.dist/
+flight_backend/*.log
+flight_backend/src/main/resources/application.properties
+
+# Frontend
+flight-frontend/node_modules/
+flight-frontend/.angular/
+flight-frontend/dist/
+
+# IDE
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
