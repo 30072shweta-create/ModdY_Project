@@ -233,11 +233,19 @@ $shadow-card: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23,
 .dest-card { grid-column: span 6; }
 
 .date-card { grid-column: span 3; }
+<<<<<<< HEAD
+.airline-card { grid-column: span 3; }
+=======
+>>>>>>> c0433ef5f1e407a86a7aa70b8549f194d827e51f
 .class-card { grid-column: span 3; }
 .passenger-card { grid-column: span 3; }
 
 @media (max-width: 991px) {
+<<<<<<< HEAD
+  .source-card, .dest-card, .date-card, .airline-card, .class-card, .passenger-card {
+=======
   .source-card, .dest-card, .date-card, .class-card, .passenger-card {
+>>>>>>> c0433ef5f1e407a86a7aa70b8549f194d827e51f
     grid-column: span 12 !important;
   }
   .swap-container {
@@ -257,7 +265,11 @@ $shadow-card: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23,
   margin-bottom: 4px;
 }
 
+<<<<<<< HEAD
+.airport-select, .airline-select, .class-select {
+=======
 .airport-select, .class-select {
+>>>>>>> c0433ef5f1e407a86a7aa70b8549f194d827e51f
   width: 100%;
   border: none;
   background: transparent;

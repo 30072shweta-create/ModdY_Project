@@ -35,10 +35,18 @@ import com.example.flight.security.GoogleUserInfo;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+<<<<<<< HEAD
+import lombok.extern.slf4j.Slf4j;
+=======
+>>>>>>> c0433ef5f1e407a86a7aa70b8549f194d827e51f
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+<<<<<<< HEAD
+@Slf4j
+=======
+>>>>>>> c0433ef5f1e407a86a7aa70b8549f194d827e51f
 public class AuthService {
 
     private final UserRepository userRepository;
@@ -80,7 +88,12 @@ public class AuthService {
         // Send verification OTP
         try {
             sendEmailVerificationOtp(savedUser.getEmail());
+<<<<<<< HEAD
+        } catch (Exception ex) {
+            log.warn("Failed to send email verification OTP to {}", savedUser.getEmail(), ex);
+=======
         } catch (Exception ignored) {
+>>>>>>> c0433ef5f1e407a86a7aa70b8549f194d827e51f
             // Log but don't fail registration if mail host is unreachable in local test
         }
 
@@ -233,6 +246,10 @@ public class AuthService {
         try {
             emailService.sendOtpEmail(email, otp, "EMAIL_VERIFICATION");
         } catch (Exception ex) {
+<<<<<<< HEAD
+            log.warn("Failed to send email verification OTP to {}", email, ex);
+=======
+>>>>>>> c0433ef5f1e407a86a7aa70b8549f194d827e51f
             // Log but don't fail transaction if mail host is unreachable in local test environment
         }
 
@@ -284,6 +301,10 @@ public class AuthService {
         try {
             emailService.sendOtpEmail(user.getEmail(), otp, "PASSWORD_RESET");
         } catch (Exception ex) {
+<<<<<<< HEAD
+            log.warn("Failed to send password reset OTP to {}", user.getEmail(), ex);
+=======
+>>>>>>> c0433ef5f1e407a86a7aa70b8549f194d827e51f
             // Log but don't fail transaction if mail host is unreachable in local test environment
         }
 

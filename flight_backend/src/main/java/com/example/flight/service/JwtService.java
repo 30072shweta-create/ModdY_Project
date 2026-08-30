@@ -35,6 +35,11 @@ public class JwtService {
     public static final String CLAIM_ROLE = "role";
     public static final String CLAIM_TYPE = "type";
     public static final String TOKEN_TYPE_ACCESS = "ACCESS";
+<<<<<<< HEAD
+    private static final String DEFAULT_DEVELOPMENT_SECRET =
+            "1e561ab13dc3ac0ba177c453aba2e676a895ce13169eed7682e3479762ffb3f7";
+=======
+>>>>>>> c0433ef5f1e407a86a7aa70b8549f194d827e51f
 
     private final JwtProperties jwtProperties;
 
@@ -171,6 +176,30 @@ public class JwtService {
 
     private SecretKey getSigningKey() {
         String secret = jwtProperties.getSecret();
+<<<<<<< HEAD
+        if (secret == null || secret.isBlank() || "JWT_SECRET".equals(secret)) {
+            secret = DEFAULT_DEVELOPMENT_SECRET;
+        }
+
+        byte[] keyBytes = secret.startsWith("base64:")
+                ? Decoders.BASE64.decode(secret.substring("base64:".length()))
+                : secret.getBytes(StandardCharsets.UTF_8);
+
+        if (keyBytes.length < 32) {
+            keyBytes = sha256(secret);
+        }
+
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    private byte[] sha256(String value) {
+        try {
+            return MessageDigest.getInstance("SHA-256").digest(value.getBytes(StandardCharsets.UTF_8));
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("SHA-256 algorithm not found", e);
+        }
+    }
+=======
         byte[] keyBytes;
         try {
             keyBytes = Decoders.BASE64.decode(secret);
@@ -179,4 +208,5 @@ public class JwtService {
         }
         return Keys.hmacShaKeyFor(keyBytes);
     }
+>>>>>>> c0433ef5f1e407a86a7aa70b8549f194d827e51f
 }

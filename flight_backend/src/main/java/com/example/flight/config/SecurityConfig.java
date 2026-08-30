@@ -91,6 +91,11 @@ public class SecurityConfig {
                     "/v3/api-docs/**",
                     "/v3/api-docs"
                 ).permitAll()
+<<<<<<< HEAD
+                // Public AI chatbot endpoint
+                .requestMatchers("/api/chat/**").permitAll()
+=======
+>>>>>>> c0433ef5f1e407a86a7aa70b8549f194d827e51f
                 // Public read-only endpoints for user search
                 .requestMatchers(org.springframework.http.HttpMethod.GET,
                     "/api/flights/**",
@@ -116,4 +121,8 @@ public class SecurityConfig {
 
         return http.build();
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> c0433ef5f1e407a86a7aa70b8549f194d827e51f

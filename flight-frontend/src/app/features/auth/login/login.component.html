@@ -28,6 +28,23 @@
         </div>
       }
 
+<<<<<<< HEAD
+      <div class="google-signin-wrap mb-6" [class.google-signin-wrap--loading]="isGoogleLoading">
+        <div id="googleSignInButton" class="google-signin-button"></div>
+        @if (isGoogleLoading) {
+          <div class="google-signin-loading">
+            <span class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
+            <span>Signing in with Google...</span>
+          </div>
+        }
+      </div>
+
+      <div class="auth-divider mb-6">
+        <span>or sign in with email</span>
+      </div>
+
+=======
+>>>>>>> c0433ef5f1e407a86a7aa70b8549f194d827e51f
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
         <div>
           <label class="block font-label-md text-label-md font-semibold text-on-surface mb-1" for="email">Email</label>
@@ -82,4 +99,7 @@
     </div>
   </div>
 </div>
+<<<<<<< HEAD
+=======
 
+>>>>>>> c0433ef5f1e407a86a7aa70b8549f194d827e51f

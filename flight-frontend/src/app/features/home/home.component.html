@@ -125,6 +125,23 @@
             <input type="date" formControlName="returnDate" class="date-input" />
           </div>
 
+<<<<<<< HEAD
+          <!-- AIRLINE -->
+          <div class="form-card airline-card">
+            <div class="card-label">
+              <span class="material-symbols-outlined text-secondary">airlines</span>
+              AIRLINE
+            </div>
+            <select formControlName="airline" class="airline-select">
+              <option value="">All Airlines</option>
+              <option *ngFor="let airline of airlines" [value]="airline.airlineCode">
+                {{ airline.airlineName }} ({{ airline.airlineCode }})
+              </option>
+            </select>
+          </div>
+
+=======
+>>>>>>> c0433ef5f1e407a86a7aa70b8549f194d827e51f
           <!-- CABIN CLASS -->
           <div class="form-card class-card">
             <div class="card-label">

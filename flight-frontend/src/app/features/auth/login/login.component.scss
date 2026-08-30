@@ -7,6 +7,60 @@
   background: radial-gradient(circle at top right, #E0F2FE, #F8FAFC);
 }
 
+<<<<<<< HEAD
+.google-signin-wrap {
+  position: relative;
+  min-height: 44px;
+
+  &--loading {
+    .google-signin-button {
+      opacity: 0.35;
+      pointer-events: none;
+    }
+  }
+}
+
+.google-signin-button {
+  width: 100%;
+
+  > div {
+    width: 100% !important;
+  }
+}
+
+.google-signin-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.86);
+  color: #191c1e;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #76777d;
+  font-size: 0.875rem;
+  font-weight: 600;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #c6c6cd;
+  }
+}
+
+=======
+>>>>>>> c0433ef5f1e407a86a7aa70b8549f194d827e51f
 .auth-card {
   width: 100%;
   max-width: 440px;

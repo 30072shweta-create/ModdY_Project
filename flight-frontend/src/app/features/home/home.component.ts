@@ -3,8 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AirportsService } from '../../core/services/airports.service';
+<<<<<<< HEAD
+import { AirlinesService } from '../../core/services/airlines.service';
+import { FlightsService } from '../../core/services/flights.service';
+import { AirlineResponseDTO, AirportResponseDTO, FlightResponseDTO } from '../../core/models/flight.model';
+=======
 import { FlightsService } from '../../core/services/flights.service';
 import { AirportResponseDTO, FlightResponseDTO } from '../../core/models/flight.model';
+>>>>>>> c0433ef5f1e407a86a7aa70b8549f194d827e51f
 
 @Component({
   selector: 'app-home',
@@ -16,10 +22,18 @@ import { AirportResponseDTO, FlightResponseDTO } from '../../core/models/flight.
 export class HomeComponent implements OnInit {
   private fb = inject(FormBuilder);
   private airportsService = inject(AirportsService);
+<<<<<<< HEAD
+  private airlinesService = inject(AirlinesService);
+=======
+>>>>>>> c0433ef5f1e407a86a7aa70b8549f194d827e51f
   private flightsService = inject(FlightsService);
   private router = inject(Router);
 
   public airports: AirportResponseDTO[] = [];
+<<<<<<< HEAD
+  public airlines: AirlineResponseDTO[] = [];
+=======
+>>>>>>> c0433ef5f1e407a86a7aa70b8549f194d827e51f
   public featuredFlights: FlightResponseDTO[] = [];
   public isLoadingAirports = true;
   public isSearching = false;
@@ -31,6 +45,10 @@ export class HomeComponent implements OnInit {
     destination: ['', [Validators.required]],
     date: ['', [Validators.required]],
     returnDate: [''],
+<<<<<<< HEAD
+    airline: [''],
+=======
+>>>>>>> c0433ef5f1e407a86a7aa70b8549f194d827e51f
     cabinClass: ['ECONOMY', [Validators.required]],
     passengers: [1, [Validators.required, Validators.min(1), Validators.max(9)]]
   });
@@ -51,6 +69,10 @@ export class HomeComponent implements OnInit {
     });
 
     this.loadAirports();
+<<<<<<< HEAD
+    this.loadAirlines();
+=======
+>>>>>>> c0433ef5f1e407a86a7aa70b8549f194d827e51f
     this.loadFeaturedFlights();
 
     // Listen to tripType changes to toggle returnDate validators
@@ -70,6 +92,16 @@ export class HomeComponent implements OnInit {
     this.searchForm.get('returnDate')?.valueChanges.subscribe(() => this.validateDates());
   }
 
+<<<<<<< HEAD
+  private loadAirlines(): void {
+    this.airlinesService.getAllAirlines().subscribe({
+      next: (data) => this.airlines = data || [],
+      error: () => this.airlines = []
+    });
+  }
+
+=======
+>>>>>>> c0433ef5f1e407a86a7aa70b8549f194d827e51f
   public setTripType(type: 'roundTrip' | 'oneWay'): void {
     this.searchForm.patchValue({ tripType: type });
   }
@@ -178,6 +210,13 @@ export class HomeComponent implements OnInit {
       queryParams.returnDate = val.returnDate;
     }
 
+<<<<<<< HEAD
+    if (val.airline) {
+      queryParams.airline = val.airline;
+    }
+
+=======
+>>>>>>> c0433ef5f1e407a86a7aa70b8549f194d827e51f
     this.isSearching = true;
     this.router.navigate(['/flights'], { queryParams }).then(() => {
       this.isSearching = false;

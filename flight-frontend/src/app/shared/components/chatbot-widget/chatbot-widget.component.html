@@ -1,0 +1,51 @@
+<section class="chat-widget" [class.chat-widget--open]="isOpen" aria-label="Flight assistant">
+  <button class="chat-widget__toggle" type="button" (click)="toggleChat()" aria-label="Open flight assistant">
+    <span class="material-symbols-outlined">{{ isOpen ? 'close' : 'support_agent' }}</span>
+  </button>
+
+  <div class="chat-widget__panel" *ngIf="isOpen">
+    <header class="chat-widget__header">
+      <div>
+        <h2>Flight Assistant</h2>
+        <span>AI support</span>
+      </div>
+    </header>
+
+    <label class="chat-widget__domain">
+      <span>Domain</span>
+      <select [(ngModel)]="selectedDomain">
+        <option *ngFor="let domain of domains" [ngValue]="domain.value">
+          {{ domain.name }}
+        </option>
+      </select>
+    </label>
+
+    <div class="chat-widget__messages" aria-live="polite">
+      <div
+        class="chat-widget__message"
+        *ngFor="let item of messages"
+        [class.chat-widget__message--user]="item.role === 'user'"
+      >
+        {{ item.text }}
+      </div>
+
+      <div class="chat-widget__message chat-widget__message--loading" *ngIf="isLoading">
+        Thinking...
+      </div>
+    </div>
+
+    <form class="chat-widget__form" (ngSubmit)="sendMessage()">
+      <input
+        type="text"
+        name="message"
+        [(ngModel)]="message"
+        maxlength="1000"
+        autocomplete="off"
+        placeholder="Ask a question"
+      />
+      <button type="submit" [disabled]="isLoading || !message.trim()" aria-label="Send message">
+        <span class="material-symbols-outlined">send</span>
+      </button>
+    </form>
+  </div>
+</section>
