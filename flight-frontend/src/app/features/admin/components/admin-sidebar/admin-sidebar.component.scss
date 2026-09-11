@@ -1,11 +1,14 @@
-$primary-navy: #1e3a8a;
-$primary-blue: #2563eb;
-$blue-hover: #1d4ed8;
-$blue-light: #eff6ff;
-$text-main: #0f172a;
-$text-muted: #64748b;
-$border-color: #e2e8f0;
-$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+$primary-navy: #101A2B;
+$primary-blue: #101A2B;
+$primary-gold: #B58A4A;
+$gold-hover: #9E743A;
+$gold-light: rgba(181, 138, 74, 0.12);
+$blue-hover: #1E2D4A;
+$blue-light: #F4F6F9;
+$text-main: #101A2B;
+$text-muted: #6B7280;
+$border-color: #E8EBF0;
+$shadow-md: 0 4px 12px rgba(16, 26, 43, 0.08);
 
 .admin-mobile-bar {
   display: none;
@@ -41,6 +44,12 @@ $shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     gap: 8px;
     font-weight: 700;
     font-size: 1.1rem;
+
+    &-img {
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
+    }
   }
 }
 
@@ -101,9 +110,10 @@ $shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     font-size: 1.25rem;
   }
 
-  &__logo-icon {
-    font-size: 28px;
-    color: $primary-blue;
+  &__logo-img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
   }
 
   &__collapse-btn {
@@ -115,7 +125,7 @@ $shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     align-items: center;
     padding: 4px;
     border-radius: 4px;
-    &:hover { background: $blue-light; color: $primary-blue; }
+    &:hover { background: $blue-light; color: $primary-gold; }
     @media (max-width: 991px) { display: none; }
   }
 
@@ -149,14 +159,18 @@ $shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     transition: all 0.15s ease;
 
     &:hover {
-      background: $blue-light;
-      color: $primary-blue;
+      background: $gold-light;
+      color: $primary-navy;
     }
 
     &--active {
-      background: $primary-blue;
+      background: $primary-navy;
       color: #ffffff;
       font-weight: 600;
+
+      .material-symbols-outlined {
+        color: $primary-gold;
+      }
 
       &:hover {
         background: $blue-hover;

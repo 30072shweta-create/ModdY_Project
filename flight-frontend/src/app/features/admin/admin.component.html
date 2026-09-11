@@ -5,7 +5,7 @@
     <header class="admin-header">
       <div>
         <h1 class="admin-header__title">Dashboard Overview</h1>
-        <p class="admin-header__subtitle">Real-time SkyRoute flight management metrics & operations</p>
+        <p class="admin-header__subtitle">Real-time Meridian flight management metrics & operations</p>
       </div>
       <div class="admin-header__actions">
         <button class="btn btn--secondary btn--sm" (click)="loadDashboardData()" [disabled]="isLoading">
@@ -127,7 +127,7 @@
             <tbody>
               <tr *ngFor="let f of flights | slice:0:5">
                 <td><strong>{{ f.flightNumber }}</strong></td>
-                <td>{{ f.fromAirport }} ➔ {{ f.toAirport }}</td>
+                <td>{{ f.fromAirport }} &rarr; {{ f.toAirport }}</td>
                 <td>{{ f.departureTs | date:'short' }}</td>
                 <td>₹{{ f.basePrice }}</td>
                 <td><span class="badge badge--{{ f.status | lowercase }}">{{ f.status }}</span></td>

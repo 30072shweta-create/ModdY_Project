@@ -222,7 +222,7 @@ export class AdminFlightsComponent implements OnInit {
     this.confirmModal = {
       show: true,
       title: 'Delete Flight',
-      message: `Are you sure you want to delete flight "${flight.flightNumber}" (${flight.fromAirport} ➔ ${flight.toAirport})?`,
+      message: `Are you sure you want to delete flight "${flight.flightNumber}" (${flight.fromAirport} to ${flight.toAirport})?`,
       onConfirm: () => {
         this.isLoading = true;
         this.flightsService.deleteFlight(flight.flightId).subscribe({

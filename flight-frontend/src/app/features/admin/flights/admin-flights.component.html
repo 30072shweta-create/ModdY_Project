@@ -61,7 +61,7 @@
             <tr>
               <th>Flight No</th>
               <th>Airline</th>
-              <th>Origin ➔ Dest</th>
+              <th>Origin &rarr; Dest</th>
               <th>Departure / Arrival</th>
               <th>Available Seats</th>
               <th>Base Price</th>
@@ -74,7 +74,7 @@
               <td><strong>{{ getFlightNumberLabel(f) }}</strong></td>
               <td>{{ f.airlineName || getAirlineLabel(f.airlineCode) }}</td>
               <td>
-                <span class="route-pill">{{ f.fromAirport }} ➔ {{ f.toAirport }}</span>
+                <span class="route-pill">{{ f.fromAirport }} &rarr; {{ f.toAirport }}</span>
               </td>
               <td>
                 <div class="time-block">

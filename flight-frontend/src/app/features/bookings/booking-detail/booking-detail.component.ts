@@ -66,7 +66,7 @@ export class BookingDetailComponent implements OnInit {
         flightId: 1,
         flightNumber: 'SK-100',
         airlineCode: 'SK',
-        airlineName: 'SkyRoute Express',
+        airlineName: 'Meridian Express',
         fromAirport: 'BLR',
         toAirport: 'DEL',
         departureTs: this.booking?.bookingTs || new Date().toISOString(),

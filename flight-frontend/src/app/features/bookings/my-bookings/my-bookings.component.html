@@ -58,7 +58,11 @@
               <div class="md:col-span-8 space-y-sm">
                 @for (seg of b.segments; track seg.segmentId) {
                   <div class="flex items-center gap-md">
-                    <span class="font-headline-md text-headline-md font-bold text-primary">{{ seg.fromAirport }} ✈ {{ seg.toAirport }}</span>
+                    <span class="font-headline-md text-headline-md font-bold text-primary flex items-center gap-1.5">
+                      <span>{{ seg.fromAirport }}</span>
+                      <span class="material-symbols-outlined text-[18px] text-amber-600">arrow_forward</span>
+                      <span>{{ seg.toAirport }}</span>
+                    </span>
                     <span class="text-body-sm text-on-surface-variant font-medium">({{ seg.airlineName }} #{{ seg.flightNumber }})</span>
                   </div>
                 }

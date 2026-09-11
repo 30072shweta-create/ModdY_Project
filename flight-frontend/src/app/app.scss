@@ -7,3 +7,127 @@
 .main-content {
   flex: 1;
 }
+
+/* =====================================================
+   PURE CSS CENTER-TO-NAVBAR LOGO ENTRANCE ANIMATION
+   Starts in the dead center of the screen on luxury dark
+   background, then smoothly shrinks and flies directly to
+   the top-left logo position where it sits in the navbar!
+   ===================================================== */
+
+.meridian-intro-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 50% 48%, #14233c 0%, #060B14 100%);
+  pointer-events: none;
+  animation: introOverlayFadeOut 2.2s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+  will-change: opacity, visibility;
+}
+
+@keyframes introOverlayFadeOut {
+  0% {
+    opacity: 1;
+    visibility: visible;
+  }
+  40% {
+    opacity: 1;
+    visibility: visible;
+  }
+  80% {
+    opacity: 0.25;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.intro-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  animation: introFlyToNavbar 2.2s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+  will-change: transform;
+}
+
+@keyframes introFlyToNavbar {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  40% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(max(calc(-50vw + 50px), -590px), calc(-50vh + 34px)) scale(0.24);
+  }
+}
+
+.intro-logo {
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+  filter: drop-shadow(0 14px 40px rgba(181, 138, 74, 0.85)) drop-shadow(0 0 55px rgba(181, 138, 74, 0.5));
+}
+
+.intro-wordmark {
+  font-family: var(--font-sans, 'Inter', sans-serif);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.30em;
+  color: #FFFFFF;
+  text-shadow: 0 4px 20px rgba(181, 138, 74, 0.55);
+  animation: introWordmarkFade 2.2s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+  will-change: opacity, transform;
+}
+
+@keyframes introWordmarkFade {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  70% {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .intro-logo {
+    width: 110px;
+    height: 110px;
+  }
+
+  .intro-wordmark {
+    font-size: 22px;
+    letter-spacing: 0.22em;
+  }
+
+  @keyframes introFlyToNavbar {
+    0% {
+      transform: translate(0, 0) scale(1);
+    }
+    40% {
+      transform: translate(0, 0) scale(1);
+    }
+    100% {
+      transform: translate(calc(-50vw + 38px), calc(-50vh + 30px)) scale(0.28);
+    }
+  }
+}

@@ -12,7 +12,7 @@
           [class.bg-primary]="currentStep === 'passengers'" 
           [class.text-on-primary]="currentStep === 'passengers'" 
           [class.bg-surface-container-highest]="currentStep !== 'passengers' && !isPastStep('passengers')">
-          @if (isPastStep('passengers')) { ✓ } @else { 1 }
+          @if (isPastStep('passengers')) { <span class="material-symbols-outlined text-[16px] leading-none">check</span> } @else { 1 }
         </div>
         <span>Passenger Details</span>
       </div>
@@ -26,7 +26,7 @@
           [class.bg-primary]="currentStep === 'seats'" 
           [class.text-on-primary]="currentStep === 'seats'" 
           [class.bg-surface-container-highest]="currentStep !== 'seats' && !isPastStep('seats')">
-          @if (isPastStep('seats')) { ✓ } @else { 2 }
+          @if (isPastStep('seats')) { <span class="material-symbols-outlined text-[16px] leading-none">check</span> } @else { 2 }
         </div>
         <span>Seat Selection</span>
       </div>
@@ -40,7 +40,7 @@
           [class.bg-primary]="currentStep === 'payment' || currentStep === 'addons'" 
           [class.text-on-primary]="currentStep === 'payment' || currentStep === 'addons'" 
           [class.bg-surface-container-highest]="currentStep !== 'payment' && currentStep !== 'addons' && !isPastStep('payment')">
-          @if (isPastStep('payment')) { ✓ } @else { 3 }
+          @if (isPastStep('payment')) { <span class="material-symbols-outlined text-[16px] leading-none">check</span> } @else { 3 }
         </div>
         <span>Payment & Fare</span>
       </div>
@@ -52,7 +52,7 @@
           [class.bg-emerald-600]="currentStep === 'confirmation'" 
           [class.text-white]="currentStep === 'confirmation'" 
           [class.bg-surface-container-highest]="currentStep !== 'confirmation'">
-          @if (currentStep === 'confirmation') { ✓ } @else { 4 }
+          @if (currentStep === 'confirmation') { <span class="material-symbols-outlined text-[16px] leading-none">check</span> } @else { 4 }
         </div>
         <span>Confirmation</span>
       </div>
@@ -139,7 +139,11 @@
             <h3 class="font-headline-md text-headline-md font-bold text-primary border-b border-outline-variant/30 pb-sm mb-md">Flight Summary</h3>
             @if (flight) {
               <div class="space-y-sm font-body-md text-body-md text-on-surface-variant">
-                <div class="font-label-md text-label-md font-bold text-primary">{{ flight.fromAirport }} ✈ {{ flight.toAirport }}</div>
+                <div class="font-label-md text-label-md font-bold text-primary flex items-center gap-1.5">
+                  <span>{{ flight.fromAirport }}</span>
+                  <span class="material-symbols-outlined text-[16px] text-amber-600">arrow_forward</span>
+                  <span>{{ flight.toAirport }}</span>
+                </div>
                 <div class="text-body-sm">{{ flight.airlineName }} #{{ flight.flightNumber }}</div>
                 <div class="text-body-sm">{{ flight.departureTs | date:'mediumDate' }} • {{ flight.departureTs | date:'shortTime' }}</div>
                 <div class="border-t border-outline-variant/30 pt-sm flex justify-between font-bold text-primary">
@@ -194,7 +198,10 @@
                     [class.text-on-surface]="activePassengerIndex !== idx"
                     [class.border-outline-variant]="activePassengerIndex !== idx"
                   >
-                    <span>👤 {{ p.firstName }} {{ p.lastName }}</span>
+                    <span class="flex items-center gap-1">
+                      <span class="material-symbols-outlined text-[16px]">person</span>
+                      <span>{{ p.firstName }} {{ p.lastName }}</span>
+                    </span>
                     @if (selectedSeatsMap.has(p.passengerId)) {
                       <span class="bg-emerald-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">
                         Seat {{ selectedSeatsMap.get(p.passengerId) }}
@@ -216,23 +223,30 @@
                 <span class="font-medium text-slate-700">Available</span>
               </div>
               <div class="flex items-center gap-2">
-                <div class="w-5 h-5 bg-blue-600 border-2 border-blue-700 rounded text-white text-[10px] flex items-center justify-center font-bold">✓</div>
+                <div class="w-5 h-5 bg-primary border-2 border-primary rounded text-white text-[10px] flex items-center justify-center font-bold">
+                  <span class="material-symbols-outlined text-[12px] leading-none">check</span>
+                </div>
                 <span class="font-medium text-slate-700">Selected (Your Hold)</span>
               </div>
               <div class="flex items-center gap-2">
-                <div class="w-5 h-5 bg-amber-100 border-2 border-amber-300 rounded text-amber-700 text-[10px] flex items-center justify-center font-bold">🔒</div>
+                <div class="w-5 h-5 bg-amber-100 border-2 border-amber-300 rounded text-amber-700 text-[10px] flex items-center justify-center font-bold">
+                  <span class="material-symbols-outlined text-[12px] leading-none">lock</span>
+                </div>
                 <span class="font-medium text-slate-700">Held by Another Traveler</span>
               </div>
               <div class="flex items-center gap-2">
-                <div class="w-5 h-5 bg-slate-300 border-2 border-slate-400 rounded text-slate-600 text-[10px] flex items-center justify-center font-bold">✕</div>
+                <div class="w-5 h-5 bg-slate-300 border-2 border-slate-400 rounded text-slate-600 text-[10px] flex items-center justify-center font-bold">
+                  <span class="material-symbols-outlined text-[12px] leading-none">close</span>
+                </div>
                 <span class="font-medium text-slate-700">Booked</span>
               </div>
             </div>
 
             <!-- Aircraft Fuselage Seat Grid -->
             <div class="relative w-full max-w-[460px] mx-auto bg-slate-50 rounded-[3rem] border-2 border-slate-300 p-lg pb-xl shadow-inner my-lg">
-              <div class="text-center font-label-sm text-slate-400 uppercase tracking-widest pt-2 mb-4 font-bold">
-                ✈ Cockpit / Front of Aircraft
+              <div class="text-center font-label-sm text-slate-400 uppercase tracking-widest pt-2 mb-4 font-bold flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-[16px]">flight</span>
+                <span>Cockpit / Front of Aircraft</span>
               </div>
               
               <!-- Column Letter Header -->
@@ -286,13 +300,13 @@
                             [class.text-slate-600]="seatObj.isOccupied && !seatObj.isLocked && !seatObj.isMine"
                           >
                             @if (seatObj.isPending) {
-                              ⏳ {{ sNum }}
+                              <span class="material-symbols-outlined text-[14px] animate-spin">sync</span>
                             } @else if (seatObj.isSelected && seatObj.isMine) {
-                              ✓ {{ sNum }}
+                              <span class="flex items-center justify-center"><span class="material-symbols-outlined text-[12px]">check</span> {{ sNum }}</span>
                             } @else if (seatObj.isLocked && !seatObj.isMine) {
-                              🔒
+                              <span class="material-symbols-outlined text-[14px]">lock</span>
                             } @else if (seatObj.isOccupied && !seatObj.isMine) {
-                              ✕
+                              <span class="material-symbols-outlined text-[14px]">close</span>
                             } @else {
                               {{ sNum }}
                             }
@@ -308,22 +322,26 @@
             <div class="flex justify-between items-center pt-md border-t border-outline-variant/30">
               <button
                 type="button"
-                class="bg-surface text-primary border border-outline-variant px-lg py-sm rounded-lg font-label-md text-label-md font-semibold hover:bg-surface-container-low"
+                class="bg-surface text-primary border border-outline-variant px-lg py-sm rounded-lg font-label-md text-label-md font-semibold hover:bg-surface-container-low flex items-center gap-1.5"
                 (click)="currentStep = 'passengers'"
               >
-                ← Back to Passenger Details
+                <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                <span>Back to Passenger Details</span>
               </button>
               <button
                 type="button"
-                class="bg-secondary text-on-secondary px-xl py-md rounded-lg font-label-md text-label-md font-semibold hover:opacity-90 transition-all active:scale-[0.98] shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                class="bg-secondary text-on-secondary px-xl py-md rounded-lg font-label-md text-label-md font-semibold hover:opacity-90 transition-all active:scale-[0.98] shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
                 [disabled]="assignedSeatsCount < requiredSeatsCount || isLoading || isLockingSeat"
                 (click)="proceedToAddons()"
               >
                 <span>
                   {{ assignedSeatsCount >= requiredSeatsCount
-                    ? 'Continue to Add-ons ➔'
+                    ? 'Continue to Add-ons'
                     : 'Please Select Seats (' + assignedSeatsCount + '/' + requiredSeatsCount + ')' }}
                 </span>
+                @if (assignedSeatsCount >= requiredSeatsCount) {
+                  <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+                }
               </button>
             </div>
           </div>
@@ -413,8 +431,14 @@
         </div>
 
         <div class="flex justify-between items-center border-t border-outline-variant/30 pt-md">
-          <button type="button" class="bg-surface text-primary border border-outline-variant px-lg py-sm rounded-lg font-label-md text-label-md font-semibold hover:bg-surface-container-low" (click)="currentStep = 'seats'">Back</button>
-          <button type="button" class="bg-secondary text-on-secondary px-xl py-md rounded-lg font-label-md text-label-md font-semibold hover:opacity-90 transition-all active:scale-[0.98] shadow-sm" (click)="proceedToPayment()">Continue to Payment ➔</button>
+          <button type="button" class="bg-surface text-primary border border-outline-variant px-lg py-sm rounded-lg font-label-md text-label-md font-semibold hover:bg-surface-container-low flex items-center gap-1.5" (click)="currentStep = 'seats'">
+            <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+            <span>Back</span>
+          </button>
+          <button type="button" class="bg-secondary text-on-secondary px-xl py-md rounded-lg font-label-md text-label-md font-semibold hover:opacity-90 transition-all active:scale-[0.98] shadow-sm flex items-center gap-1.5" (click)="proceedToPayment()">
+            <span>Continue to Payment</span>
+            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+          </button>
         </div>
       </div>
     }
@@ -446,7 +470,7 @@
 
             <button type="button" class="w-full bg-secondary text-on-secondary py-md px-xl rounded-lg font-label-md text-label-md font-semibold hover:opacity-90 transition-all active:scale-[0.98] shadow-sm flex items-center justify-center gap-2 text-base disabled:opacity-50 disabled:cursor-not-allowed" (click)="initiatePayment()" [disabled]="isLoading || !fareBreakdown">
               <span class="material-symbols-outlined text-[20px]">credit_card</span>
-              <span>{{ isLoading ? 'Processing...' : 'Pay with Razorpay 💳' }}</span>
+              <span>{{ isLoading ? 'Processing...' : 'Pay with Razorpay' }}</span>
             </button>
           </div>
 
@@ -531,7 +555,11 @@
         <div class="bg-surface p-md rounded-xl border border-outline-variant/30 text-left space-y-sm font-body-sm text-body-sm">
           <div class="flex justify-between border-b border-outline-variant/20 pb-xs">
             <span class="text-on-surface-variant font-medium">Route:</span>
-            <span class="font-bold text-primary">{{ flight?.fromAirport }} ✈ {{ flight?.toAirport }}</span>
+            <span class="font-bold text-primary flex items-center gap-1.5">
+              <span>{{ flight?.fromAirport }}</span>
+              <span class="material-symbols-outlined text-[16px] text-amber-600">arrow_forward</span>
+              <span>{{ flight?.toAirport }}</span>
+            </span>
           </div>
           <div class="flex justify-between border-b border-outline-variant/20 pb-xs">
             <span class="text-on-surface-variant font-medium">Flight:</span>

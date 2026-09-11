@@ -1,129 +1,99 @@
-$navy-dark: #0f172a;
-$navy-primary: #1e3a8a;
-$blue-primary: #2563eb;
-$blue-hover: #1d4ed8;
-$blue-light: #eff6ff;
-$bg-slate: #f8fafc;
-$text-dark: #0f172a;
-$text-muted: #64748b;
-$border-light: #e2e8f0;
-$shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.1), 0 10px 10px -5px rgba(15, 23, 42, 0.04);
-$shadow-card: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23, 42, 0.05);
+// ============================================================
+// Meridian Home Page — Full Design Migration
+// ============================================================
 
 :host {
   display: block;
-  background-color: $bg-slate;
-  color: $text-dark;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--md-background);
+  color: var(--md-on-surface);
+  font-family: 'Inter', sans-serif;
 }
 
-/* ==========================================================================
-   1. HERO SECTION (Deep Navy Overlay)
-   ========================================================================== */
-
-.hero-section {
+// ── Hero ──────────────────────────────────────────────────
+.hero {
   position: relative;
-  min-height: 440px;
-  padding: 56px 24px 110px 24px;
+  min-height: 620px;
+  padding: 64px 32px 80px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  overflow: visible;
-  background-color: $navy-dark;
-}
-
-.hero-bg {
-  position: absolute;
-  inset: 0;
-  background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD2XpwY0Seq4PpdIlWqWB__nx3d2VneBeaZFDe0LwAQnvpHtNgTGWao5SuyvNz5XugBaixZ5RkKTVMr68uaW9_rcMRDNOwAXPqv7xjZmAGFRxnsVQiCs-UwwJfGJg35sejaRO3gjzywkFUD_tyNqTo4udLgzsAjrKPZn7YEH6VHY-YjMCEB5yhFEJ3E3FzZ13y5Oj46EMKLUh9GuBY3i2XLWjJ32uAgcR74lPC5eCuwZisqhICJXPaE');
-  background-size: cover;
-  background-position: center;
-  z-index: 0;
+  align-items: flex-start;
+  justify-content: center;
+  background:
+    linear-gradient(180deg, rgba(16, 26, 43, 0.48) 0%, rgba(16, 26, 43, 0.68) 100%),
+    url('/images/herobg.png') center/cover no-repeat;
+  overflow: hidden;
 }
 
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.88) 0%, rgba(30, 58, 138, 0.78) 100%);
-  z-index: 1;
+  background: radial-gradient(circle at 50% 20%, rgba(181, 138, 74, 0.15), transparent 70%);
+  pointer-events: none;
 }
 
 .hero-content {
   position: relative;
-  z-index: 2;
-  text-align: center;
-  max-width: 800px;
+  width: 100%;
+  max-width: 1100px;
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  align-items: center;
+  text-align: center;
+  padding-top: 12px;
 }
 
-.hero-badge {
-  display: inline-flex;
+.hero-copy {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 6px;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  color: #ffffff;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  margin-bottom: 16px;
-  letter-spacing: 0.5px;
+  max-width: 760px;
+}
+
+.hero-eyebrow {
+  margin: 0 0 14px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--md-gold-light, #D0A866);
 }
 
 .hero-title {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 3rem;
-  font-weight: 800;
-  color: #ffffff;
-  margin: 0 0 12px 0;
-  line-height: 1.15;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-
-  @media (max-width: 768px) {
-    font-size: 2.2rem;
-  }
+  margin: 0 0 18px;
+  font-size: clamp(2.6rem, 4.5vw, 4.2rem);
+  line-height: 1.08;
+  font-weight: 700;
+  color: #FFFFFF;
+  letter-spacing: -0.02em;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
 }
 
 .hero-subtitle {
-  font-size: 1.1rem;
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 400;
   color: rgba(255, 255, 255, 0.9);
-  max-width: 650px;
-  margin: 0 auto;
+  max-width: 580px;
   line-height: 1.6;
-
-  @media (max-width: 768px) {
-    font-size: 0.95rem;
-  }
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.3);
 }
 
-/* ==========================================================================
-   2. PROMINENT FLIGHT SEARCH PANEL
-   ========================================================================== */
+.hero-search { width: 100%; }
 
-.search-widget-container {
-  position: relative;
-  z-index: 10;
-  width: 100%;
-  max-width: 1140px;
-  margin: -70px auto 0 auto;
-  padding: 0 16px;
-}
-
+// ── Search Card ──────────────────────────────────────────
 .search-card {
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: $shadow-xl;
-  border: 1px solid $border-light;
+  background: #FFFFFF;
+  border-radius: var(--md-radius-lg);
+  box-shadow: 0 20px 40px rgba(16, 26, 43, 0.16);
+  border: 1px solid var(--md-outline-variant);
   padding: 24px 28px;
 }
 
 .search-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   margin-bottom: 20px;
   flex-wrap: wrap;
   gap: 12px;
@@ -131,10 +101,10 @@ $shadow-card: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23,
 
 .trip-type-selector {
   display: inline-flex;
-  background: #f1f5f9;
+  background: var(--md-background);
   padding: 4px;
   border-radius: 30px;
-  border: 1px solid $border-light;
+  border: 1px solid var(--md-outline-variant);
 }
 
 .trip-btn {
@@ -145,16 +115,16 @@ $shadow-card: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23,
   border-radius: 24px;
   border: none;
   background: transparent;
-  color: $text-muted;
+  color: var(--md-on-surface-variant);
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
 
   &.active {
-    background: #ffffff;
-    color: $blue-primary;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    background: #FFFFFF;
+    color: var(--md-primary);
+    box-shadow: var(--md-shadow);
   }
 }
 
@@ -162,76 +132,62 @@ $shadow-card: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23,
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  border: 2px solid #cbd5e1;
+  border: 2px solid var(--md-outline);
   display: inline-block;
   transition: all 0.2s ease;
 
   &.checked {
-    border-color: $blue-primary;
-    background-color: $blue-primary;
-    box-shadow: inset 0 0 0 2px #ffffff;
+    border-color: var(--md-primary);
+    background-color: var(--md-primary);
+    box-shadow: inset 0 0 0 2px #FFFFFF;
   }
 }
 
-.header-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: $navy-primary;
-  font-size: 0.85rem;
-  font-weight: 600;
-  background: $blue-light;
-  padding: 6px 14px;
-  border-radius: 20px;
-}
+
 
 .date-error-banner {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: #fef2f2;
-  color: #991b1b;
-  border: 1px solid #fecaca;
+  background: #FEF2F2;
+  color: #991B1B;
+  border: 1px solid #FECACA;
   padding: 10px 14px;
-  border-radius: 8px;
+  border-radius: var(--md-radius-md);
   margin-bottom: 16px;
   font-size: 0.85rem;
   font-weight: 600;
 }
 
-/* Form Controls Grid */
-
+// ── Search Form Grid ──
 .search-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   gap: 12px;
   align-items: center;
 
-  @media (max-width: 991px) {
-    grid-template-columns: 1fr;
-  }
+  @media (max-width: 991px) { grid-template-columns: 1fr; }
 }
 
 .form-card {
-  background: #f8fafc;
-  border: 1px solid $border-light;
-  border-radius: 12px;
+  background: var(--md-background);
+  border: 1px solid var(--md-outline-variant);
+  border-radius: var(--md-radius-md);
   padding: 10px 14px;
   display: flex;
   flex-direction: column;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
   &:focus-within {
-    border-color: $blue-primary;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
-    background: #ffffff;
+    border-color: var(--md-gold);
+    box-shadow: 0 0 0 2px rgba(181, 138, 74, 0.18);
+    background: #FFFFFF;
   }
 }
 
 .source-card { grid-column: span 5; }
 .swap-container { grid-column: span 1; display: flex; justify-content: center; align-items: center; }
 .dest-card { grid-column: span 6; }
-
 .date-card { grid-column: span 3; }
 .airline-card { grid-column: span 3; }
 .class-card { grid-column: span 3; }
@@ -241,10 +197,7 @@ $shadow-card: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23,
   .source-card, .dest-card, .date-card, .airline-card, .class-card, .passenger-card {
     grid-column: span 12 !important;
   }
-  .swap-container {
-    grid-column: span 12;
-    margin: 4px 0;
-  }
+  .swap-container { grid-column: span 12; margin: 4px 0; }
 }
 
 .card-label {
@@ -253,9 +206,11 @@ $shadow-card: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23,
   gap: 6px;
   font-size: 0.7rem;
   font-weight: 700;
-  color: $text-muted;
+  color: var(--md-on-surface-variant);
   letter-spacing: 0.5px;
   margin-bottom: 4px;
+
+  svg { color: var(--md-gold); }
 }
 
 .airport-select, .airline-select, .class-select {
@@ -264,10 +219,11 @@ $shadow-card: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23,
   background: transparent;
   font-size: 0.95rem;
   font-weight: 600;
-  color: $text-dark;
+  color: var(--md-on-surface);
   outline: none;
   cursor: pointer;
   padding: 2px 0;
+  font-family: inherit;
 }
 
 .airport-preview {
@@ -279,19 +235,19 @@ $shadow-card: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23,
 }
 
 .code-badge {
-  background: $navy-primary;
-  color: #ffffff;
+  background: var(--md-primary);
+  color: #FFFFFF;
   font-family: monospace;
   font-size: 0.75rem;
   font-weight: 700;
   padding: 2px 6px;
-  border-radius: 4px;
+  border-radius: var(--md-radius-sm);
   flex-shrink: 0;
 }
 
 .airport-name {
   font-size: 0.75rem;
-  color: $text-muted;
+  color: var(--md-on-surface-variant);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -301,18 +257,19 @@ $shadow-card: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23,
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: #ffffff;
-  border: 1px solid $border-light;
-  color: $blue-primary;
+  background: #FFFFFF;
+  border: 1px solid var(--md-outline-variant);
+  color: var(--md-primary);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--md-shadow);
   transition: all 0.2s ease;
 
   &:hover {
-    background: $blue-light;
+    background: rgba(181, 138, 74, 0.08);
+    border-color: var(--md-gold);
     transform: rotate(180deg);
   }
 }
@@ -323,12 +280,11 @@ $shadow-card: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23,
   background: transparent;
   font-size: 0.95rem;
   font-weight: 600;
-  color: $text-dark;
+  color: var(--md-on-surface);
   outline: none;
   padding: 2px 0;
+  font-family: inherit;
 }
-
-/* Stepper Controls for Passengers */
 
 .stepper-controls {
   display: flex;
@@ -340,10 +296,10 @@ $shadow-card: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23,
 .stepper-btn {
   width: 28px;
   height: 28px;
-  border-radius: 6px;
-  border: 1px solid $border-light;
-  background: #ffffff;
-  color: $text-dark;
+  border-radius: var(--md-radius-sm);
+  border: 1px solid var(--md-outline-variant);
+  background: #FFFFFF;
+  color: var(--md-on-surface);
   font-size: 1.1rem;
   font-weight: 700;
   display: flex;
@@ -352,40 +308,25 @@ $shadow-card: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23,
   cursor: pointer;
 
   &:hover:not(:disabled) {
-    background: $blue-light;
-    color: $blue-primary;
+    background: rgba(181, 138, 74, 0.1);
+    color: var(--md-primary);
+    border-color: var(--md-gold);
   }
-
-  &:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
 }
 
 .stepper-count {
   font-size: 0.9rem;
   font-weight: 700;
-  color: $text-dark;
+  color: var(--md-on-surface);
 }
-
-/* Search Footer & Button */
 
 .search-footer {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   margin-top: 20px;
-  flex-wrap: wrap;
   gap: 16px;
-}
-
-.guarantee-text {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.85rem;
-  color: $text-muted;
-  font-weight: 500;
 }
 
 .btn-search-primary {
@@ -393,179 +334,117 @@ $shadow-card: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23,
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background: $blue-primary;
-  color: #ffffff;
+  background: var(--md-primary);
+  color: #FFFFFF;
   border: none;
-  border-radius: 12px;
+  border-radius: var(--md-radius-md);
   padding: 14px 36px;
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+  box-shadow: 0 4px 14px rgba(16, 26, 43, 0.3);
   transition: all 0.2s ease;
+  font-family: inherit;
 
   &:hover:not(:disabled) {
-    background: $blue-hover;
+    background: var(--md-primary-hover);
     transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.45);
+    box-shadow: 0 6px 20px rgba(16, 26, 43, 0.4);
   }
+  &:active:not(:disabled) { transform: translateY(0); }
+  &:disabled { opacity: 0.7; cursor: not-allowed; }
 
-  &:active:not(:disabled) {
-    transform: translateY(0);
-  }
-
-  &:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-  }
-
-  @media (max-width: 768px) {
-    width: 100%;
-  }
+  @media (max-width: 768px) { width: 100%; }
 }
 
 .spinner {
   width: 18px;
   height: 18px;
-  border: 2px solid #ffffff;
+  border: 2px solid #FFFFFF;
   border-top-color: transparent;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
-
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ==========================================================================
-   3. TRUST & BENEFITS BANNER
-   ========================================================================== */
 
-.trust-banner {
-  padding: 48px 24px 32px 24px;
-  max-width: 1140px;
+
+// ── Shared Section Layout ─────────────────────────────────
+.section-inner {
+  max-width: 1200px;
   margin: 0 auto;
+  padding: 0 32px;
 }
 
-.trust-container {
+.section-header-block {
+  margin-bottom: 32px;
+}
+
+.section-eyebrow {
+  margin: 0 0 4px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--md-gold-text, #7C571C);
+}
+
+.section-title {
+  margin: 0 0 6px;
+  font-size: clamp(1.6rem, 2.5vw, 2rem);
+  font-weight: 700;
+  color: var(--md-primary);
+  letter-spacing: -0.02em;
+}
+
+.section-subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: var(--md-on-surface-variant);
+}
+
+// ── Destinations Grid ──────────────────────────────────────
+.destinations-section {
+  padding: 56px 0 64px;
+}
+
+.destinations-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
 
-  @media (max-width: 991px) {
+  @media (max-width: 1024px) {
     grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
   }
-  @media (max-width: 576px) {
+
+  @media (max-width: 600px) {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
 }
 
-.trust-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  background: #ffffff;
-  border: 1px solid $border-light;
-  padding: 18px 20px;
-  border-radius: 12px;
-  box-shadow: $shadow-card;
-}
-
-.trust-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 10px;
-  background: $blue-light;
-  color: $blue-primary;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-
-  .material-symbols-outlined { font-size: 22px; }
-}
-
-.trust-title {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: $navy-dark;
-  margin: 0 0 4px 0;
-}
-
-.trust-desc {
-  font-size: 0.8rem;
-  color: $text-muted;
-  margin: 0;
-  line-height: 1.4;
-}
-
-/* ==========================================================================
-   4. POPULAR DESTINATIONS BENTO GRID
-   ========================================================================== */
-
-.destinations-section {
-  padding: 40px 24px 48px 24px;
-  max-width: 1140px;
-  margin: 0 auto;
-}
-
-.section-header {
-  margin-bottom: 28px;
-}
-
-.section-tag {
-  font-size: 0.75rem;
-  font-weight: 800;
-  color: $blue-primary;
-  letter-spacing: 1px;
-}
-
-.section-title {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 1.85rem;
-  font-weight: 800;
-  color: $navy-dark;
-  margin: 4px 0 6px 0;
-}
-
-.section-subtitle {
-  font-size: 0.95rem;
-  color: $text-muted;
-  margin: 0;
-}
-
-.bento-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-auto-rows: 240px;
-  gap: 16px;
-
-  @media (max-width: 991px) {
-    grid-template-columns: 1fr;
-    grid-auto-rows: 220px;
-  }
-}
-
-.bento-card {
+.destination-card {
   position: relative;
-  border-radius: 16px;
+  height: 380px;
+  border-radius: var(--md-radius-lg);
   overflow: hidden;
   cursor: pointer;
-  box-shadow: $shadow-card;
-  transition: all 0.3s ease;
+  box-shadow: var(--md-shadow);
+  border: 1px solid var(--md-outline-variant);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s ease;
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: $shadow-xl;
+    box-shadow: var(--md-shadow-elevated);
+    border-color: var(--md-gold);
 
-    .card-img { transform: scale(1.05); }
-  }
+    .card-img {
+      transform: scale(1.06);
+    }
 
-  &--large {
-    grid-column: span 2;
-    grid-row: span 2;
-
-    @media (max-width: 991px) {
-      grid-column: span 1;
-      grid-row: span 1;
+    .price-link {
+      color: var(--md-gold-light, #D0A866);
     }
   }
 }
@@ -576,23 +455,28 @@ $shadow-card: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23,
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.6s ease;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .card-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(15, 23, 42, 0.85) 0%, rgba(15, 23, 42, 0.1) 60%);
+  background: linear-gradient(to top, rgba(16, 26, 43, 0.92) 0%, rgba(16, 26, 43, 0.45) 45%, rgba(16, 26, 43, 0.15) 100%);
+  transition: background 0.3s ease;
+}
+
+.destination-card:hover .card-overlay {
+  background: linear-gradient(to top, rgba(16, 26, 43, 0.95) 0%, rgba(16, 26, 43, 0.5) 45%, rgba(16, 26, 43, 0.15) 100%);
 }
 
 .card-content {
   position: absolute;
   inset: 0;
-  padding: 24px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  color: #ffffff;
+  color: #FFFFFF;
   z-index: 2;
 }
 
@@ -600,80 +484,89 @@ $shadow-card: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23,
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
 }
 
 .iata-tag {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.5px;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(4px);
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   padding: 4px 10px;
-  border-radius: 6px;
+  border-radius: var(--md-radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
 }
 
 .price-chip {
-  background: #ffffff;
-  color: $navy-dark;
-  font-size: 0.85rem;
+  background: #FFFFFF;
+  color: var(--md-primary);
+  font-size: 0.8rem;
   font-weight: 800;
-  padding: 4px 12px;
+  padding: 4px 10px;
   border-radius: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  white-space: nowrap;
+}
+
+.card-footer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .card-title {
-  font-size: 1.4rem;
+  font-size: 1.25rem;
   font-weight: 700;
-  margin: 0 0 4px 0;
+  margin: 0;
+  color: #FFFFFF;
 }
 
 .card-desc {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.85);
   margin: 0;
+  line-height: 1.4;
 }
 
 .price-link {
   font-size: 0.85rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--md-gold-light, #D0A866);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  transition: color 0.2s ease, transform 0.2s ease;
 }
 
-/* ==========================================================================
-   5. FEATURED FLIGHT OFFERS SECTION
-   ========================================================================== */
-
-.flights-section {
-  padding: 20px 24px 60px 24px;
-  max-width: 1140px;
-  margin: 0 auto;
-}
+// ── Flight Offers ─────────────────────────────────────────
+.flights-section { padding: 0 0 64px; }
 
 .flight-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 16px;
 
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-  }
+  @media (max-width: 768px) { grid-template-columns: 1fr; }
 }
 
 .flight-offer-card {
-  background: #ffffff;
-  border: 1px solid $border-light;
-  border-radius: 14px;
+  background: var(--md-surface);
+  border: 1px solid var(--md-outline-variant);
+  border-radius: var(--md-radius-lg);
   padding: 20px;
-  box-shadow: $shadow-card;
+  box-shadow: var(--md-shadow);
   cursor: pointer;
   transition: all 0.25s ease;
 
   &:hover {
-    border-color: $blue-primary;
+    border-color: var(--md-gold);
     transform: translateY(-2px);
-    box-shadow: $shadow-xl;
-
-    .btn-select { background: $blue-primary; color: #ffffff; }
+    box-shadow: var(--md-shadow-hover);
+    .btn-select { background: var(--md-primary); color: #FFFFFF; }
   }
 }
 
@@ -682,37 +575,25 @@ $shadow-card: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23,
   align-items: center;
   justify-content: space-between;
   padding-bottom: 12px;
-  border-bottom: 1px solid $border-light;
+  border-bottom: 1px solid var(--md-outline-variant);
 }
 
-.airline-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+.airline-info { display: flex; align-items: center; gap: 8px; }
 
-.airline-name {
-  font-weight: 700;
-  color: $navy-dark;
-  font-size: 0.95rem;
-}
-
-.flight-code {
-  font-size: 0.8rem;
-  color: $text-muted;
-}
+.airline-name { font-weight: 700; color: var(--md-primary); font-size: 0.95rem; }
+.flight-code { font-size: 0.8rem; color: var(--md-on-surface-variant); }
 
 .stop-badge {
   font-size: 0.75rem;
   font-weight: 700;
-  background: #f1f5f9;
-  color: $text-muted;
+  background: var(--md-surface-container);
+  color: var(--md-on-surface-variant);
   padding: 3px 8px;
-  border-radius: 4px;
+  border-radius: var(--md-radius-sm);
 
   &.direct {
-    background: #d1fae5;
-    color: #047857;
+    background: rgba(26, 107, 60, 0.1);
+    color: #1A6B3C;
   }
 }
 
@@ -725,18 +606,8 @@ $shadow-card: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23,
 
 .route-point {
   text-align: center;
-
-  .time {
-    font-size: 1.3rem;
-    font-weight: 800;
-    color: $navy-dark;
-  }
-
-  .airport {
-    font-size: 0.85rem;
-    color: $text-muted;
-    font-weight: 600;
-  }
+  .time { font-size: 1.3rem; font-weight: 800; color: var(--md-primary); }
+  .airport { font-size: 0.85rem; color: var(--md-on-surface-variant); font-weight: 600; }
 }
 
 .route-line {
@@ -746,27 +617,20 @@ $shadow-card: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23,
   align-items: center;
   padding: 0 16px;
 
-  .duration {
-    font-size: 0.75rem;
-    color: $text-muted;
-    margin-bottom: 4px;
-  }
-
+  .duration { font-size: 0.75rem; color: var(--md-on-surface-variant); margin-bottom: 4px; }
   .line {
     width: 100%;
     height: 1px;
-    background: $border-light;
+    background: var(--md-outline-variant);
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
   }
-
   .plane-icon {
-    font-size: 16px;
-    color: $blue-primary;
-    background: #ffffff;
+    background: var(--md-surface);
     padding: 0 4px;
+    color: var(--md-gold);
   }
 }
 
@@ -775,55 +639,42 @@ $shadow-card: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23,
   align-items: center;
   justify-content: space-between;
   padding-top: 12px;
-  border-top: 1px solid $border-light;
+  border-top: 1px solid var(--md-outline-variant);
 }
 
-.fare-label {
-  display: block;
-  font-size: 0.75rem;
-  color: $text-muted;
-}
-
-.fare-price {
-  font-size: 1.25rem;
-  font-weight: 800;
-  color: $navy-dark;
-}
+.fare-label { display: block; font-size: 0.75rem; color: var(--md-on-surface-variant); }
+.fare-price { font-size: 1.25rem; font-weight: 800; color: var(--md-primary); }
 
 .btn-select {
-  background: $blue-light;
-  color: $blue-primary;
+  background: rgba(181, 138, 74, 0.1);
+  color: var(--md-gold-text);
   border: none;
   padding: 8px 16px;
-  border-radius: 8px;
+  border-radius: var(--md-radius-sm);
   font-size: 0.85rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
+  font-family: inherit;
 }
 
 .empty-flights {
-  text-align: center;
-  padding: 48px;
-  background: #ffffff;
-  border-radius: 12px;
-  border: 1px solid $border-light;
-  color: $text-muted;
-}
-
-/* ==========================================================================
-   6. ABOUT & HELP SECTIONS
-   ========================================================================== */
-
-.info-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
   padding: 56px 24px;
+  color: var(--md-on-surface-variant);
+
+  svg { color: var(--md-outline); }
+  p { font-size: 1rem; text-align: center; }
 }
 
-.info-container {
-  max-width: 1140px;
-  margin: 0 auto;
-}
 
-.info-text {
-  max-width: 800px;
+
+// ── Responsive Global ─────────────────────────────────────
+@media (max-width: 640px) {
+  .hero { padding: 40px 20px 64px; }
+  .trust-banner, .section-inner { padding-left: 20px; padding-right: 20px; }
+  .search-card { padding: 18px 16px; }
 }

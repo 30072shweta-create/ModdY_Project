@@ -1,18 +1,19 @@
 <!doctype html>
-<html lang="en" class="light">
+<html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>SkyRoute - Premium Flight Management</title>
+  <title>Meridian | Premium Flight Booking</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Meridian - Discover the world with every journey. Search and book premium flights at unbeatable prices.">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <!-- Google Fonts & Material Symbols -->
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <!-- Tailwind CSS CDN with Plugins -->
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <script id="tailwind-config">
     tailwind.config = {
@@ -20,80 +21,68 @@
       theme: {
         extend: {
           "colors": {
-            "on-primary-container": "#7c839b",
-            "outline-variant": "#c6c6cd",
-            "surface-container-highest": "#e0e3e5",
-            "error": "#ba1a1a",
-            "on-error": "#ffffff",
-            "tertiary": "#000000",
-            "surface-container-lowest": "#ffffff",
-            "inverse-primary": "#bec6e0",
-            "secondary-fixed": "#d8e2ff",
-            "on-tertiary": "#ffffff",
-            "on-primary": "#ffffff",
-            "surface-dim": "#d8dadc",
-            "surface-container-high": "#e6e8ea",
-            "secondary": "#0058be",
-            "primary": "#000000",
-            "on-background": "#191c1e",
-            "on-primary-fixed": "#131b2e",
-            "outline": "#76777d",
-            "on-tertiary-fixed-variant": "#38485d",
-            "tertiary-fixed": "#d3e4fe",
-            "on-secondary": "#ffffff",
-            "surface-bright": "#f7f9fb",
-            "on-surface-variant": "#45464d",
-            "tertiary-fixed-dim": "#b7c8e1",
-            "surface-tint": "#565e74",
-            "surface-container-low": "#f2f4f6",
-            "on-secondary-fixed": "#001a42",
-            "surface-variant": "#e0e3e5",
-            "inverse-on-surface": "#eff1f3",
-            "primary-fixed": "#dae2fd",
-            "on-secondary-fixed-variant": "#004395",
-            "on-surface": "#191c1e",
-            "on-error-container": "#93000a",
-            "inverse-surface": "#2d3133",
-            "on-secondary-container": "#fefcff",
-            "secondary-fixed-dim": "#adc6ff",
-            "primary-fixed-dim": "#bec6e0",
-            "background": "#f7f9fb",
-            "error-container": "#ffdad6",
-            "surface-container": "#eceef0",
-            "primary-container": "#131b2e",
-            "on-tertiary-container": "#75859d",
-            "on-tertiary-fixed": "#0b1c30",
-            "tertiary-container": "#0b1c30",
-            "surface": "#f7f9fb",
-            "secondary-container": "#2170e4",
-            "on-primary-fixed-variant": "#3f465c"
+            /* Meridian palette — remapped to keep Tailwind classes working */
+            "primary": "#101A2B",
+            "primary-container": "#101A2B",
+            "on-primary": "#FFFFFF",
+            "on-primary-container": "#D0A866",
+            "secondary": "#101A2B",
+            "secondary-container": "#1B2C47",
+            "secondary-fixed": "#E8EEFF",
+            "on-secondary": "#FFFFFF",
+            "on-secondary-fixed-variant": "#7C571C",
+            "background": "#F9F9FF",
+            "surface": "#FFFFFF",
+            "surface-container-lowest": "#FFFFFF",
+            "surface-container-low": "#F3F4FF",
+            "surface-container": "#E8EEFF",
+            "surface-container-high": "#DDE0EE",
+            "surface-container-highest": "#D4D6E6",
+            "on-background": "#111C2D",
+            "on-surface": "#111C2D",
+            "on-surface-variant": "#45474C",
+            "outline": "#C5C6CD",
+            "outline-variant": "#E4E1DA",
+            "error": "#BA1A1A",
+            "error-container": "#FFDAD6",
+            "on-error": "#FFFFFF",
+            "on-error-container": "#410002",
+            /* gold accent */
+            "gold": "#B58A4A",
+            "gold-light": "#D0A866",
+            "gold-dark": "#7C571C",
+            /* inverse */
+            "inverse-surface": "#1C1B1F",
+            "inverse-on-surface": "#F4EFF4"
           },
           "borderRadius": {
-            "DEFAULT": "0.25rem",
-            "lg": "0.5rem",
-            "xl": "0.75rem",
+            "DEFAULT": "4px",
+            "sm": "4px",
+            "md": "8px",
+            "lg": "12px",
+            "xl": "16px",
             "full": "9999px"
           },
           "spacing": {
             "container-max": "1280px",
             "gutter": "24px",
-            "2xl": "48px",
-            "md": "16px",
             "xs": "4px",
-            "3xl": "64px",
-            "xl": "32px",
-            "lg": "24px",
             "sm": "8px",
-            "base": "4px"
+            "md": "16px",
+            "lg": "24px",
+            "xl": "32px",
+            "2xl": "48px",
+            "3xl": "64px"
           },
           "fontFamily": {
-            "headline-lg-mobile": ["Plus Jakarta Sans"],
-            "display-lg": ["Plus Jakarta Sans"],
-            "headline-lg": ["Plus Jakarta Sans"],
+            "sans": ["Inter", "system-ui", "-apple-system", "sans-serif"],
+            "headline-lg-mobile": ["Inter"],
+            "display-lg": ["Inter"],
+            "headline-lg": ["Inter"],
             "body-lg": ["Inter"],
             "body-md": ["Inter"],
             "body-sm": ["Inter"],
-            "headline-md": ["Plus Jakarta Sans"],
+            "headline-md": ["Inter"],
             "label-sm": ["Inter"],
             "label-md": ["Inter"]
           },
@@ -113,7 +102,7 @@
     }
   </script>
 </head>
-<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md antialiased">
+<body class="bg-background text-on-background min-h-screen flex flex-col antialiased">
   <app-root></app-root>
 </body>
 </html>

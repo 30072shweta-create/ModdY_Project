@@ -24,9 +24,9 @@ import { AuthService } from '../../../core/auth/auth.service';
       <div class="flex-1 flex flex-col justify-center px-6 lg:px-20 xl:px-28 bg-surface py-2xl">
         <div class="w-full max-w-md mx-auto">
           <!-- Logo Header -->
-          <div class="mb-8 flex items-center gap-2">
-            <span class="material-symbols-outlined text-secondary text-3xl">flight_takeoff</span>
-            <span class="font-headline-md text-headline-md font-bold text-primary">SkyRoute</span>
+          <div class="mb-8 flex items-center gap-3">
+            <img src="images/logo.png" alt="Meridian Logo" width="32" height="32" style="border-radius: 4px" />
+            <span class="font-headline-md text-headline-md font-bold text-primary" style="letter-spacing: 0.14em">MERIDIAN</span>
           </div>
 
           <h2 class="font-headline-lg text-headline-lg font-bold text-primary mb-2">Email Verification</h2>

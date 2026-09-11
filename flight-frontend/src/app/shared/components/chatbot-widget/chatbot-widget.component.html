@@ -1,54 +1,101 @@
-<section class="chat-widget" [class.chat-widget--open]="isOpen" aria-label="Flight assistant">
-  <button class="chat-widget__toggle" type="button" (click)="toggleChat()" aria-label="Open flight assistant">
-    <span class="material-symbols-outlined">{{ isOpen ? 'close' : 'support_agent' }}</span>
+<section class="chat-widget" [class.chat-widget--open]="isOpen" aria-label="Meridian Flight Assistant">
+
+  <!-- Toggle Button -->
+  <button class="chat-toggle-btn" type="button" (click)="toggleChat()" aria-label="Toggle Meridian AI Assistant">
+    @if (!isOpen) {
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
+      <span class="chat-badge">AI</span>
+    } @else {
+      <span class="close-icon">&times;</span>
+    }
   </button>
 
-  <div class="chat-widget__panel" *ngIf="isOpen">
-    <header class="chat-widget__header">
-      <div>
-        <h2>Flight Assistant</h2>
-        <span>AI support</span>
+  <!-- Chat Panel -->
+  <div class="chat-panel" *ngIf="isOpen">
+
+    <!-- Header -->
+    <div class="chat-header">
+      <div class="header-title-box">
+        <div class="ai-avatar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2 2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/>
+            <path d="M4 11a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7z"/>
+            <circle cx="9" cy="14" r="1"/><circle cx="15" cy="14" r="1"/>
+          </svg>
+        </div>
+        <div>
+          <h3>Meridian Flight Assistant</h3>
+          <span class="status-indicator">AI Support &bull; Always available</span>
+        </div>
       </div>
-    </header>
+      <button type="button" class="header-close" (click)="toggleChat()">&times;</button>
+    </div>
 
-    <label class="chat-widget__domain">
-      <span>Domain</span>
-      <select [(ngModel)]="selectedDomain">
-        <option *ngFor="let domain of domains" [ngValue]="domain.value">
+    <!-- Domain Selector Strip -->
+    <div class="domain-strip">
+      <span class="domain-strip-title">Topic:</span>
+      <div class="domain-chips-scroll">
+        <button
+          type="button"
+          class="domain-chip"
+          *ngFor="let domain of domains"
+          [class.active]="selectedDomain === domain.value"
+          (click)="selectedDomain = domain.value"
+        >
           {{ domain.name }}
-        </option>
-      </select>
-    </label>
+        </button>
+      </div>
+    </div>
 
-    <div class="chat-widget__messages" aria-live="polite">
+    <!-- Messages Body -->
+    <div class="messages-body" aria-live="polite">
       <div
-        class="chat-widget__message"
+        class="message-row"
         *ngFor="let item of messages"
-        [class.chat-widget__message--user]="item.role === 'user'"
+        [class.user]="item.role === 'user'"
+        [class.assistant]="item.role === 'assistant'"
       >
         <div
-          class="chat-widget__message-content"
+          class="bubble"
           [innerHTML]="formatMessage(item.text)"
         ></div>
       </div>
 
-      <div class="chat-widget__message chat-widget__message--loading" *ngIf="isLoading">
-        Thinking...
+      <!-- Loading dots -->
+      <div class="message-row assistant" *ngIf="isLoading">
+        <div class="bubble loading-bubble">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
       </div>
     </div>
 
-    <form class="chat-widget__form" (ngSubmit)="sendMessage()">
+    <!-- Input Bar -->
+    <form class="chat-input-bar" (ngSubmit)="sendMessage()">
       <input
         type="text"
         name="message"
         [(ngModel)]="message"
         maxlength="1000"
         autocomplete="off"
-        placeholder="Ask a question"
+        placeholder="Ask about flights, bookings, pricing..."
+        [disabled]="isLoading"
       />
-      <button type="submit" [disabled]="isLoading || !message.trim()" aria-label="Send message">
-        <span class="material-symbols-outlined">send</span>
+      <button
+        type="submit"
+        class="btn-send"
+        [disabled]="isLoading || !message.trim()"
+        aria-label="Send message"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
       </button>
     </form>
+
   </div>
 </section>

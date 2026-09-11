@@ -1,8 +1,8 @@
 <div class="min-h-screen bg-background font-body-md text-on-surface flex w-full">
   <!-- Left Side: Airplane Window Photography Canvas -->
   <div class="hidden lg:flex lg:flex-1 relative overflow-hidden bg-primary-container">
-    <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC7uk-PDJGZWI9sLOHyuuqxcmpaUap089GZYkJYMuTK_xF1CcjUzVxWlb277B4NulH5ZaGj2R9rG-of8ZsGWykkX2qx5j0AZFChXbnQXRIKE1-BGoTYLthaSPeFYLRzQHCoPkNNQs7PJepxnxCRqKkjSa8QJtvYdusr1Amz00TjNclcR_c0uJ5SdLYV7iCJZwQCRdg1RRTwQyak7sl9j4gmt5k8WFpZsduHZGwIub1mOK9PbnpA6FNl')"></div>
-    <div class="absolute inset-0 bg-gradient-to-t from-primary/80 via-primary/40 to-transparent"></div>
+    <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('/images/herobg.png')"></div>
+    <div class="absolute inset-0" style="background: linear-gradient(to top, rgba(16,26,43,0.82) 0%, rgba(16,26,43,0.45) 100%)"></div>
     <div class="absolute bottom-12 left-12 text-on-primary max-w-md z-10">
       <h1 class="font-display-lg text-display-lg font-bold mb-4 drop-shadow-md">Elevate your travel experience.</h1>
       <p class="font-body-lg text-body-lg opacity-90 drop-shadow">Seamless booking, premium service, and clear skies ahead.</p>
@@ -13,13 +13,13 @@
   <div class="flex-1 flex flex-col justify-center px-6 lg:px-20 xl:px-28 bg-surface py-2xl">
     <div class="w-full max-w-md mx-auto">
       <!-- Logo Header -->
-      <div class="mb-8 flex items-center gap-2">
-        <span class="material-symbols-outlined text-secondary text-3xl">flight_takeoff</span>
-        <span class="font-headline-md text-headline-md font-bold text-primary">SkyRoute</span>
+      <div class="mb-8 flex items-center gap-3">
+        <img src="images/logo.png" alt="Meridian Logo" width="32" height="32" style="border-radius: 4px" />
+        <span class="font-headline-md text-headline-md font-bold text-primary" style="letter-spacing: 0.14em">MERIDIAN</span>
       </div>
 
       <h2 class="font-headline-lg text-headline-lg font-bold text-primary mb-2">Create an account</h2>
-      <p class="font-body-md text-body-md text-on-surface-variant mb-8">Join SkyRoute to elevate your travel.</p>
+      <p class="font-body-md text-body-md text-on-surface-variant mb-8">Join Meridian to elevate your travel.</p>
 
       @if (errorMessage) {
         <div class="p-md rounded-lg bg-error-container text-on-error-container text-body-sm font-medium mb-md border border-error/20 flex items-center gap-2">
@@ -43,7 +43,7 @@
               type="text" 
               id="firstName" 
               formControlName="firstName" 
-              class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest shadow-sm focus:border-secondary focus:ring-1 focus:ring-secondary font-body-md text-body-md py-2.5 px-4 outline-none transition-all" 
+              class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest shadow-sm focus:border-gold focus:ring-1 focus:ring-gold font-body-md text-body-md py-2.5 px-4 outline-none transition-all" 
               placeholder="Jane" 
             />
           </div>
@@ -53,7 +53,7 @@
               type="text" 
               id="lastName" 
               formControlName="lastName" 
-              class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest shadow-sm focus:border-secondary focus:ring-1 focus:ring-secondary font-body-md text-body-md py-2.5 px-4 outline-none transition-all" 
+              class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest shadow-sm focus:border-gold focus:ring-1 focus:ring-gold font-body-md text-body-md py-2.5 px-4 outline-none transition-all" 
               placeholder="Doe" 
             />
           </div>
@@ -65,7 +65,7 @@
             type="email" 
             id="email" 
             formControlName="email" 
-            class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest shadow-sm focus:border-secondary focus:ring-1 focus:ring-secondary font-body-md text-body-md py-2.5 px-4 outline-none transition-all" 
+            class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest shadow-sm focus:border-gold focus:ring-1 focus:ring-gold font-body-md text-body-md py-2.5 px-4 outline-none transition-all" 
             placeholder="Enter your email" 
           />
           @if (registerForm.get('email')?.touched && registerForm.get('email')?.hasError('email')) {
@@ -79,7 +79,7 @@
             type="password" 
             id="password" 
             formControlName="password" 
-            class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest shadow-sm focus:border-secondary focus:ring-1 focus:ring-secondary font-body-md text-body-md py-2.5 px-4 outline-none transition-all" 
+            class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest shadow-sm focus:border-gold focus:ring-1 focus:ring-gold font-body-md text-body-md py-2.5 px-4 outline-none transition-all" 
             placeholder="Create a password" 
           />
           @if (registerForm.get('password')?.touched && registerForm.get('password')?.hasError('minlength')) {
@@ -88,7 +88,7 @@
         </div>
 
         <div class="pt-2">
-          <button type="submit" class="w-full flex justify-center items-center gap-2 py-3 px-4 rounded-lg shadow-sm font-label-md text-label-md text-white bg-secondary hover:bg-secondary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary transition-all transform active:scale-[0.98] font-semibold" [disabled]="isLoading">
+          <button type="submit" class="w-full flex justify-center items-center gap-2 py-3 px-4 rounded-lg shadow-sm font-label-md text-label-md text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gold transition-all transform active:scale-[0.98] font-semibold" [disabled]="isLoading">
             @if (isLoading) {
               <span class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
               <span>Creating account...</span>
@@ -101,7 +101,7 @@
 
       <p class="mt-6 text-center font-body-md text-body-md text-on-surface-variant">
         Already have an account? 
-        <a routerLink="/login" class="font-label-md text-label-md text-secondary hover:text-on-secondary-fixed-variant font-semibold">Log in</a>
+        <a routerLink="/login" class="font-label-md text-label-md text-gold-dark hover:text-primary font-semibold">Log in</a>
       </p>
     </div>
   </div>

@@ -1,19 +1,88 @@
-<footer class="w-full py-xl px-lg bg-surface-container-highest border-t border-outline-variant mt-auto">
-  <div class="max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-md">
-    <div class="flex flex-col items-center md:items-start gap-xs">
-      <div class="flex items-center gap-2">
-        <span class="material-symbols-outlined text-secondary text-[22px]">flight_takeoff</span>
-        <span class="font-headline-sm text-headline-sm font-bold text-primary">SkyRoute</span>
+<footer class="footer">
+  <div class="footer-inner">
+
+    <!-- Newsletter Banner -->
+    <div class="footer-newsletter">
+      <div class="newsletter-text">
+        <p class="newsletter-eyebrow">STAY INSPIRED</p>
+        <h3 class="newsletter-heading">Receive curated travel inspiration and special fares</h3>
       </div>
-      <p class="font-body-sm text-body-sm text-on-surface-variant">© {{ currentYear }} SkyRoute. All rights reserved.</p>
+      <div class="newsletter-form">
+        <input type="email" placeholder="Enter your email address" class="newsletter-input" />
+        <button type="button" class="btn-subscribe">Subscribe</button>
+      </div>
     </div>
-    
-    <div class="flex flex-wrap justify-center gap-lg font-body-sm text-body-sm">
-      <a routerLink="/flights" class="text-on-surface-variant hover:text-secondary hover:underline transition-colors">Flight Search</a>
-      <a routerLink="/my-bookings" class="text-on-surface-variant hover:text-secondary hover:underline transition-colors">My Trips</a>
-      <a routerLink="/about" class="text-on-surface-variant hover:text-secondary hover:underline transition-colors">About Us</a>
-      <a routerLink="/profile" class="text-on-surface-variant hover:text-secondary hover:underline transition-colors">Profile</a>
+
+    <!-- Footer Grid -->
+    <div class="footer-grid">
+
+      <!-- Brand Column -->
+      <div class="footer-col brand-col">
+        <div class="footer-brand">
+          <span class="footer-brand-name">MERIDIAN</span>
+        </div>
+        <p class="brand-tagline">
+          Redefining luxury air travel. Curated destinations, premium flights, and exceptional experiences across the globe.
+        </p>
+        <div class="social-links">
+          <a href="#" class="social-link" title="Instagram">IG</a>
+          <a href="#" class="social-link" title="Twitter">X</a>
+          <a href="#" class="social-link" title="LinkedIn">IN</a>
+          <a href="#" class="social-link" title="Facebook">FB</a>
+        </div>
+      </div>
+
+      <!-- Explore Fares -->
+      <div class="footer-col">
+        <h4 class="footer-col-title">Explore Fares</h4>
+        <ul class="footer-links">
+          <li><a routerLink="/flights">Popular Routes</a></li>
+          <li><a routerLink="/flights">Flight Schedules</a></li>
+          <li><a routerLink="/flights">Cabin Classes</a></li>
+          <li><a routerLink="/flights">Baggage &amp; Amenities</a></li>
+          <li><a routerLink="/flights">Private Charters</a></li>
+        </ul>
+      </div>
+
+      <!-- About Us -->
+      <div class="footer-col">
+        <h4 class="footer-col-title">About Us</h4>
+        <ul class="footer-links">
+          <li><a routerLink="/about">Our Story</a></li>
+          <li><a href="#">Fleet &amp; Safety</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Press &amp; News</a></li>
+          <li><a href="#">Sustainability</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact & Support -->
+      <div class="footer-col">
+        <h4 class="footer-col-title">Contact &amp; Support</h4>
+        <ul class="footer-links">
+          <li><a href="#">Customer Care 24/7</a></li>
+          <li><a routerLink="/my-bookings">My Trips &amp; Cancellations</a></li>
+          <li><a href="#">Help Center &amp; FAQs</a></li>
+          <li><a href="mailto:support@meridian.com">support&#64;meridian.com</a></li>
+          <li><a href="tel:+18005556374">+1 (800) MERIDIAN</a></li>
+        </ul>
+      </div>
+
     </div>
+
+    <!-- Bottom Bar -->
+    <div class="footer-bottom">
+      <p class="copyright">&copy; {{ currentYear }} Meridian Aviation Group. All rights reserved.</p>
+      <div class="legal-links">
+        <a href="#">Privacy Policy</a>
+        <span class="dot">&middot;</span>
+        <a href="#">Terms of Service</a>
+        <span class="dot">&middot;</span>
+        <a href="#">Cookie Preferences</a>
+        <span class="dot">&middot;</span>
+        <a href="#">Security</a>
+      </div>
+    </div>
+
   </div>
 </footer>
-

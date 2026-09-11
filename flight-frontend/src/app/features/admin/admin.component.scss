@@ -1,14 +1,15 @@
-$primary-navy: #1e3a8a;
-$primary-blue: #2563eb;
-$blue-hover: #1d4ed8;
-$blue-light: #eff6ff;
-$bg-slate: #f8fafc;
+$primary-navy: #101A2B;
+$primary-blue: #101A2B;
+$primary-gold: #B58A4A;
+$blue-hover: #1E2D4A;
+$blue-light: rgba(181, 138, 74, 0.08);
+$bg-slate: #F9F9FF;
 $card-bg: #ffffff;
-$text-main: #0f172a;
-$text-muted: #64748b;
-$border-color: #e2e8f0;
-$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+$text-main: #101A2B;
+$text-muted: #6B7280;
+$border-color: #E8EBF0;
+$shadow-sm: 0 1px 3px rgba(16, 26, 43, 0.04);
+$shadow-md: 0 4px 12px rgba(16, 26, 43, 0.08);
 
 .admin-layout {
   display: flex;
@@ -209,7 +210,7 @@ $shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   font-size: 0.9rem;
 
   th {
-    background: #f8fafc;
+    background: #f9f9ff;
     padding: 12px 16px;
     font-weight: 600;
     color: $text-muted;
@@ -217,7 +218,7 @@ $shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   }
 
   td { padding: 14px 16px; border-bottom: 1px solid $border-color; }
-  tbody tr:hover { background: #f1f5f9; }
+  tbody tr:hover { background: #f9f9ff; }
 }
 
 .badge {
@@ -250,7 +251,7 @@ $shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   border: 1px solid transparent;
   text-decoration: none;
 
-  &--secondary { background: #fff; border-color: $border-color; color: $text-main; &:hover { background: #f8fafc; } }
-  &--text { background: transparent; color: $primary-blue; padding: 4px 8px; &:hover { text-decoration: underline; } }
+  &--secondary { background: #fff; border-color: $border-color; color: $text-main; &:hover { background: #f9f9ff; } }
+  &--text { background: transparent; color: $primary-gold; padding: 4px 8px; font-weight: 600; &:hover { text-decoration: underline; color: #9E743A; } }
   &--sm { padding: 6px 12px; font-size: 0.8rem; }
 }

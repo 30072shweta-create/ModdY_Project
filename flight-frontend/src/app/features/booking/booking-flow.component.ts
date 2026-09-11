@@ -658,7 +658,7 @@ export class BookingFlowComponent implements OnInit, OnDestroy {
       key: environment.razorpayKeyId,
       amount: orderAmountInPaise,
       currency: orderRes.currency || 'INR',
-      name: 'SkyRoute Flight System',
+      name: 'Meridian Flight System',
       description: `Flight Booking PNR: ${this.booking?.bookingCode}`,
       order_id: orderRes.razorpayOrderId || '',
       handler: (res: any) => {

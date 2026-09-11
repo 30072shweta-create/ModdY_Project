@@ -4,8 +4,8 @@
     <span class="material-symbols-outlined">{{ isMobileSidebarOpen ? 'close' : 'menu' }}</span>
   </button>
   <div class="admin-mobile-bar__brand">
-    <span class="material-symbols-outlined">flight_takeoff</span>
-    <span>SkyRoute Admin</span>
+    <img src="images/logo.png" alt="Meridian" class="admin-mobile-bar__brand-img" />
+    <span>Meridian Admin</span>
   </div>
 </div>
 
@@ -16,8 +16,8 @@
 <aside class="admin-sidebar" [class.admin-sidebar--collapsed]="isSidebarCollapsed" [class.admin-sidebar--mobile-open]="isMobileSidebarOpen">
   <div class="admin-sidebar__header">
     <a routerLink="/" class="admin-sidebar__logo">
-      <span class="material-symbols-outlined admin-sidebar__logo-icon">flight_takeoff</span>
-      <span class="admin-sidebar__logo-text" *ngIf="!isSidebarCollapsed">SkyRoute Admin</span>
+      <img src="images/logo.png" alt="Meridian" class="admin-sidebar__logo-img" />
+      <span class="admin-sidebar__logo-text" *ngIf="!isSidebarCollapsed">Meridian Admin</span>
     </a>
     <button class="admin-sidebar__collapse-btn" (click)="toggleSidebar()" title="Toggle Sidebar">
       <span class="material-symbols-outlined">{{ isSidebarCollapsed ? 'chevron_right' : 'chevron_left' }}</span>

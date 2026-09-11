@@ -66,15 +66,15 @@
       <div class="ticket-document bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden print:shadow-none print:border print:rounded-none">
         
         <!-- Document Header / Airline Banner -->
-        <div class="bg-gradient-to-r from-[#0F172A] via-[#1E293B] to-[#0284C7] text-white p-6 sm:p-8">
+        <div class="bg-gradient-to-r from-[#101A2B] via-[#1B2C47] to-[#101A2B] text-white p-6 sm:p-8">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/10 pb-6">
             <div class="flex items-center gap-3">
-              <div class="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white font-bold text-2xl shadow-inner">
-                ✈
+              <div class="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center p-2 shadow-inner">
+                <img src="images/logo.png" alt="Meridian" class="w-full h-full object-contain" />
               </div>
               <div>
                 <h1 class="text-xl sm:text-2xl font-black tracking-tight flex items-center gap-2">
-                  SkyRoute <span class="text-sky-300 font-light text-base sm:text-lg">Airlines</span>
+                  MERIDIAN <span class="text-amber-300 font-light text-base sm:text-lg">Airlines</span>
                 </h1>
                 <p class="text-xs uppercase tracking-widest text-slate-300 font-semibold">Electronic Reservation Slip (ERS) • Passenger E-Ticket</p>
               </div>
@@ -173,7 +173,7 @@
                   </div>
                   <div>
                     <h2 class="text-base font-bold text-slate-900">
-                      {{ seg.airlineName || 'SkyRoute Express' }}
+                      {{ seg.airlineName || 'Meridian Express' }}
                     </h2>
                     <p class="text-xs text-slate-500 font-mono font-semibold">Flight No: <span class="text-slate-800 font-bold">{{ seg.flightNumber || 'SK-100' }}</span></p>
                   </div>
@@ -212,8 +212,8 @@
                   </span>
                   <div class="relative w-full flex items-center justify-center my-1">
                     <div class="w-full h-0.5 bg-slate-300"></div>
-                    <div class="absolute bg-blue-600 text-white w-7 h-7 rounded-full flex items-center justify-center text-xs shadow-sm transform -rotate-45">
-                      ✈
+                    <div class="absolute bg-primary text-white w-7 h-7 rounded-full flex items-center justify-center text-xs shadow-sm">
+                      <span class="material-symbols-outlined text-[14px]">flight</span>
                     </div>
                   </div>
                   <span class="text-[11px] text-slate-400 font-semibold mt-1">Confirmed Flight</span>
@@ -296,11 +296,13 @@
                       <td class="py-3.5 px-4 text-center">
                         @if (booking.status === 'CANCELLED') {
                           <span class="inline-flex items-center gap-1 text-rose-700 bg-rose-50 border border-rose-200 text-xs px-2.5 py-1 rounded-full font-bold">
-                            ✕ CANCELLED
+                            <span class="material-symbols-outlined text-[14px]">cancel</span>
+                            <span>CANCELLED</span>
                           </span>
                         } @else {
                           <span class="inline-flex items-center gap-1 text-emerald-700 bg-emerald-50 border border-emerald-200 text-xs px-2.5 py-1 rounded-full font-bold">
-                            ✓ CNF
+                            <span class="material-symbols-outlined text-[14px]">check_circle</span>
+                            <span>CNF</span>
                           </span>
                         }
                       </td>
@@ -436,8 +438,8 @@
             </div>
 
             <div class="text-center sm:text-right text-xs text-slate-500">
-              <p class="font-bold text-slate-700">Thank you for flying with SkyRoute Airlines!</p>
-              <p>For 24x7 Customer Assistance: support&#64;skyroute.com • 1800-108-7597</p>
+              <p class="font-bold text-slate-700">Thank you for flying with Meridian Airlines!</p>
+              <p>For 24x7 Customer Assistance: support&#64;Meridian.com • 1800-108-7597</p>
             </div>
           </div>
 
@@ -445,7 +447,7 @@
 
         <!-- Footer Bottom Bar (Screen & Print) -->
         <div class="bg-slate-100 border-t border-slate-200 px-6 py-4 flex flex-wrap justify-between items-center text-xs text-slate-500 gap-2">
-          <span>SkyRoute Systems Ltd. • This is a computer-generated electronic ticket and does not require a physical signature.</span>
+          <span>Meridian Systems Ltd. • This is a computer-generated electronic ticket and does not require a physical signature.</span>
           <span class="font-mono">P-ID: {{ booking.bookingCode }}</span>
         </div>
 

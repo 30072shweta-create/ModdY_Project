@@ -1,132 +1,150 @@
-<header class="navbar" [class.navbar--scrolled]="isScrolled">
-  <div class="navbar__container">
-    <!-- Brand Logo -->
-    <a routerLink="/" class="navbar__brand" (click)="closeMobileMenu()">
-      <span class="material-symbols-outlined navbar__brand-icon">flight_takeoff</span>
-      <span class="navbar__brand-text">SkyRoute</span>
+<header class="navbar">
+  <div class="navbar-inner">
+
+    <!-- Brand Logo with Entrance Animation + Wordmark -->
+    <a routerLink="/" class="brand" (click)="closeMobileMenu()">
+      <div class="logo-wrapper">
+        <img
+          src="images/logo.png"
+          class="logo-img"
+          appLogoAnimation
+          alt="Meridian Logo"
+          width="36"
+          height="36"
+        />
+      </div>
+      <span class="brand-name">MERIDIAN</span>
     </a>
 
-    <!-- Desktop Navigation (center) -->
-    <nav class="navbar__nav-desktop">
-      <a routerLink="/flights"
-         routerLinkActive="navbar__link--active"
-         [routerLinkActiveOptions]="{exact: false}"
-         class="navbar__link">Flight Search</a>
-      <a routerLink="/my-bookings"
-         routerLinkActive="navbar__link--active"
-         class="navbar__link">My Trips</a>
-      <a routerLink="/about"
-         routerLinkActive="navbar__link--active"
-         class="navbar__link">About</a>
+    <!-- Desktop Navigation -->
+    <nav class="nav-links" [class.open]="isMobileMenuOpen">
+      @if (isAdminPage) {
+        <span class="admin-topbar-pill">ADMIN CONSOLE</span>
+        <a routerLink="/flights" (click)="closeMobileMenu()">Public Flights</a>
+      } @else {
+        <a routerLink="/flights" routerLinkActive="active" (click)="closeMobileMenu()">Search</a>
+        @if (authService.isAuthenticated() && !isAdminUser) {
+          <a routerLink="/my-bookings" routerLinkActive="active" (click)="closeMobileMenu()">My Trips</a>
+        }
+        <a routerLink="/about" routerLinkActive="active" (click)="closeMobileMenu()">About</a>
+        @if (authService.isAuthenticated() && isAdminUser) {
+          <a routerLink="/admin" routerLinkActive="active" (click)="closeMobileMenu()">Admin Console</a>
+        }
+      }
     </nav>
 
-    <!-- Desktop Right Actions -->
-    <div class="navbar__actions-desktop">
-      <!-- Search Icon -->
-      <a routerLink="/flights" class="navbar__icon-btn" aria-label="Search flights" title="Flight Search">
-        <span class="material-symbols-outlined">search</span>
-      </a>
+    <!-- Right-Side Actions -->
+    <div class="navbar-actions">
 
-      <!-- Unauthenticated: Login & Sign Up -->
-      <ng-container *ngIf="!authService.isAuthenticated()">
-        <a routerLink="/login" class="navbar__btn navbar__btn--outlined">Login</a>
-        <a routerLink="/register" class="navbar__btn navbar__btn--filled">Sign Up</a>
-      </ng-container>
+      @if (authService.isAuthenticated()) {
+        <div class="profile-menu">
+          <button type="button" class="profile-trigger" (click)="toggleProfile()" aria-label="Profile and Settings Menu">
+            <span class="avatar">{{ initials(authService.currentUser()) }}</span>
+            <span class="profile-label">
+              <span class="profile-name">{{ authService.currentUser()?.firstName }} {{ authService.currentUser()?.lastName }}</span>
+            </span>
+            <svg class="chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
 
-      <!-- Authenticated: User Info & Logout -->
-      <ng-container *ngIf="authService.isAuthenticated()">
-        <!-- Admin Badge -->
-        <a routerLink="/admin" class="navbar__admin-chip" *ngIf="authService.isAdmin()">
-          <span class="material-symbols-outlined" style="font-size: 16px;">admin_panel_settings</span>
-          Admin Console
-        </a>
+          @if (isProfileOpen) {
+            <div class="profile-dropdown">
+              <div class="profile-dropdown-header">
+                <span class="profile-dropdown-name">{{ authService.currentUser()?.firstName }} {{ authService.currentUser()?.lastName }}</span>
+                <span class="profile-dropdown-email">{{ authService.currentUser()?.email }}</span>
+              </div>
+              @if (isAdminUser) {
+                <a routerLink="/admin" class="profile-dropdown-item" (click)="isProfileOpen = false">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="item-icon"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                  Admin Console
+                </a>
+              }
+              <a routerLink="/profile" class="profile-dropdown-item" (click)="isProfileOpen = false">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="item-icon"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 10-16 0"/></svg>
+                Profile & Settings
+              </a>
+              @if (!isAdminPage && !isAdminUser) {
+                <a routerLink="/my-bookings" class="profile-dropdown-item" (click)="isProfileOpen = false">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="item-icon"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  My Bookings
+                </a>
+                <a routerLink="/notifications" class="profile-dropdown-item" (click)="isProfileOpen = false">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="item-icon"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                  Notifications
+                </a>
+              }
+              <div class="dropdown-divider"></div>
+              <button type="button" class="profile-dropdown-item logout" (click)="logout()">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="item-icon"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                Sign Out
+              </button>
+            </div>
+          }
+        </div>
 
-        <!-- User Profile -->
-        <a routerLink="/profile" class="navbar__user-pill">
-          <div class="navbar__avatar">
-            {{ authService.currentUser()?.firstName?.charAt(0) || 'U' }}
-          </div>
-          <span class="navbar__user-name">{{ authService.currentUser()?.firstName }}</span>
-        </a>
+      } @else {
+        <a routerLink="/login" class="btn-ghost">Login</a>
+        <a routerLink="/register" class="btn-solid">Sign Up</a>
+      }
 
-        <!-- Logout -->
-        <button class="navbar__btn navbar__btn--outlined navbar__btn--logout" (click)="logout()">
-          Logout
-        </button>
-      </ng-container>
+      <!-- Mobile Hamburger -->
+      <button type="button" class="menu-toggle navbar__mobile-toggle" (click)="toggleMobileMenu()" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
     </div>
 
-    <!-- Mobile Menu Toggle -->
-    <button class="navbar__mobile-toggle" (click)="toggleMobileMenu()" aria-label="Toggle navigation">
-      <span class="material-symbols-outlined">{{ isMobileMenuOpen ? 'close' : 'menu' }}</span>
-    </button>
   </div>
 
-  <!-- Mobile Dropdown Menu -->
+  <!-- Mobile Menu Dropdown -->
   <div class="navbar__mobile-menu" [class.navbar__mobile-menu--open]="isMobileMenuOpen">
     <nav class="navbar__mobile-nav">
-      <a routerLink="/flights"
-         routerLinkActive="navbar__mobile-link--active"
-         [routerLinkActiveOptions]="{exact: false}"
+      <a routerLink="/flights" routerLinkActive="navbar__mobile-link--active"
          class="navbar__mobile-link" (click)="closeMobileMenu()">
-        <span class="material-symbols-outlined">search</span>
-        Flight Search
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Search Flights
       </a>
-      <a routerLink="/my-bookings"
-         routerLinkActive="navbar__mobile-link--active"
+      @if (authService.isAuthenticated() && !isAdminUser) {
+        <a routerLink="/my-bookings" routerLinkActive="navbar__mobile-link--active"
+           class="navbar__mobile-link" (click)="closeMobileMenu()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          My Trips
+        </a>
+      }
+      <a routerLink="/about" routerLinkActive="navbar__mobile-link--active"
          class="navbar__mobile-link" (click)="closeMobileMenu()">
-        <span class="material-symbols-outlined">luggage</span>
-        My Trips
-      </a>
-      <a routerLink="/profile"
-         routerLinkActive="navbar__mobile-link--active"
-         class="navbar__mobile-link" (click)="closeMobileMenu()"
-         *ngIf="authService.isAuthenticated()">
-        <span class="material-symbols-outlined">person</span>
-        Profile
-      </a>
-      <a routerLink="/about"
-         routerLinkActive="navbar__mobile-link--active"
-         class="navbar__mobile-link" (click)="closeMobileMenu()">
-        <span class="material-symbols-outlined">corporate_fare</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         About
       </a>
-
-      <!-- Admin in mobile -->
-      <a routerLink="/admin"
-         routerLinkActive="navbar__mobile-link--active"
-         class="navbar__mobile-link" (click)="closeMobileMenu()"
-         *ngIf="authService.isAuthenticated() && authService.isAdmin()">
-        <span class="material-symbols-outlined">admin_panel_settings</span>
-        Admin Console
-      </a>
-
-      <!-- Mobile Auth Section -->
-      <div class="navbar__mobile-auth">
-        <ng-container *ngIf="!authService.isAuthenticated()">
-          <a routerLink="/login" class="navbar__btn navbar__btn--outlined navbar__btn--full" (click)="closeMobileMenu()">Login</a>
-          <a routerLink="/register" class="navbar__btn navbar__btn--filled navbar__btn--full" (click)="closeMobileMenu()">Sign Up</a>
-        </ng-container>
-
-        <ng-container *ngIf="authService.isAuthenticated()">
+      @if (authService.isAuthenticated()) {
+        <a routerLink="/profile" routerLinkActive="navbar__mobile-link--active"
+           class="navbar__mobile-link" (click)="closeMobileMenu()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 10-16 0"/></svg>
+          Profile
+        </a>
+        @if (isAdminUser) {
+          <a routerLink="/admin" routerLinkActive="navbar__mobile-link--active"
+             class="navbar__mobile-link" (click)="closeMobileMenu()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            Admin Console
+          </a>
+        }
+        <div class="navbar__mobile-auth">
           <div class="navbar__mobile-user-info">
-            <div class="navbar__avatar navbar__avatar--lg">
-              {{ authService.currentUser()?.firstName?.charAt(0) || 'U' }}
-            </div>
-            <div class="navbar__mobile-user-details">
-              <span class="navbar__mobile-user-name">{{ authService.currentUser()?.firstName }} {{ authService.currentUser()?.lastName }}</span>
-              <span class="navbar__mobile-user-email">{{ authService.currentUser()?.email }}</span>
+            <div class="navbar__avatar-lg">{{ initials(authService.currentUser()) }}</div>
+            <div>
+              <div class="navbar__mobile-user-name">{{ authService.currentUser()?.firstName }} {{ authService.currentUser()?.lastName }}</div>
+              <div class="navbar__mobile-user-email">{{ authService.currentUser()?.email }}</div>
             </div>
           </div>
-          <button class="navbar__btn navbar__btn--outlined navbar__btn--full navbar__btn--logout" (click)="logout(); closeMobileMenu()">
-            <span class="material-symbols-outlined" style="font-size: 18px;">logout</span>
-            Logout
-          </button>
-        </ng-container>
-      </div>
+          <button class="mobile-logout-btn" (click)="logout(); closeMobileMenu()">Sign Out</button>
+        </div>
+      } @else {
+        <div class="navbar__mobile-auth">
+          <a routerLink="/login" class="btn-ghost mobile-btn" (click)="closeMobileMenu()">Login</a>
+          <a routerLink="/register" class="btn-solid mobile-btn" (click)="closeMobileMenu()">Sign Up</a>
+        </div>
+      }
     </nav>
   </div>
 </header>
-
-<!-- Spacer to prevent content from hiding behind fixed navbar -->
-<div class="navbar__spacer"></div>
