@@ -5,7 +5,9 @@ import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { FlightsService } from '../../../core/services/flights.service';
 import { AirportsService } from '../../../core/services/airports.service';
 import { AirlinesService } from '../../../core/services/airlines.service';
+import { WeatherService } from '../../../core/services/weather.service';
 import { FlightResponseDTO, FlightSearchRequestDTO, AirportResponseDTO, AirlineResponseDTO, Page } from '../../../core/models/flight.model';
+import { RouteWeather, AirportWeather } from '../../../core/models/weather.model';
 
 @Component({
   selector: 'app-flight-list',
@@ -19,12 +21,15 @@ export class FlightListComponent implements OnInit {
   private flightsService = inject(FlightsService);
   private airportsService = inject(AirportsService);
   private airlinesService = inject(AirlinesService);
+  private weatherService = inject(WeatherService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
   public flightsPage: Page<FlightResponseDTO> | null = null;
   public airports: AirportResponseDTO[] = [];
   public airlines: AirlineResponseDTO[] = [];
+  public routeWeather: RouteWeather | null = null;
+  public isLoadingWeather = false;
 
   public isLoading = true;
   public errorMessage = '';
@@ -76,6 +81,24 @@ export class FlightListComponent implements OnInit {
   public executeSearch(): void {
     this.isLoading = true;
     this.errorMessage = '';
+
+    const from = this.filterForm.value.source;
+    const to = this.filterForm.value.destination;
+
+    if (from && to) {
+      this.isLoadingWeather = true;
+      this.weatherService.getRouteWeather(from, to).subscribe({
+        next: (rw) => {
+          this.routeWeather = rw;
+          this.isLoadingWeather = false;
+        },
+        error: () => {
+          this.isLoadingWeather = false;
+        }
+      });
+    } else {
+      this.routeWeather = null;
+    }
 
     const rawStops = this.filterForm.value.stops;
     const query: FlightSearchRequestDTO = {

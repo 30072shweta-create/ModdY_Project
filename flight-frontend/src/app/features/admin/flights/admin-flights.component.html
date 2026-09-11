@@ -71,8 +71,8 @@
           </thead>
           <tbody>
             <tr *ngFor="let f of filteredFlights">
-              <td><strong>{{ f.flightNumber }}</strong></td>
-              <td>{{ f.airlineCode }}</td>
+              <td><strong>{{ getFlightNumberLabel(f) }}</strong></td>
+              <td>{{ f.airlineName || getAirlineLabel(f.airlineCode) }}</td>
               <td>
                 <span class="route-pill">{{ f.fromAirport }} ➔ {{ f.toAirport }}</span>
               </td>

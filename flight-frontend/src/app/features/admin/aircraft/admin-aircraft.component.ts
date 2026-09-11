@@ -114,6 +114,7 @@ export class AdminAircraftComponent implements OnInit {
           //this.editingId = null;
           this.closeModal();
           this.successMessage = 'Aircraft updated successfully!';
+          this.autoDismissToast();
           this.loadAircraft(true);
         },
         error: (err) => this.handleError(err)
@@ -125,6 +126,7 @@ export class AdminAircraftComponent implements OnInit {
           this.isLoading = false;
           this.closeModal();
           this.successMessage = 'Aircraft created successfully!';
+          this.autoDismissToast();
           this.loadAircraft(true);
         },
         error: (err) => this.handleError(err)
@@ -144,12 +146,19 @@ export class AdminAircraftComponent implements OnInit {
             this.isLoading = false;
             this.confirmModal.show = false;
             this.successMessage = 'Aircraft deactivated successfully!';
+            this.autoDismissToast();
             this.loadAircraft(true);
           },
           error: (err) => this.handleError(err)
         });
       }
     };
+  }
+
+  private autoDismissToast(): void {
+    setTimeout(() => {
+      this.successMessage = '';
+    }, 4000);
   }
 
   private handleError(err: any): void {

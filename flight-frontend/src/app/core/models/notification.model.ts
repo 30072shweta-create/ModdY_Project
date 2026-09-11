@@ -3,17 +3,21 @@ export interface NotificationResponseDTO {
   userId: number;
   bookingId?: number;
   message: string;
-  recipientEmail: string;
+  recipientEmail?: string;
   type: string;
+  channel?: string;
   status: string;
-  sentAt: string;
-  read: boolean;
+  createdAt?: string;
+  sentAt?: string;
+  read?: boolean;
 }
 
 export interface NotificationRequestDTO {
   userId: number;
   bookingId?: number;
   message: string;
-  recipientEmail: string;
+  recipientEmail?: string;
   type: string;
+  channel?: string;
 }
+

@@ -3,8 +3,6 @@ package com.example.flight.service;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.example.flight.dto.AirportRequestDTO;
@@ -23,19 +21,24 @@ public class AirportService {
     private final ModelMapper modelMapper;
 
     // ================= ADD AIRPORT =================
-    @CacheEvict(value = {"airports", "airports_all"}, allEntries = true)
     public AirportResponseDTO addAirport(AirportRequestDTO dto) {
-        if (airportRepository.existsById(dto.getAirportCode())) {
-            throw new RuntimeException("Airport already exists with code: " + dto.getAirportCode());
+        String airportCode = dto.getAirportCode().trim().toUpperCase();
+
+        if (airportRepository.existsById(airportCode)) {
+            throw new RuntimeException("Airport already exists with code: " + airportCode);
         }
 
-        Airport airport = modelMapper.map(dto, Airport.class);
+        Airport airport = new Airport();
+        airport.setAirportCode(airportCode);
+        airport.setName(dto.getName().trim());
+        airport.setCity(dto.getCity().trim());
+        airport.setCountry(dto.getCountry().trim());
+
         Airport savedAirport = airportRepository.save(airport);
         return modelMapper.map(savedAirport, AirportResponseDTO.class);
     }
 
     // ================= GET ALL AIRPORTS =================
-    @Cacheable(value = "airports_all")
     public List<AirportResponseDTO> getAllAirports() {
         return airportRepository.findAll()
                 .stream()
@@ -44,33 +47,33 @@ public class AirportService {
     }
 
     // ================= GET AIRPORT BY CODE =================
-    @Cacheable(value = "airports", key = "#airportCode")
     public AirportResponseDTO getAirportByCode(String airportCode) {
-        Airport airport = airportRepository.findById(airportCode)
-                .orElseThrow(() -> new ResourceNotFoundException("Airport not found with code: " + airportCode));
+        String normalizedAirportCode = airportCode.trim().toUpperCase();
+        Airport airport = airportRepository.findById(normalizedAirportCode)
+                .orElseThrow(() -> new ResourceNotFoundException("Airport not found with code: " + normalizedAirportCode));
 
         return modelMapper.map(airport, AirportResponseDTO.class);
     }
 
     // ================= UPDATE AIRPORT =================
-    @CacheEvict(value = {"airports", "airports_all"}, allEntries = true)
     public AirportResponseDTO updateAirport(String airportCode, AirportRequestDTO dto) {
-        Airport airport = airportRepository.findById(airportCode)
-                .orElseThrow(() -> new ResourceNotFoundException("Airport not found with code: " + airportCode));
+        String normalizedAirportCode = airportCode.trim().toUpperCase();
+        Airport airport = airportRepository.findById(normalizedAirportCode)
+                .orElseThrow(() -> new ResourceNotFoundException("Airport not found with code: " + normalizedAirportCode));
 
-        airport.setName(dto.getName());
-        airport.setCity(dto.getCity());
-        airport.setCountry(dto.getCountry());
+        airport.setName(dto.getName().trim());
+        airport.setCity(dto.getCity().trim());
+        airport.setCountry(dto.getCountry().trim());
 
         Airport updatedAirport = airportRepository.save(airport);
         return modelMapper.map(updatedAirport, AirportResponseDTO.class);
     }
 
     // ================= DELETE AIRPORT =================
-    @CacheEvict(value = {"airports", "airports_all"}, allEntries = true)
     public void deleteAirport(String airportCode) {
-        Airport airport = airportRepository.findById(airportCode)
-                .orElseThrow(() -> new ResourceNotFoundException("Airport not found with code: " + airportCode));
+        String normalizedAirportCode = airportCode.trim().toUpperCase();
+        Airport airport = airportRepository.findById(normalizedAirportCode)
+                .orElseThrow(() -> new ResourceNotFoundException("Airport not found with code: " + normalizedAirportCode));
 
         airportRepository.delete(airport);
     }

@@ -69,7 +69,7 @@
               </td>
               <td>{{ p.paymentMethod }}</td>
               <td>
-                <strong>{{ p.amount | currency:(p.currency || 'USD') }}</strong>
+                <strong>{{ p.amount | currency:(p.currency || 'INR'):'symbol':'1.2-2' }}</strong>
               </td>
               <td>
                 <span class="code-badge" *ngIf="p.transactionRef || p.razorpayPaymentId">
@@ -110,8 +110,8 @@
             <div class="detail-item"><strong>Payment ID:</strong> #{{ selectedPayment.paymentId }}</div>
             <div class="detail-item"><strong>Booking ID:</strong> #{{ selectedPayment.bookingId }}</div>
             <div class="detail-item"><strong>Payment Method:</strong> {{ selectedPayment.paymentMethod }}</div>
-            <div class="detail-item"><strong>Amount:</strong> {{ selectedPayment.amount | currency:(selectedPayment.currency || 'USD') }}</div>
-            <div class="detail-item"><strong>Currency:</strong> {{ selectedPayment.currency || 'USD' }}</div>
+            <div class="detail-item"><strong>Amount:</strong> {{ selectedPayment.amount | currency:(selectedPayment.currency || 'INR'):'symbol':'1.2-2' }}</div>
+            <div class="detail-item"><strong>Currency:</strong> {{ selectedPayment.currency || 'INR' }}</div>
             <div class="detail-item"><strong>Payment Status:</strong> {{ selectedPayment.status }}</div>
             <div class="detail-item" *ngIf="selectedPayment.razorpayOrderId"><strong>Razorpay Order ID:</strong> {{ selectedPayment.razorpayOrderId }}</div>
             <div class="detail-item" *ngIf="selectedPayment.razorpayPaymentId"><strong>Razorpay Payment ID:</strong> {{ selectedPayment.razorpayPaymentId }}</div>

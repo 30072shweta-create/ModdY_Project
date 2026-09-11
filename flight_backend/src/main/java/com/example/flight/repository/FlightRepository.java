@@ -3,6 +3,7 @@ package com.example.flight.repository;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -15,8 +16,16 @@ import com.example.flight.entity.Flight;
 
 public interface FlightRepository extends JpaRepository<Flight, Long> {
 
+    boolean existsByFlightNumberIgnoreCase(String flightNumber);
+
+    @Query("SELECT f FROM Flight f LEFT JOIN FETCH f.airline LEFT JOIN FETCH f.fromAirport LEFT JOIN FETCH f.toAirport LEFT JOIN FETCH f.aircraft")
+    List<Flight> findAllWithDetails();
+
     @Query("SELECT f FROM Flight f LEFT JOIN FETCH f.airline LEFT JOIN FETCH f.fromAirport LEFT JOIN FETCH f.toAirport LEFT JOIN FETCH f.aircraft WHERE f.flightId = :flightId")
     Optional<Flight> findByIdWithDetails(@Param("flightId") Long flightId);
+
+    @Query("SELECT f FROM Flight f LEFT JOIN FETCH f.airline LEFT JOIN FETCH f.fromAirport LEFT JOIN FETCH f.toAirport LEFT JOIN FETCH f.aircraft WHERE UPPER(REPLACE(f.flightNumber, '-', '')) = UPPER(REPLACE(:flightNumber, '-', ''))")
+    Optional<Flight> findByFlightNumberWithDetails(@Param("flightNumber") String flightNumber);
 
     @Query("""
         SELECT f
@@ -26,9 +35,9 @@ public interface FlightRepository extends JpaRepository<Flight, Long> {
         LEFT JOIN FETCH f.toAirport
         LEFT JOIN FETCH f.aircraft
         WHERE
-            (COALESCE(:source, '') = '' OR UPPER(f.fromAirport.airportCode) = UPPER(:source))
+            (COALESCE(:source, '') = '' OR UPPER(f.fromAirport.airportCode) = UPPER(:source) OR UPPER(f.fromAirport.city) = UPPER(:source))
         AND
-            (COALESCE(:destination, '') = '' OR UPPER(f.toAirport.airportCode) = UPPER(:destination))
+            (COALESCE(:destination, '') = '' OR UPPER(f.toAirport.airportCode) = UPPER(:destination) OR UPPER(f.toAirport.city) = UPPER(:destination))
         AND
             (f.departureTs >= :startDateTime AND f.departureTs < :endDateTime)
         AND

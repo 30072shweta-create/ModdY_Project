@@ -136,6 +136,9 @@ public class SeatLockService {
         seatLock.setLockedAt(now);
         seatLock.setLockedUntil(now.plusMinutes(lockDurationMinutes));
 
+        passenger.setSeatNumber(seatNumber);
+        passengerRepository.save(passenger);
+
         SeatLock savedLock = seatLockRepository.save(seatLock);
         return convertToResponse(savedLock);
     }
@@ -192,6 +195,10 @@ public class SeatLockService {
         lockOpt.ifPresent(lock -> {
             lock.setStatus(SeatLockStatus.RELEASED);
             seatLockRepository.save(lock);
+            if (lock.getPassenger() != null) {
+                lock.getPassenger().setSeatNumber(null);
+                passengerRepository.save(lock.getPassenger());
+            }
         });
         return true;
     }

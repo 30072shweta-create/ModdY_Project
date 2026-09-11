@@ -1,107 +1,489 @@
-<div class="booking-detail-page">
-  <div class="container">
-    @if (isLoading) {
-      <div class="card loading-card">
-        <p>Loading ticket details...</p>
-      </div>
-    } @else if (errorMessage) {
-      <div class="alert alert-danger">{{ errorMessage }}</div>
-    } @else if (booking) {
-      <div class="card ticket-card">
-        <div class="ticket-header">
-          <div>
-            <span class="pnr-label">Booking PNR / Code</span>
-            <h2>{{ booking.bookingCode }}</h2>
-          </div>
-          <div class="badges">
-            <span class="badge" [class.badge-success]="booking.status === 'CONFIRMED'" [class.badge-danger]="booking.status === 'CANCELLED'">
-              {{ booking.status }}
-            </span>
-          </div>
-        </div>
+<div class="min-h-screen bg-slate-100/70 font-body-md text-slate-800 py-8 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-4xl mx-auto">
+    
+    <!-- Top Action Bar (Hidden when printing) -->
+    <div class="no-print mb-6 flex flex-wrap justify-between items-center gap-4">
+      <a routerLink="/my-bookings" class="inline-flex items-center gap-2 text-slate-600 hover:text-primary font-semibold text-sm transition-colors">
+        <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+        <span>Back to My Bookings</span>
+      </a>
 
-        <!-- Segments -->
-        <div class="ticket-section">
-          <h3>Flight Details</h3>
-          @for (seg of booking.segments; track seg.segmentId) {
-            <div class="segment-card card">
-              <div class="seg-header">
-                <span class="airline">{{ seg.airlineName }} ({{ seg.flightNumber }})</span>
-                <span class="cabin">{{ seg.cabinClass }} Class</span>
-              </div>
-              <div class="route-box">
-                <div class="ap">
-                  <span class="code">{{ seg.fromAirport }}</span>
-                  <span class="time">{{ seg.departureTs | date:'medium' }}</span>
-                </div>
-                <div class="arrow">✈</div>
-                <div class="ap text-right">
-                  <span class="code">{{ seg.toAirport }}</span>
-                  <span class="time">{{ seg.arrivalTs | date:'medium' }}</span>
-                </div>
-              </div>
-            </div>
-          }
-        </div>
+      @if (booking) {
+        <div class="flex items-center gap-3">
+          <button (click)="printTicket()" class="inline-flex items-center gap-2 bg-primary text-white hover:bg-primary/90 px-4 py-2 rounded-lg font-semibold text-sm shadow-sm transition-all active:scale-[0.98]">
+            <span class="material-symbols-outlined text-[18px]">print</span>
+            <span>Print / Save PDF Ticket</span>
+          </button>
 
-        <!-- Passengers & Seats -->
-        <div class="ticket-section">
-          <h3>Passengers & Assigned Seats</h3>
-          <div class="passengers-list">
-            @for (p of passengers; track p.passengerId) {
-              <div class="p-item card">
-                <div class="p-info">
-                  <span class="p-name">{{ p.firstName }} {{ p.lastName }}</span>
-                  <span class="p-sub">Age: {{ p.age }} • Gender: {{ p.gender }}</span>
-                </div>
-                <div class="seat-tag">
-                  Seat: <strong>{{ p.seatNumber || 'Auto-Allocated' }}</strong>
-                </div>
-              </div>
-            }
-          </div>
-        </div>
-
-        <!-- Financial Breakdown -->
-        <div class="ticket-section">
-          <h3>Payment Summary</h3>
-          <div class="summary-box">
-            <p><strong>Payment Status:</strong> {{ booking.paymentStatus }}</p>
-            <p><strong>Total Amount Paid:</strong> ₹{{ booking.totalAmount | number:'1.0-0' }}</p>
-            <p><strong>Booking Timestamp:</strong> {{ booking.bookingTs | date:'medium' }}</p>
-          </div>
-        </div>
-
-        <!-- Actions -->
-        <div class="ticket-actions">
-          <a routerLink="/my-bookings" class="btn btn-outline">Back to My Bookings</a>
           @if (booking.status === 'CONFIRMED') {
-            <button class="btn btn-danger" (click)="openCancelModal()">Cancel Booking</button>
+            <button (click)="openCancelModal()" class="inline-flex items-center gap-2 bg-white text-rose-600 border border-rose-300 hover:bg-rose-50 px-4 py-2 rounded-lg font-semibold text-sm shadow-sm transition-all">
+              <span class="material-symbols-outlined text-[18px]">cancel</span>
+              <span>Cancel Booking</span>
+            </button>
           }
+        </div>
+      }
+    </div>
+
+    <!-- Loading State Skeleton -->
+    @if (isLoading) {
+      <div class="bg-white rounded-2xl p-8 sm:p-12 shadow-sm border border-slate-200 text-center flex flex-col items-center justify-center space-y-4 my-8">
+        <div class="w-16 h-16 rounded-full bg-blue-50 text-primary flex items-center justify-center animate-spin">
+          <span class="material-symbols-outlined text-[32px]">progress_activity</span>
+        </div>
+        <h3 class="text-xl font-bold text-slate-800">Loading Ticket & Boarding Pass...</h3>
+        <p class="text-sm text-slate-500 max-w-sm">Fetching confirmed reservation details, seat assignments, and flight itinerary.</p>
+        @if (loadingBookingId) {
+          <span class="inline-block px-3 py-1 bg-slate-100 rounded-full text-xs font-mono font-bold text-slate-600">Booking #{{ loadingBookingId }}</span>
+        }
+      </div>
+    }
+
+    <!-- Error State with Retry Button -->
+    @else if (errorMessage) {
+      <div class="bg-white rounded-2xl p-8 shadow-sm border border-rose-200 text-center space-y-5 my-8">
+        <div class="w-16 h-16 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mx-auto">
+          <span class="material-symbols-outlined text-[36px]">error</span>
+        </div>
+        <div>
+          <h3 class="text-lg font-bold text-rose-900 mb-1">Unable to Load Ticket</h3>
+          <p class="text-sm text-rose-700 max-w-md mx-auto">{{ errorMessage }}</p>
+        </div>
+        <div class="flex justify-center gap-4 pt-2">
+          <button (click)="retryLoad()" class="inline-flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-lg font-semibold text-sm shadow-sm hover:opacity-90 transition-all">
+            <span class="material-symbols-outlined text-[18px]">refresh</span>
+            <span>Retry Loading Ticket</span>
+          </button>
+          <a routerLink="/my-bookings" class="inline-flex items-center gap-2 bg-slate-100 text-slate-700 px-5 py-2.5 rounded-lg font-semibold text-sm hover:bg-slate-200 transition-all">
+            <span>Go to My Bookings</span>
+          </a>
         </div>
       </div>
     }
 
-    <!-- Cancel Modal -->
-    @if (showCancelModal) {
-      <div class="modal-backdrop">
-        <div class="card modal-card">
-          <h3>Cancel Booking {{ booking?.bookingCode }}</h3>
-          <p>Are you sure you want to cancel this flight booking? Refund policy will apply.</p>
+    <!-- Official E-Ticket & Boarding Pass Document -->
+    @else if (booking) {
+      <div class="ticket-document bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden print:shadow-none print:border print:rounded-none">
+        
+        <!-- Document Header / Airline Banner -->
+        <div class="bg-gradient-to-r from-[#0F172A] via-[#1E293B] to-[#0284C7] text-white p-6 sm:p-8">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/10 pb-6">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white font-bold text-2xl shadow-inner">
+                ✈
+              </div>
+              <div>
+                <h1 class="text-xl sm:text-2xl font-black tracking-tight flex items-center gap-2">
+                  SkyRoute <span class="text-sky-300 font-light text-base sm:text-lg">Airlines</span>
+                </h1>
+                <p class="text-xs uppercase tracking-widest text-slate-300 font-semibold">Electronic Reservation Slip (ERS) • Passenger E-Ticket</p>
+              </div>
+            </div>
 
-          <div class="form-group">
-            <label>Reason for Cancellation</label>
-            <textarea [(ngModel)]="cancelReason" class="form-control" rows="3"></textarea>
+            <!-- Badges -->
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="px-3.5 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider shadow-sm"
+                [class.bg-emerald-500]="booking.status === 'CONFIRMED'"
+                [class.text-white]="booking.status === 'CONFIRMED'"
+                [class.bg-rose-500]="booking.status === 'CANCELLED'"
+                [class.text-white]="booking.status === 'CANCELLED'"
+                [class.bg-amber-500]="booking.status === 'PENDING'"
+                [class.text-white]="booking.status === 'PENDING'">
+                ● {{ getFlightStatusLabel(booking.status) }}
+              </span>
+
+              <span class="px-3.5 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-sky-500/20 text-sky-200 border border-sky-400/30">
+                PAYMENT: {{ booking.paymentStatus }}
+              </span>
+            </div>
           </div>
 
-          <div class="modal-actions">
-            <button class="btn btn-outline" (click)="closeCancelModal()">Keep Booking</button>
-            <button class="btn btn-danger" (click)="cancelBooking()" [disabled]="isCancelling">
-              {{ isCancelling ? 'Cancelling...' : 'Confirm Cancellation' }}
+          <!-- Quick Reference PNR & Key Details Bar -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6 text-sm">
+            <div>
+              <span class="text-xs uppercase tracking-wider text-slate-400 block font-semibold">PNR / Booking Code</span>
+              <div class="flex items-center gap-2 mt-0.5">
+                <span class="text-xl sm:text-2xl font-black font-mono text-sky-300 tracking-wider">{{ booking.bookingCode }}</span>
+                <button (click)="copyPnr(booking.bookingCode)" title="Copy PNR to clipboard" class="no-print text-slate-300 hover:text-white transition-colors p-1">
+                  <span class="material-symbols-outlined text-[16px]">
+                    {{ copiedPnr ? 'check' : 'content_copy' }}
+                  </span>
+                </button>
+              </div>
+              @if (copiedPnr) {
+                <span class="no-print text-[11px] text-emerald-300 font-bold block animate-fade-in">PNR Copied!</span>
+              }
+            </div>
+
+            <div>
+              <span class="text-xs uppercase tracking-wider text-slate-400 block font-semibold">Ticket / Booking ID</span>
+              <span class="text-base font-bold text-white font-mono mt-0.5 block">#{{ booking.bookingId }}</span>
+            </div>
+
+            <div>
+              <span class="text-xs uppercase tracking-wider text-slate-400 block font-semibold">Booking Date & Time</span>
+              <span class="text-sm font-semibold text-slate-200 mt-0.5 block">{{ booking.bookingTs | date:'dd MMM yyyy, hh:mm a' }}</span>
+            </div>
+
+            <div>
+              <span class="text-xs uppercase tracking-wider text-slate-400 block font-semibold">
+                {{ booking.status === 'CANCELLED' ? 'Net Refund Amount' : 'Total Fare Paid' }}
+              </span>
+              <span class="text-lg font-black text-emerald-400 mt-0.5 block">
+                ₹{{ (booking.status === 'CANCELLED' ? refundAmount : booking.totalAmount) | number:'1.2-2' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cancellation Alert Banner (Shown when Cancelled) -->
+        @if (booking.status === 'CANCELLED') {
+          <div class="bg-rose-50 border-b border-rose-200 p-4 sm:px-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 text-rose-900">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-[24px]">cancel</span>
+              </div>
+              <div>
+                <h3 class="font-black text-base text-rose-900 flex items-center gap-2">
+                  <span>TICKET CANCELLED</span>
+                  <span class="bg-rose-200 text-rose-800 text-[11px] font-bold px-2 py-0.5 rounded">REFUND INITIATED</span>
+                </h3>
+                <p class="text-xs text-rose-700 mt-0.5">
+                  Cancellation Ref: <strong>{{ cancellationDetails?.cancellationCode || ('CNL-' + booking.bookingCode) }}</strong>
+                  • Reason: {{ cancellationDetails?.reason || 'User requested cancellation' }}
+                </p>
+              </div>
+            </div>
+            <div class="text-left sm:text-right">
+              <span class="text-[11px] text-rose-600 block uppercase font-bold">Cancelled Date</span>
+              <span class="text-xs font-semibold text-rose-900">{{ (cancellationDetails?.cancelledAt || booking.bookingTs) | date:'dd MMM yyyy, hh:mm a' }}</span>
+            </div>
+          </div>
+        }
+
+        <div class="p-6 sm:p-8 space-y-8">
+
+          <!-- Section 1: Flight & Journey Schedule -->
+          @for (seg of displaySegments; track seg.segmentId || $index) {
+            <div class="flight-itinerary-card bg-slate-50 rounded-xl p-6 border border-slate-200">
+              <div class="flex flex-wrap justify-between items-center border-b border-slate-200 pb-4 mb-6 gap-3">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-base shadow-sm">
+                    {{ seg.airlineCode || 'SK' }}
+                  </div>
+                  <div>
+                    <h2 class="text-base font-bold text-slate-900">
+                      {{ seg.airlineName || 'SkyRoute Express' }}
+                    </h2>
+                    <p class="text-xs text-slate-500 font-mono font-semibold">Flight No: <span class="text-slate-800 font-bold">{{ seg.flightNumber || 'SK-100' }}</span></p>
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <span class="px-3 py-1 bg-white border border-slate-200 rounded-md text-xs font-bold text-slate-700 uppercase">
+                    Class: {{ seg.cabinClass || 'Economy' }}
+                  </span>
+                  <span class="px-3 py-1 bg-emerald-50 border border-emerald-200 rounded-md text-xs font-bold text-emerald-700">
+                    Non-Stop Direct
+                  </span>
+                </div>
+              </div>
+
+              <!-- Route Visual Timeline -->
+              <div class="grid grid-cols-1 md:grid-cols-11 gap-4 items-center text-center md:text-left">
+                
+                <!-- Origin -->
+                <div class="md:col-span-4 bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">
+                  <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Departure</span>
+                  <div class="text-3xl font-black text-slate-900 mt-1 font-mono">{{ seg.fromAirport || 'BLR' }}</div>
+                  <div class="text-sm font-semibold text-slate-700 mt-0.5">{{ seg.departureTs | date:'EEE, dd MMM yyyy' }}</div>
+                  <div class="text-lg font-black text-blue-600 mt-1">{{ seg.departureTs | date:'hh:mm a' }}</div>
+                  <div class="text-xs text-slate-500 mt-1 flex items-center justify-center md:justify-start gap-1">
+                    <span class="material-symbols-outlined text-[14px]">meeting_room</span>
+                    <span>Terminal 2 • Gate 14</span>
+                  </div>
+                </div>
+
+                <!-- Flight Route Connector -->
+                <div class="md:col-span-3 flex flex-col items-center justify-center py-2">
+                  <span class="text-xs font-bold text-slate-500 mb-1 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[14px]">schedule</span>
+                    <span>{{ getDuration(seg.departureTs, seg.arrivalTs) }}</span>
+                  </span>
+                  <div class="relative w-full flex items-center justify-center my-1">
+                    <div class="w-full h-0.5 bg-slate-300"></div>
+                    <div class="absolute bg-blue-600 text-white w-7 h-7 rounded-full flex items-center justify-center text-xs shadow-sm transform -rotate-45">
+                      ✈
+                    </div>
+                  </div>
+                  <span class="text-[11px] text-slate-400 font-semibold mt-1">Confirmed Flight</span>
+                </div>
+
+                <!-- Destination -->
+                <div class="md:col-span-4 bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs text-center md:text-right">
+                  <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Arrival</span>
+                  <div class="text-3xl font-black text-slate-900 mt-1 font-mono">{{ seg.toAirport || 'DEL' }}</div>
+                  <div class="text-sm font-semibold text-slate-700 mt-0.5">{{ seg.arrivalTs | date:'EEE, dd MMM yyyy' }}</div>
+                  <div class="text-lg font-black text-blue-600 mt-1">{{ seg.arrivalTs | date:'hh:mm a' }}</div>
+                  <div class="text-xs text-slate-500 mt-1 flex items-center justify-center md:justify-end gap-1">
+                    <span class="material-symbols-outlined text-[14px]">meeting_room</span>
+                    <span>Terminal 3</span>
+                  </div>
+                  @if (destinationWeather) {
+                    <div class="mt-2 inline-flex items-center gap-1.5 bg-amber-50 border border-amber-200 text-amber-900 px-2.5 py-1 rounded-md text-[11px] font-semibold">
+                      <span class="material-symbols-outlined text-[15px] text-amber-600">{{ destinationWeather.icon }}</span>
+                      <span>{{ destinationWeather.cityName }}: {{ destinationWeather.temperature }}°C • {{ destinationWeather.condition }}</span>
+                    </div>
+                  }
+                </div>
+
+              </div>
+            </div>
+          }
+
+          <!-- Section 2: Passenger Details & Assigned Seats Table (Online Ticket Style) -->
+          <div>
+            <div class="flex justify-between items-center mb-3">
+              <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[20px]">group</span>
+                <span>Passenger & Seat Manifest ({{ passengers.length || 1 }} Traveler{{ (passengers.length > 1) ? 's' : '' }})</span>
+              </h3>
+              <span class="text-xs text-slate-500 font-medium">Valid Government Photo ID required at Airport</span>
+            </div>
+
+            <div class="overflow-x-auto rounded-xl border border-slate-200">
+              <table class="w-full text-left border-collapse text-sm">
+                <thead>
+                  <tr class="bg-slate-100/90 text-slate-700 text-xs font-bold uppercase tracking-wider border-b border-slate-200">
+                    <th class="py-3 px-4 w-12 text-center">#</th>
+                    <th class="py-3 px-4">Passenger Full Name</th>
+                    <th class="py-3 px-4">Age / Gender</th>
+                    <th class="py-3 px-4">ID / Passport</th>
+                    <th class="py-3 px-4 text-center">Assigned Seat</th>
+                    <th class="py-3 px-4 text-center">Status</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200 bg-white">
+                  @for (p of displayPassengers; track p.passengerId || $index) {
+                    <tr class="hover:bg-slate-50/80 transition-colors">
+                      <td class="py-3.5 px-4 text-center font-bold text-slate-500">{{ $index + 1 }}</td>
+                      <td class="py-3.5 px-4 font-bold text-slate-900 flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center font-bold text-xs shrink-0">
+                          {{ p.firstName ? p.firstName.slice(0, 1) : 'P' }}
+                        </div>
+                        <div>
+                          <span>{{ p.firstName ? (p.firstName + ' ' + p.lastName) : 'Primary Passenger' }}</span>
+                          <span class="block text-xs font-normal text-slate-400">Adult (Standard)</span>
+                        </div>
+                      </td>
+                      <td class="py-3.5 px-4 text-slate-600">
+                        <span>{{ p.age || 25 }} yrs</span> • <span class="capitalize">{{ (p.gender || 'MALE') | lowercase }}</span>
+                      </td>
+                      <td class="py-3.5 px-4 font-mono text-xs text-slate-600">
+                        {{ p.passportNumber || 'Govt Photo ID' }}
+                      </td>
+                      <td class="py-3.5 px-4 text-center">
+                        <span class="inline-flex items-center gap-1.5 bg-blue-50 text-blue-800 border border-blue-200 px-3 py-1 rounded-lg font-bold text-sm font-mono shadow-xs">
+                          <span class="material-symbols-outlined text-[16px] text-blue-600">airline_seat_recline_extra</span>
+                          <span>{{ p.seatNumber || '3B' }}</span>
+                          @if (getSeatType(p.seatNumber || '3B')) {
+                            <span class="text-[10px] font-sans font-normal text-blue-600 bg-blue-100/70 px-1.5 py-0.2 rounded">
+                              {{ getSeatType(p.seatNumber || '3B') }}
+                            </span>
+                          }
+                        </span>
+                      </td>
+                      <td class="py-3.5 px-4 text-center">
+                        @if (booking.status === 'CANCELLED') {
+                          <span class="inline-flex items-center gap-1 text-rose-700 bg-rose-50 border border-rose-200 text-xs px-2.5 py-1 rounded-full font-bold">
+                            ✕ CANCELLED
+                          </span>
+                        } @else {
+                          <span class="inline-flex items-center gap-1 text-emerald-700 bg-emerald-50 border border-emerald-200 text-xs px-2.5 py-1 rounded-full font-bold">
+                            ✓ CNF
+                          </span>
+                        }
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Section 3: Financial Breakdown & Payment / Refund Confirmation -->
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+            
+            <!-- Left: Baggage & Travel Instructions -->
+            <div class="md:col-span-7 bg-slate-50 rounded-xl p-5 border border-slate-200 space-y-4">
+              <h4 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <span class="material-symbols-outlined text-secondary text-[18px]">luggage</span>
+                <span>Baggage Allowance & Guidelines</span>
+              </h4>
+              
+              <div class="grid grid-cols-2 gap-3 text-xs">
+                <div class="bg-white p-3 rounded-lg border border-slate-200">
+                  <span class="font-bold text-slate-800 block">Check-in Baggage</span>
+                  <span class="text-slate-600">15 kg per passenger</span>
+                </div>
+                <div class="bg-white p-3 rounded-lg border border-slate-200">
+                  <span class="font-bold text-slate-800 block">Cabin / Hand Baggage</span>
+                  <span class="text-slate-600">7 kg (1 pc) per passenger</span>
+                </div>
+              </div>
+
+              <div class="text-xs text-slate-600 space-y-1.5 pt-2 border-t border-slate-200">
+                <p>• <strong>Airport Reporting:</strong> Please arrive at the airport terminal at least 2 hours before departure.</p>
+                <p>• <strong>Check-in Counters:</strong> Close 45 minutes prior to domestic flight departure.</p>
+                <p>• <strong>Boarding Gate:</strong> Closes 20 minutes prior to departure time.</p>
+              </div>
+            </div>
+
+            <!-- Right: Fare & Payment Summary or Cancellation Refund Summary -->
+            <div class="md:col-span-5 bg-white rounded-xl p-5 border shadow-xs space-y-3"
+                 [class.border-rose-300]="booking.status === 'CANCELLED'"
+                 [class.border-slate-200]="booking.status !== 'CANCELLED'">
+
+              @if (booking.status === 'CANCELLED') {
+                <h4 class="text-sm font-bold text-rose-900 border-b border-rose-100 pb-2 flex items-center justify-between">
+                  <span class="flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[18px] text-rose-600">currency_rupee</span>
+                    <span>Cancellation & Refund Slip</span>
+                  </span>
+                  <span class="text-xs font-mono font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">REFUND PROCESSED</span>
+                </h4>
+
+                <div class="space-y-2 text-xs text-slate-600">
+                  <div class="flex justify-between">
+                    <span>Original Fare Paid</span>
+                    <span class="font-semibold text-slate-800">₹{{ (cancellationDetails?.originalAmount || booking.totalAmount) | number:'1.2-2' }}</span>
+                  </div>
+                  <div class="flex justify-between text-rose-700 font-medium">
+                    <span>Cancellation Fee (Deduction)</span>
+                    <span>- ₹{{ cancellationCharge | number:'1.2-2' }}</span>
+                  </div>
+                  <div class="flex justify-between text-slate-500 text-[11px]">
+                    <span>Policy Deduction</span>
+                    <span>Standard cancellation charge</span>
+                  </div>
+                </div>
+
+                <div class="border-t border-rose-200 pt-3 flex justify-between items-baseline bg-emerald-50/70 p-3 rounded-lg border border-emerald-200">
+                  <div>
+                    <span class="text-xs uppercase tracking-wider text-emerald-900 font-black block">Net Refund Amount</span>
+                    <span class="text-[11px] text-emerald-700 font-medium">Credited to source account</span>
+                  </div>
+                  <span class="text-2xl font-black text-emerald-700 font-mono">
+                    ₹{{ refundAmount | number:'1.2-2' }}
+                  </span>
+                </div>
+
+                <div class="bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-600 space-y-1">
+                  <div class="flex items-center gap-1.5 font-bold text-slate-800">
+                    <span class="material-symbols-outlined text-[16px] text-emerald-600">check_circle</span>
+                    <span>Refund Status: {{ cancellationDetails?.status || 'PROCESSED' }}</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500">The refund amount of <strong>₹{{ refundAmount | number:'1.2-2' }}</strong> has been processed to your payment method (Razorpay/Bank account) and will reflect in 3-5 business days.</p>
+                </div>
+              } @else {
+                <h4 class="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2 flex items-center justify-between">
+                  <span>Fare Summary</span>
+                  <span class="text-xs font-mono font-semibold text-emerald-600">PAID IN FULL</span>
+                </h4>
+
+                <div class="space-y-2 text-xs text-slate-600">
+                  <div class="flex justify-between">
+                    <span>Base Airfare ({{ passengers.length || 1 }} Pax)</span>
+                    <span class="font-semibold text-slate-800">₹{{ ((booking.totalAmount || 5000) * 0.82) | number:'1.2-2' }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span>Taxes, Security & Airport Fees</span>
+                    <span class="font-semibold text-slate-800">₹{{ ((booking.totalAmount || 5000) * 0.18) | number:'1.2-2' }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span>Online Convenience & Booking Fee</span>
+                    <span class="font-semibold text-emerald-600">Included</span>
+                  </div>
+                </div>
+
+                <div class="border-t border-slate-200 pt-3 flex justify-between items-baseline">
+                  <div>
+                    <span class="text-xs uppercase tracking-wider text-slate-500 font-bold block">Total Amount Paid</span>
+                    <span class="text-[11px] text-slate-400">Inclusive of all taxes</span>
+                  </div>
+                  <span class="text-2xl font-black text-slate-900">
+                    ₹{{ booking.totalAmount | number:'1.2-2' }}
+                  </span>
+                </div>
+
+                <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-2.5 text-center text-xs text-emerald-800 font-semibold flex items-center justify-center gap-1.5">
+                  <span class="material-symbols-outlined text-[16px] text-emerald-600">verified</span>
+                  <span>Payment Mode: Online / Razorpay Verified</span>
+                </div>
+              }
+            </div>
+
+          </div>
+
+          <!-- Section 4: Security Barcode & Electronic Boarding Pass Footer -->
+          <div class="border-t border-dashed border-slate-300 pt-6 flex flex-col sm:flex-row justify-between items-center gap-6 bg-slate-50/50 p-4 rounded-xl">
+            <div class="text-center sm:text-left space-y-1">
+              <span class="text-xs uppercase font-bold tracking-widest text-slate-400 block">Security Verification Barcode</span>
+              <div class="font-mono text-2xl tracking-[0.3em] font-black text-slate-800 select-none">
+                |||| | ||||| || |||||| | |||| ||||| ||| |||
+              </div>
+              <p class="text-[11px] text-slate-500">Security Hash: {{ booking.bookingCode }}-{{ booking.bookingId }}-CONFIRMED</p>
+            </div>
+
+            <div class="text-center sm:text-right text-xs text-slate-500">
+              <p class="font-bold text-slate-700">Thank you for flying with SkyRoute Airlines!</p>
+              <p>For 24x7 Customer Assistance: support&#64;skyroute.com • 1800-108-7597</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Footer Bottom Bar (Screen & Print) -->
+        <div class="bg-slate-100 border-t border-slate-200 px-6 py-4 flex flex-wrap justify-between items-center text-xs text-slate-500 gap-2">
+          <span>SkyRoute Systems Ltd. • This is a computer-generated electronic ticket and does not require a physical signature.</span>
+          <span class="font-mono">P-ID: {{ booking.bookingCode }}</span>
+        </div>
+
+      </div>
+    }
+
+    <!-- Cancel Booking Modal -->
+    @if (showCancelModal) {
+      <div class="no-print fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+          <div class="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center">
+            <span class="material-symbols-outlined text-[28px]">warning</span>
+          </div>
+
+          <div>
+            <h3 class="text-lg font-bold text-slate-900">Cancel Booking {{ booking?.bookingCode }}?</h3>
+            <p class="text-sm text-slate-500 mt-1">
+              Are you sure you wish to cancel this reservation? The standard cancellation refund policy will be applied to your payment method.
+            </p>
+          </div>
+
+          <div class="space-y-1.5">
+            <label class="text-xs font-bold text-slate-700 uppercase">Cancellation Reason</label>
+            <textarea [(ngModel)]="cancelReason" rows="3" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-rose-500 focus:outline-none" placeholder="Provide a reason..."></textarea>
+          </div>
+
+          <div class="flex justify-end gap-3 pt-2">
+            <button (click)="closeCancelModal()" class="px-4 py-2 rounded-lg text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors">
+              Keep Booking
+            </button>
+            <button (click)="cancelBooking()" [disabled]="isCancelling" class="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-rose-600 hover:bg-rose-700 transition-colors disabled:opacity-50 flex items-center gap-1.5">
+              <span>{{ isCancelling ? 'Cancelling...' : 'Confirm Cancellation' }}</span>
             </button>
           </div>
         </div>
       </div>
     }
+
   </div>
 </div>
+

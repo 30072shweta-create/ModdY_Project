@@ -7,7 +7,6 @@
   background: radial-gradient(circle at top right, #E0F2FE, #F8FAFC);
 }
 
-<<<<<<< HEAD
 .google-signin-wrap {
   position: relative;
   min-height: 44px;
@@ -59,8 +58,39 @@
   }
 }
 
-=======
->>>>>>> c0433ef5f1e407a86a7aa70b8549f194d827e51f
+.password-input-wrap {
+  position: relative;
+
+  input {
+    width: 100%;
+  }
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 0.75rem;
+  display: inline-flex;
+  width: 2rem;
+  height: 2rem;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #76777d;
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: background-color 0.2s ease, color 0.2s ease;
+
+  &:hover,
+  &:focus-visible {
+    background: rgba(0, 0, 0, 0.06);
+    color: #005b98;
+    outline: none;
+  }
+}
+
 .auth-card {
   width: 100%;
   max-width: 440px;

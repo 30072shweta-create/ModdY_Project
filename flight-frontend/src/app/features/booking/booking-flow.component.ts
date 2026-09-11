@@ -90,6 +90,13 @@ export class BookingFlowComponent implements OnInit, OnDestroy {
     }
   }
 
+  public isPastStep(step: BookingStep): boolean {
+    const order: BookingStep[] = ['passengers', 'seats', 'addons', 'payment', 'confirmation'];
+    const currentIdx = order.indexOf(this.currentStep);
+    const targetIdx = order.indexOf(step);
+    return currentIdx > targetIdx;
+  }
+
   private loadFlight(flightId: number): void {
     this.flightsService.getFlightById(flightId).subscribe({
       next: (f) => this.flight = f,

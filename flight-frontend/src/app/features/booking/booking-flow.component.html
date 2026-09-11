@@ -2,23 +2,61 @@
   <div class="max-w-container-max mx-auto px-md md:px-lg">
     
     <!-- Top Step Indicator Header -->
-    <div class="flex items-center justify-center gap-md font-label-md text-label-md mb-xl flex-wrap">
-      <div class="flex items-center gap-2" [class.text-primary]="currentStep === 'passengers'" [class.font-bold]="currentStep === 'passengers'" [class.text-on-surface-variant]="currentStep !== 'passengers'">
-        <div class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-label-sm" [class.bg-primary]="currentStep === 'passengers'" [class.text-on-primary]="currentStep === 'passengers'" [class.bg-surface-container-highest]="currentStep !== 'passengers'">1</div>
+    <div class="flex items-center justify-center gap-2 sm:gap-4 font-label-md text-label-md mb-xl flex-wrap">
+      
+      <!-- Step 1: Passenger Details -->
+      <div class="flex items-center gap-2" [class.text-primary]="currentStep === 'passengers' || isPastStep('passengers')" [class.font-bold]="currentStep === 'passengers'" [class.text-on-surface-variant]="currentStep !== 'passengers' && !isPastStep('passengers')">
+        <div class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-label-sm shadow-xs" 
+          [class.bg-emerald-600]="isPastStep('passengers')" 
+          [class.text-white]="isPastStep('passengers')"
+          [class.bg-primary]="currentStep === 'passengers'" 
+          [class.text-on-primary]="currentStep === 'passengers'" 
+          [class.bg-surface-container-highest]="currentStep !== 'passengers' && !isPastStep('passengers')">
+          @if (isPastStep('passengers')) { ✓ } @else { 1 }
+        </div>
         <span>Passenger Details</span>
       </div>
-      <div class="h-[1px] w-8 bg-outline-variant hidden sm:block"></div>
+      <div class="h-[1px] w-6 sm:w-10 bg-outline-variant hidden sm:block"></div>
 
-      <div class="flex items-center gap-2" [class.text-primary]="currentStep === 'seats'" [class.font-bold]="currentStep === 'seats'" [class.text-on-surface-variant]="currentStep !== 'seats'">
-        <div class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-label-sm" [class.bg-primary]="currentStep === 'seats'" [class.text-on-primary]="currentStep === 'seats'" [class.bg-surface-container-highest]="currentStep !== 'seats'">2</div>
+      <!-- Step 2: Seat Selection -->
+      <div class="flex items-center gap-2" [class.text-primary]="currentStep === 'seats' || isPastStep('seats')" [class.font-bold]="currentStep === 'seats'" [class.text-on-surface-variant]="currentStep !== 'seats' && !isPastStep('seats')">
+        <div class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-label-sm shadow-xs" 
+          [class.bg-emerald-600]="isPastStep('seats')" 
+          [class.text-white]="isPastStep('seats')"
+          [class.bg-primary]="currentStep === 'seats'" 
+          [class.text-on-primary]="currentStep === 'seats'" 
+          [class.bg-surface-container-highest]="currentStep !== 'seats' && !isPastStep('seats')">
+          @if (isPastStep('seats')) { ✓ } @else { 2 }
+        </div>
         <span>Seat Selection</span>
       </div>
-      <div class="h-[1px] w-8 bg-outline-variant hidden sm:block"></div>
+      <div class="h-[1px] w-6 sm:w-10 bg-outline-variant hidden sm:block"></div>
 
-      <div class="flex items-center gap-2" [class.text-primary]="currentStep === 'addons' || currentStep === 'payment'" [class.font-bold]="currentStep === 'payment'" [class.text-on-surface-variant]="currentStep !== 'payment'">
-        <div class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-label-sm" [class.bg-primary]="currentStep === 'payment'" [class.text-on-primary]="currentStep === 'payment'" [class.bg-surface-container-highest]="currentStep !== 'payment'">3</div>
+      <!-- Step 3: Payment & Fare -->
+      <div class="flex items-center gap-2" [class.text-primary]="currentStep === 'addons' || currentStep === 'payment' || isPastStep('payment')" [class.font-bold]="currentStep === 'addons' || currentStep === 'payment'" [class.text-on-surface-variant]="currentStep !== 'payment' && currentStep !== 'addons' && !isPastStep('payment')">
+        <div class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-label-sm shadow-xs" 
+          [class.bg-emerald-600]="isPastStep('payment')" 
+          [class.text-white]="isPastStep('payment')"
+          [class.bg-primary]="currentStep === 'payment' || currentStep === 'addons'" 
+          [class.text-on-primary]="currentStep === 'payment' || currentStep === 'addons'" 
+          [class.bg-surface-container-highest]="currentStep !== 'payment' && currentStep !== 'addons' && !isPastStep('payment')">
+          @if (isPastStep('payment')) { ✓ } @else { 3 }
+        </div>
         <span>Payment & Fare</span>
       </div>
+      <div class="h-[1px] w-6 sm:w-10 bg-outline-variant hidden sm:block"></div>
+
+      <!-- Step 4: Confirmation -->
+      <div class="flex items-center gap-2" [class.text-emerald-700]="currentStep === 'confirmation'" [class.font-bold]="currentStep === 'confirmation'" [class.text-on-surface-variant]="currentStep !== 'confirmation'">
+        <div class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-label-sm shadow-xs" 
+          [class.bg-emerald-600]="currentStep === 'confirmation'" 
+          [class.text-white]="currentStep === 'confirmation'" 
+          [class.bg-surface-container-highest]="currentStep !== 'confirmation'">
+          @if (currentStep === 'confirmation') { ✓ } @else { 4 }
+        </div>
+        <span>Confirmation</span>
+      </div>
+
     </div>
 
     @if (errorMessage) {
@@ -124,7 +162,7 @@
               <div>
                 <h2 class="font-headline-lg text-headline-lg font-bold text-primary mb-1">Select Your Seats</h2>
                 <p class="text-on-surface-variant font-body-sm text-body-sm">
-                  Seats held temporarily with Redis atomic locks (10 min TTL) • Flight #{{ flight?.flightNumber || flightId }}
+                  Flight #{{ flight?.flightNumber || flightId }}
                 </p>
               </div>
               <div class="bg-blue-50 border border-blue-200 px-md py-sm rounded-xl text-right flex items-center gap-2">
@@ -506,7 +544,10 @@
         </div>
 
         <div class="flex justify-center gap-md pt-md">
-          <a routerLink="/my-bookings" class="bg-secondary text-on-secondary px-xl py-md rounded-lg font-label-md text-label-md font-semibold hover:opacity-90 transition-all shadow-sm">View My Bookings</a>
+          @if (booking?.bookingId) {
+            <a [routerLink]="['/booking', booking?.bookingId]" class="bg-secondary text-on-secondary px-xl py-md rounded-lg font-label-md text-label-md font-semibold hover:opacity-90 transition-all shadow-sm">View Ticket</a>
+          }
+          <a routerLink="/my-bookings" class="bg-surface text-primary border border-outline-variant px-xl py-md rounded-lg font-label-md text-label-md font-semibold hover:bg-surface-container-low transition-colors">View My Bookings</a>
           <a routerLink="/" class="bg-surface text-primary border border-outline-variant px-xl py-md rounded-lg font-label-md text-label-md font-semibold hover:bg-surface-container-low transition-colors">Back to Home</a>
         </div>
       </div>
@@ -514,4 +555,3 @@
 
   </div>
 </div>
-

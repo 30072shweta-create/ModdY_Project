@@ -1,10 +1,6 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:8080',
-<<<<<<< HEAD
+  apiUrl: 'http://localhost:8081',
   razorpayKeyId: 'rzp_test_TUGebtD9RnRKDo',
-  googleClientId: '92274469042-idom1lfs8nhao9hbs4i6jofla6rpopqu.apps.googleusercontent.com'
-=======
-  razorpayKeyId: 'rzp_test_TUGebtD9RnRKDo'
->>>>>>> c0433ef5f1e407a86a7aa70b8549f194d827e51f
+  googleClientId: '312887704650-uilh510uio68aquinkb3lb2gc12htmm3.apps.googleusercontent.com'
 };

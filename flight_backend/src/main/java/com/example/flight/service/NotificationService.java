@@ -17,6 +17,7 @@ import com.example.flight.repository.BookingRepository;
 import com.example.flight.repository.NotificationRepository;
 import com.example.flight.repository.UserRepository;
 
+import org.springframework.beans.factory.annotation.Value;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -28,6 +29,9 @@ public class NotificationService {
     private final BookingRepository bookingRepository;
     private final ModelMapper modelMapper;
     private final JavaMailSender mailSender;
+
+    @Value("${spring.mail.username:shwetagaonkar179@gmail.com}")
+    private String fromEmail;
 
 
     // ==========================================
@@ -144,34 +148,42 @@ public class NotificationService {
                         )
                 );
 
-        Notification notification = modelMapper.map(
-                dto,
-                Notification.class
-        );
-
+        Notification notification = new Notification();
         notification.setUser(user);
+        notification.setType(dto.getType() != null ? dto.getType() : "SYSTEM_ALERT");
+        notification.setChannel(dto.getChannel() != null ? dto.getChannel() : "EMAIL");
+        notification.setMessage(dto.getMessage());
+        notification.setCreatedAt(LocalDateTime.now());
 
         if (dto.getBookingId() != null) {
-
             Booking booking = bookingRepository
                     .findById(dto.getBookingId())
-                    .orElseThrow(() ->
-                            new RuntimeException(
-                                    "Booking not found with ID: "
-                                            + dto.getBookingId()
-                            )
-                    );
-
+                    .orElse(null);
             notification.setBooking(booking);
         }
 
-        if (notification.getStatus() == null
-                || notification.getStatus().isBlank()) {
+        String recipientEmail = (dto.getRecipientEmail() != null && !dto.getRecipientEmail().isBlank())
+                ? dto.getRecipientEmail()
+                : user.getEmail();
 
-            notification.setStatus("PENDING");
+        try {
+            if (recipientEmail != null && !recipientEmail.isBlank()) {
+                SimpleMailMessage email = new SimpleMailMessage();
+                if (fromEmail != null && !fromEmail.isBlank()) {
+                    email.setFrom(fromEmail);
+                }
+                email.setTo(recipientEmail);
+                email.setSubject("[SkyRoute] " + (dto.getType() != null ? dto.getType().replace('_', ' ') : "Notification Alert"));
+                email.setText(dto.getMessage());
+
+                mailSender.send(email);
+                notification.setStatus("SENT");
+            } else {
+                notification.setStatus("SKIPPED_NO_EMAIL");
+            }
+        } catch (Exception ex) {
+            notification.setStatus("FAILED");
         }
-
-        notification.setCreatedAt(LocalDateTime.now());
 
         Notification savedNotification =
                 notificationRepository.save(notification);
@@ -264,21 +276,38 @@ public class NotificationService {
     public void sendBookingConfirmationNotification(
             Booking booking
     ) {
+        String flightNumber = "Flight";
+        String departure = "Scheduled";
+        String route = "";
 
-        String subject =
-                "Booking Confirmed - "
-                        + booking.getBookingCode();
+        if (booking.getFlight() != null) {
+            flightNumber = booking.getFlight().getFlightNumber();
+            departure = booking.getFlight().getDepartureTs() != null ? booking.getFlight().getDepartureTs().toString() : "";
+            if (booking.getFlight().getFromAirport() != null && booking.getFlight().getToAirport() != null) {
+                route = booking.getFlight().getFromAirport().getAirportCode() + " -> " + booking.getFlight().getToAirport().getAirportCode();
+            }
+        } else if (booking.getSegments() != null && !booking.getSegments().isEmpty()) {
+            var seg = booking.getSegments().get(0);
+            if (seg.getFlight() != null) {
+                flightNumber = seg.getFlight().getFlightNumber();
+                departure = seg.getFlight().getDepartureTs() != null ? seg.getFlight().getDepartureTs().toString() : "";
+                if (seg.getFlight().getFromAirport() != null && seg.getFlight().getToAirport() != null) {
+                    route = seg.getFlight().getFromAirport().getAirportCode() + " -> " + seg.getFlight().getToAirport().getAirportCode();
+                }
+            }
+        }
 
-        String message =
-                "Your flight booking has been confirmed.\n\n"
-                        + "Booking Code: "
-                        + booking.getBookingCode()
-                        + "\n"
-                        + "Flight: "
-                        + booking.getFlight().getFlightNumber()
-                        + "\n"
-                        + "Departure: "
-                        + booking.getFlight().getDepartureTs();
+        String subject = "Booking Confirmed - " + booking.getBookingCode();
+
+        String message = "Dear Customer,\n\n"
+                + "Your flight booking has been successfully CONFIRMED!\n\n"
+                + "Booking Reference (PNR): " + booking.getBookingCode() + "\n"
+                + "Flight: " + flightNumber + (route.isEmpty() ? "" : " (" + route + ")") + "\n"
+                + "Departure Time: " + departure + "\n"
+                + "Total Amount Paid: ₹" + (booking.getTotalAmount() != null ? booking.getTotalAmount() : "0") + "\n"
+                + "Status: CONFIRMED (CNF)\n\n"
+                + "You can view, print, or download your official boarding pass anytime from your SkyRoute dashboard.\n\n"
+                + "Thank you for choosing SkyRoute Airlines!";
 
         sendAndSaveNotification(
                 booking,
@@ -358,13 +387,13 @@ public class NotificationService {
                 "Booking Cancelled - "
                         + booking.getBookingCode();
 
-        String message =
-                "Your booking has been cancelled.\n\n"
-                        + "Booking Code: "
-                        + booking.getBookingCode()
-                        + "\n"
-                        + "Reason: "
-                        + reason;
+        String message = "Dear Customer,\n\n"
+                + "Your flight booking #" + booking.getBookingCode() + " has been successfully CANCELLED.\n\n"
+                + "Booking Code: " + booking.getBookingCode() + "\n"
+                + "Reason: " + (reason != null ? reason : "User requested cancellation") + "\n"
+                + "Status: CANCELLED\n\n"
+                + "Your refund is being processed back to your original payment method.\n\n"
+                + "Thank you,\nSkyRoute Airlines Support";
 
         sendAndSaveNotification(
                 booking,
@@ -388,13 +417,13 @@ public class NotificationService {
                 "Refund Processed - "
                         + booking.getBookingCode();
 
-        String message =
-                "Your refund has been processed successfully.\n\n"
-                        + "Booking Code: "
-                        + booking.getBookingCode()
-                        + "\n"
-                        + "Refund Amount: ₹"
-                        + refundAmount;
+        String message = "Dear Customer,\n\n"
+                + "Your refund for booking #" + booking.getBookingCode() + " has been PROCESSED.\n\n"
+                + "Booking Code: " + booking.getBookingCode() + "\n"
+                + "Net Refund Amount: ₹" + (refundAmount != null ? refundAmount : "0") + "\n"
+                + "Status: REFUND_SUCCESS\n\n"
+                + "The refund will reflect in your original payment method (Razorpay/Bank Account) within 3-5 business days.\n\n"
+                + "Thank you,\nSkyRoute Airlines Support";
 
         sendAndSaveNotification(
                 booking,
@@ -427,24 +456,21 @@ public class NotificationService {
         notification.setCreatedAt(LocalDateTime.now());
 
         try {
+            if (booking.getUser() != null && booking.getUser().getEmail() != null && !booking.getUser().getEmail().isBlank()) {
+                SimpleMailMessage email = new SimpleMailMessage();
+                if (fromEmail != null && !fromEmail.isBlank()) {
+                    email.setFrom(fromEmail);
+                }
+                email.setTo(booking.getUser().getEmail());
+                email.setSubject(subject);
+                email.setText(message);
 
-            SimpleMailMessage email =
-                    new SimpleMailMessage();
-
-            email.setTo(
-                    booking.getUser().getEmail()
-            );
-
-            email.setSubject(subject);
-
-            email.setText(message);
-
-            mailSender.send(email);
-
-            notification.setStatus("SENT");
-
+                mailSender.send(email);
+                notification.setStatus("SENT");
+            } else {
+                notification.setStatus("SKIPPED_NO_EMAIL");
+            }
         } catch (Exception exception) {
-
             notification.setStatus("FAILED");
         }
 
@@ -467,19 +493,22 @@ public class NotificationService {
                 );
 
         if (notification.getUser() != null) {
-
             response.setUserId(
                     notification.getUser().getUserId()
+            );
+            response.setRecipientEmail(
+                    notification.getUser().getEmail()
             );
         }
 
         if (notification.getBooking() != null) {
-
             response.setBookingId(
                     notification.getBooking()
                             .getBookingId()
             );
         }
+
+        response.setSentAt(notification.getCreatedAt());
 
         return response;
     }

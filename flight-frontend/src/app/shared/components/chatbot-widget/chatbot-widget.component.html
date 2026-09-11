@@ -26,7 +26,10 @@
         *ngFor="let item of messages"
         [class.chat-widget__message--user]="item.role === 'user'"
       >
-        {{ item.text }}
+        <div
+          class="chat-widget__message-content"
+          [innerHTML]="formatMessage(item.text)"
+        ></div>
       </div>
 
       <div class="chat-widget__message chat-widget__message--loading" *ngIf="isLoading">

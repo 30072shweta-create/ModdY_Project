@@ -64,6 +64,45 @@
               </div>
             </div>
 
+            <!-- Route Weather Forecast -->
+            @if (routeWeather) {
+              <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-sky-900 text-white rounded-xl p-md mb-lg border border-sky-700/40">
+                <div class="flex justify-between items-center mb-3">
+                  <span class="text-xs uppercase tracking-wider font-bold text-sky-300 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[16px]">air</span>
+                    Route Weather Forecast
+                  </span>
+                  <span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500 text-white">
+                    ● {{ routeWeather.overallSuitability }} CRUISING CONDITIONS
+                  </span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div class="bg-white/10 p-3 rounded-lg flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-sky-500/20 text-sky-300 flex items-center justify-center">
+                      <span class="material-symbols-outlined text-[24px]">{{ routeWeather.departure.icon }}</span>
+                    </div>
+                    <div>
+                      <div class="text-[11px] uppercase font-bold text-slate-300">Departure: {{ routeWeather.departure.cityName }} ({{ routeWeather.departure.airportCode }})</div>
+                      <div class="text-base font-black text-white">{{ routeWeather.departure.temperature }}°C • {{ routeWeather.departure.condition }}</div>
+                      <div class="text-xs text-sky-200">Wind: {{ routeWeather.departure.windSpeed }} km/h</div>
+                    </div>
+                  </div>
+
+                  <div class="bg-white/10 p-3 rounded-lg flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-amber-500/20 text-amber-300 flex items-center justify-center">
+                      <span class="material-symbols-outlined text-[24px]">{{ routeWeather.destination.icon }}</span>
+                    </div>
+                    <div>
+                      <div class="text-[11px] uppercase font-bold text-slate-300">Arrival: {{ routeWeather.destination.cityName }} ({{ routeWeather.destination.airportCode }})</div>
+                      <div class="text-base font-black text-white">{{ routeWeather.destination.temperature }}°C • {{ routeWeather.destination.condition }}</div>
+                      <div class="text-xs text-amber-200">Wind: {{ routeWeather.destination.windSpeed }} km/h</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+
             <!-- Aircraft Information -->
             @if (aircraft) {
               <div class="border-t border-outline-variant/30 pt-md mb-lg">

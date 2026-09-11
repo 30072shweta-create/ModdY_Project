@@ -1,6 +1,6 @@
 import { Component, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 
 @Component({
@@ -12,6 +12,7 @@ import { AuthService } from '../../../core/auth/auth.service';
 })
 export class NavbarComponent {
   public authService = inject(AuthService);
+  private router = inject(Router);
   public isMobileMenuOpen = false;
   public isScrolled = false;
 
@@ -34,16 +35,16 @@ export class NavbarComponent {
   }
 
   public scrollToAbout(): void {
-    const el = document.getElementById('about-section');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
-  }
-
-  public scrollToHelp(): void {
-    const el = document.getElementById('help-section');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
+    if (this.router.url !== '/' && !this.router.url.startsWith('/#')) {
+      this.router.navigate(['/']).then(() => {
+        setTimeout(() => {
+          const el = document.getElementById('about-section');
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }, 150);
+      });
+    } else {
+      const el = document.getElementById('about-section');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
     }
   }
 }

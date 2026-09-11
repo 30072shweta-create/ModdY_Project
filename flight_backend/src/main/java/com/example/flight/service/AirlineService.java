@@ -2,8 +2,6 @@ package com.example.flight.service;
 
 import java.util.List;
 
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,19 +22,20 @@ public class AirlineService {
     }
 
     // ================= ADD AIRLINE =================
-    @CacheEvict(value = {"airlines", "airlines_all"}, allEntries = true)
     public AirlineResponseDTO addAirline(AirlineRequestDTO request) {
+        String airlineCode = request.getAirlineCode().trim().toUpperCase();
+        String airlineName = request.getAirlineName().trim();
 
-        if (airlineRepository.existsById(request.getAirlineCode())) {
+        if (airlineRepository.existsById(airlineCode)) {
             throw new RuntimeException(
                     "Airline already exists with code: "
-                    + request.getAirlineCode()
+                    + airlineCode
             );
         }
 
         Airline airline = new Airline();
-        airline.setAirlineCode(request.getAirlineCode());
-        airline.setName(request.getAirlineName());
+        airline.setAirlineCode(airlineCode);
+        airline.setName(airlineName);
 
         Airline savedAirline = airlineRepository.save(airline);
 
@@ -44,7 +43,6 @@ public class AirlineService {
     }
 
     // ================= GET ALL AIRLINES =================
-    @Cacheable(value = "airlines_all")
     @Transactional(readOnly = true)
     public List<AirlineResponseDTO> getAllAirlines() {
 
@@ -55,11 +53,10 @@ public class AirlineService {
     }
 
     // ================= GET AIRLINE =================
-    @Cacheable(value = "airlines", key = "#airlineCode")
     @Transactional(readOnly = true)
     public AirlineResponseDTO getAirlineByCode(String airlineCode) {
 
-        Airline airline = airlineRepository.findById(airlineCode)
+        Airline airline = airlineRepository.findById(airlineCode.trim().toUpperCase())
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
                                 "Airline not found with code: "
@@ -70,19 +67,18 @@ public class AirlineService {
     }
 
     // ================= UPDATE AIRLINE =================
-    @CacheEvict(value = {"airlines", "airlines_all"}, allEntries = true)
     public AirlineResponseDTO updateAirline(
             String airlineCode,
             AirlineRequestDTO request) {
 
-        Airline airline = airlineRepository.findById(airlineCode)
+        Airline airline = airlineRepository.findById(airlineCode.trim().toUpperCase())
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
                                 "Airline not found with code: "
                                 + airlineCode
                         ));
 
-        airline.setName(request.getAirlineName());
+        airline.setName(request.getAirlineName().trim());
 
         Airline updatedAirline = airlineRepository.save(airline);
 
@@ -90,10 +86,9 @@ public class AirlineService {
     }
 
     // ================= DELETE AIRLINE =================
-    @CacheEvict(value = {"airlines", "airlines_all"}, allEntries = true)
     public void deleteAirline(String airlineCode) {
 
-        Airline airline = airlineRepository.findById(airlineCode)
+        Airline airline = airlineRepository.findById(airlineCode.trim().toUpperCase())
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
                                 "Airline not found with code: "

@@ -103,7 +103,13 @@ export class AdminHolidaysComponent implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
     this.successMessage = '';
-    const dto = this.holidayForm.value;
+
+    const raw = this.holidayForm.value;
+    const dto: any = {
+      name: raw.name ? raw.name.trim() : '',
+      holidayDate: raw.holidayDate ? raw.holidayDate.split('T')[0] : '',
+      active: raw.active !== false
+    };
 
     if (this.editingId) {
       this.holidaysService.updateHoliday(this.editingId, dto).subscribe({
@@ -111,6 +117,7 @@ export class AdminHolidaysComponent implements OnInit {
           this.isLoading = false;
           this.closeModal();
           this.successMessage = 'Holiday updated successfully!';
+          this.autoDismissToast();
           this.loadHolidays(true);
         },
         error: (err) => this.handleError(err)
@@ -121,6 +128,7 @@ export class AdminHolidaysComponent implements OnInit {
           this.isLoading = false;
           this.closeModal();
           this.successMessage = 'Holiday created successfully!';
+          this.autoDismissToast();
           this.loadHolidays(true);
         },
         error: (err) => this.handleError(err)
@@ -140,12 +148,19 @@ export class AdminHolidaysComponent implements OnInit {
             this.isLoading = false;
             this.confirmModal.show = false;
             this.successMessage = 'Holiday deleted successfully!';
+            this.autoDismissToast();
             this.loadHolidays(true);
           },
           error: (err) => this.handleError(err)
         });
       }
     };
+  }
+
+  private autoDismissToast(): void {
+    setTimeout(() => {
+      this.successMessage = '';
+    }, 4000);
   }
 
   private handleError(err: any): void {

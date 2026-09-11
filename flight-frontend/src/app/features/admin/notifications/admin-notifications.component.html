@@ -65,17 +65,20 @@
             <tr *ngFor="let n of filteredNotifications">
               <td>#{{ n.notificationId }}</td>
               <td>
-                <strong>{{ n.recipientEmail }}</strong>
+                <strong>{{ n.recipientEmail || 'Customer' }}</strong>
               </td>
               <td>
                 <span class="type-badge">{{ n.type }}</span>
               </td>
               <td class="message-cell">{{ n.message }}</td>
               <td>{{ n.bookingId ? '#' + n.bookingId : '-' }}</td>
-              <td>{{ n.sentAt | date:'medium' }}</td>
+              <td>{{ (n.sentAt || n.createdAt) ? ((n.sentAt || n.createdAt) | date:'medium') : 'Just now' }}</td>
               <td>
-                <span class="badge" [class.badge--completed]="n.read" [class.badge--cancelled]="!n.read">
-                  {{ n.read ? 'Read' : 'Unread' }}
+                <span class="badge" 
+                  [class.badge--completed]="n.status === 'SENT' || n.status === 'SUCCESS'" 
+                  [class.badge--cancelled]="n.status === 'FAILED'" 
+                  [class.badge--pending]="n.status === 'PENDING' || n.status === 'SKIPPED_NO_EMAIL'">
+                  {{ n.status || 'SENT' }}
                 </span>
               </td>
               <td>
@@ -93,13 +96,19 @@
     </div>
 
     <!-- Add Modal -->
-    <div class="modal-backdrop" *ngIf="showModal">
-      <form class="modal" [formGroup]="notificationForm" (ngSubmit)="submitNotification()">
+    <div class="modal-backdrop" *ngIf="showModal" (click)="closeModal()">
+      <form class="modal" [formGroup]="notificationForm" (ngSubmit)="submitNotification()" (click)="$event.stopPropagation()">
         <div class="modal__header">
           <h3>Send New Notification</h3>
           <button type="button" class="modal__close" (click)="closeModal()">&times;</button>
         </div>
         <div class="modal__body">
+          <!-- Modal Error Alert -->
+          <div class="admin-alert admin-alert--error" *ngIf="modalErrorMessage" style="margin-bottom: 16px; padding: 10px 14px;">
+            <span class="material-symbols-outlined text-[18px]">error</span>
+            <span style="font-size: 0.85rem;">{{ modalErrorMessage }}</span>
+          </div>
+
           <div class="form-group">
             <label>Select Target User *</label>
             <select class="form-control" formControlName="userId" (change)="onUserSelect($event)">
@@ -115,7 +124,7 @@
 
           <div class="form-group">
             <label>Recipient Email *</label>
-            <input type="email" class="form-control" formControlName="recipientEmail" />
+            <input type="email" class="form-control" formControlName="recipientEmail" placeholder="e.g. user@example.com" />
           </div>
 
           <div class="form-group">
@@ -143,8 +152,12 @@
         </div>
 
         <div class="modal__footer">
-          <button type="button" class="btn btn--secondary" (click)="closeModal()">Cancel</button>
-          <button type="submit" class="btn btn--primary" [disabled]="isLoading">Send Notification</button>
+          <button type="button" class="btn btn--secondary" (click)="closeModal()" [disabled]="isSending">Cancel</button>
+          <button type="submit" class="btn btn--primary" [disabled]="isSending">
+            <span class="material-symbols-outlined text-[18px]" *ngIf="!isSending">send</span>
+            <span *ngIf="!isSending">Send Notification</span>
+            <span *ngIf="isSending">Sending Email...</span>
+          </button>
         </div>
       </form>
     </div>

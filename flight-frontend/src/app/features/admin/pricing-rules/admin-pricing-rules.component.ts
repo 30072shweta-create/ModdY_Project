@@ -117,7 +117,28 @@ export class AdminPricingRulesComponent implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
     this.successMessage = '';
-    const dto = this.ruleForm.value;
+
+    const raw = this.ruleForm.value;
+    const dto: any = {
+      name: raw.name ? raw.name.trim() : '',
+      ruleType: raw.ruleType,
+      adjustmentType: raw.adjustmentType,
+      adjustmentValue: Number(raw.adjustmentValue),
+      priority: raw.priority ? Number(raw.priority) : 1,
+      active: raw.active !== false
+    };
+
+    if (raw.effectiveFrom && raw.effectiveFrom.trim()) {
+      dto.effectiveFrom = raw.effectiveFrom.includes('T') ? raw.effectiveFrom : `${raw.effectiveFrom}T00:00:00`;
+    } else {
+      dto.effectiveFrom = null;
+    }
+
+    if (raw.effectiveTo && raw.effectiveTo.trim()) {
+      dto.effectiveTo = raw.effectiveTo.includes('T') ? raw.effectiveTo : `${raw.effectiveTo}T23:59:59`;
+    } else {
+      dto.effectiveTo = null;
+    }
 
     if (this.editingId) {
       this.pricingService.updateRule(this.editingId, dto).subscribe({
@@ -125,6 +146,7 @@ export class AdminPricingRulesComponent implements OnInit {
           this.isLoading = false;
           this.closeModal();
           this.successMessage = 'Pricing rule updated successfully!';
+          this.autoDismissToast();
           this.loadRules(true);
         },
         error: (err) => this.handleError(err)
@@ -135,6 +157,7 @@ export class AdminPricingRulesComponent implements OnInit {
           this.isLoading = false;
           this.closeModal();
           this.successMessage = 'Pricing rule created successfully!';
+          this.autoDismissToast();
           this.loadRules(true);
         },
         error: (err) => this.handleError(err)
@@ -154,12 +177,19 @@ export class AdminPricingRulesComponent implements OnInit {
             this.isLoading = false;
             this.confirmModal.show = false;
             this.successMessage = 'Pricing rule deleted successfully!';
+            this.autoDismissToast();
             this.loadRules(true);
           },
           error: (err) => this.handleError(err)
         });
       }
     };
+  }
+
+  private autoDismissToast(): void {
+    setTimeout(() => {
+      this.successMessage = '';
+    }, 4000);
   }
 
   private handleError(err: any): void {

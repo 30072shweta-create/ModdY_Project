@@ -28,7 +28,6 @@
         </div>
       }
 
-<<<<<<< HEAD
       <div class="google-signin-wrap mb-6" [class.google-signin-wrap--loading]="isGoogleLoading">
         <div id="googleSignInButton" class="google-signin-button"></div>
         @if (isGoogleLoading) {
@@ -43,8 +42,6 @@
         <span>or sign in with email</span>
       </div>
 
-=======
->>>>>>> c0433ef5f1e407a86a7aa70b8549f194d827e51f
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
         <div>
           <label class="block font-label-md text-label-md font-semibold text-on-surface mb-1" for="email">Email</label>
@@ -68,13 +65,26 @@
             <label class="block font-label-md text-label-md font-semibold text-on-surface" for="password">Password</label>
             <a routerLink="/forgot-password" class="font-label-md text-label-md text-secondary hover:text-on-secondary-fixed-variant font-semibold transition-colors">Forgot password?</a>
           </div>
-          <input 
-            type="password" 
-            id="password" 
-            formControlName="password" 
-            class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest shadow-sm focus:border-secondary focus:ring-1 focus:ring-secondary font-body-md text-body-md py-3 px-4 outline-none transition-all" 
-            placeholder="••••••••" 
-          />
+          <div class="password-input-wrap">
+            <input 
+              [type]="showPassword ? 'text' : 'password'" 
+              id="password" 
+              formControlName="password" 
+              class="w-full rounded-lg border border-outline-variant bg-surface-container-lowest shadow-sm focus:border-secondary focus:ring-1 focus:ring-secondary font-body-md text-body-md py-3 px-4 pr-12 outline-none transition-all" 
+              placeholder="Enter your password" 
+            />
+            <button
+              type="button"
+              class="password-toggle"
+              (click)="togglePasswordVisibility()"
+              [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+              [attr.title]="showPassword ? 'Hide password' : 'Show password'"
+            >
+              <span class="material-symbols-outlined text-[20px]">
+                {{ showPassword ? 'visibility_off' : 'visibility' }}
+              </span>
+            </button>
+          </div>
           @if (loginForm.get('password')?.touched && loginForm.get('password')?.hasError('required')) {
             <small class="text-error font-label-sm text-label-sm block mt-1">Password is required</small>
           }
@@ -99,7 +109,3 @@
     </div>
   </div>
 </div>
-<<<<<<< HEAD
-=======
-
->>>>>>> c0433ef5f1e407a86a7aa70b8549f194d827e51f

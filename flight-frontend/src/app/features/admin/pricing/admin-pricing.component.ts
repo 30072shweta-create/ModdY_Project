@@ -23,6 +23,7 @@ export class AdminPricingComponent implements OnInit {
   public flightsList: FlightResponseDTO[] = [];
   public search = '';
   public isLoading = false;
+  public isSaving = false;
   public errorMessage = '';
   public successMessage = '';
 
@@ -39,13 +40,13 @@ export class AdminPricingComponent implements OnInit {
   public pricingForm: FormGroup = this.fb.group({
     flightId: ['', [Validators.required]],
     cabinClass: ['ECONOMY', [Validators.required]],
-    baseFare: [100, [Validators.required, Validators.min(0)]],
-    tax: [15, [Validators.min(0)]],
-    airportFee: [10, [Validators.min(0)]],
-    convenienceFee: [5, [Validators.min(0)]],
+    baseFare: [1000, [Validators.required, Validators.min(0)]],
+    tax: [150, [Validators.min(0)]],
+    airportFee: [100, [Validators.min(0)]],
+    convenienceFee: [50, [Validators.min(0)]],
     baggageFee: [0, [Validators.min(0)]],
     discount: [0, [Validators.min(0)]],
-    currency: ['USD', [Validators.required]]
+    currency: ['INR', [Validators.required]]
   });
 
   public ngOnInit(): void {
@@ -101,13 +102,13 @@ export class AdminPricingComponent implements OnInit {
     this.editingId = null;
     this.pricingForm.reset({
       cabinClass: 'ECONOMY',
-      baseFare: 100,
-      tax: 15,
-      airportFee: 10,
-      convenienceFee: 5,
+      baseFare: 1000,
+      tax: 150,
+      airportFee: 100,
+      convenienceFee: 50,
       baggageFee: 0,
       discount: 0,
-      currency: 'USD'
+      currency: 'INR'
     });
     this.showModal = true;
   }
@@ -123,7 +124,7 @@ export class AdminPricingComponent implements OnInit {
       convenienceFee: pricing.convenienceFee || 0,
       baggageFee: pricing.baggageFee || 0,
       discount: pricing.discount || 0,
-      currency: pricing.currency || 'USD'
+      currency: pricing.currency || 'INR'
     });
     this.showModal = true;
   }
@@ -139,7 +140,7 @@ export class AdminPricingComponent implements OnInit {
       return;
     }
 
-    this.isLoading = true;
+    this.isSaving = true;
     this.errorMessage = '';
     this.successMessage = '';
     const raw = this.pricingForm.value;
@@ -158,23 +159,13 @@ export class AdminPricingComponent implements OnInit {
 
     if (this.editingId) {
       this.pricingService.updatePricing(this.editingId, dto).subscribe({
-        next: () => {
-          this.isLoading = false;
-          this.closeModal();
-          this.successMessage = 'Pricing record updated successfully!';
-          this.loadPricing(true);
-        },
-        error: (err) => this.handleError(err)
+        next: () => this.handlePricingSaveSuccess('Pricing record updated successfully!'),
+        error: (err) => this.handlePricingSaveError(err)
       });
     } else {
       this.pricingService.addPricing(dto).subscribe({
-        next: () => {
-          this.isLoading = false;
-          this.closeModal();
-          this.successMessage = 'Pricing record created successfully!';
-          this.loadPricing(true);
-        },
-        error: (err) => this.handleError(err)
+        next: () => this.handlePricingSaveSuccess('Pricing record created successfully!'),
+        error: (err) => this.handlePricingSaveError(err)
       });
     }
   }
@@ -204,7 +195,57 @@ export class AdminPricingComponent implements OnInit {
     if (err.status === 403) {
       this.errorMessage = 'You do not have permission to perform this action.';
     } else {
-      this.errorMessage = err.error?.message || err.error || 'Failed to process pricing request.';
+      this.errorMessage = this.getErrorMessage(err, 'Failed to process pricing request.');
     }
+  }
+
+  private handlePricingSaveSuccess(message: string): void {
+    this.isSaving = false;
+    this.closeModal();
+    this.pricingForm.reset({
+      cabinClass: 'ECONOMY',
+      baseFare: 100,
+      tax: 15,
+      airportFee: 10,
+      convenienceFee: 5,
+      baggageFee: 0,
+      discount: 0,
+      currency: 'USD'
+    });
+    this.successMessage = message;
+    this.autoDismissToast();
+    this.loadPricing(true);
+  }
+
+  private autoDismissToast(): void {
+    setTimeout(() => {
+      this.successMessage = '';
+    }, 4000);
+  }
+
+  private handlePricingSaveError(err: any): void {
+    if (err?.status >= 200 && err?.status < 300) {
+      this.handlePricingSaveSuccess(this.editingId ? 'Pricing record updated successfully!' : 'Pricing record created successfully!');
+      return;
+    }
+
+    this.isSaving = false;
+    this.handleError(err);
+  }
+
+  private getErrorMessage(err: any, fallback: string): string {
+    if (typeof err?.error === 'string') {
+      return err.error;
+    }
+
+    if (typeof err?.error?.message === 'string') {
+      return err.error.message;
+    }
+
+    if (typeof err?.message === 'string') {
+      return err.message;
+    }
+
+    return fallback;
   }
 }

@@ -11,13 +11,14 @@ public class NotificationRequestDTO {
 
     private Long bookingId;
 
+    private String recipientEmail;
+
     @NotBlank(message = "Notification type is required")
     @Size(max = 50)
     private String type;
 
-    @NotBlank(message = "Notification channel is required")
     @Size(max = 50)
-    private String channel;
+    private String channel = "EMAIL";
 
     @NotBlank(message = "Notification message is required")
     private String message;
@@ -31,10 +32,13 @@ public class NotificationRequestDTO {
     public Long getBookingId() { return bookingId; }
     public void setBookingId(Long bookingId) { this.bookingId = bookingId; }
 
+    public String getRecipientEmail() { return recipientEmail; }
+    public void setRecipientEmail(String recipientEmail) { this.recipientEmail = recipientEmail; }
+
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
 
-    public String getChannel() { return channel; }
+    public String getChannel() { return (channel != null && !channel.isBlank()) ? channel : "EMAIL"; }
     public void setChannel(String channel) { this.channel = channel; }
 
     public String getMessage() { return message; }

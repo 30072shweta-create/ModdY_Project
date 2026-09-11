@@ -1,13 +1,8 @@
-<<<<<<< HEAD
 import { AfterViewInit, Component, OnDestroy, inject } from '@angular/core';
-=======
-import { Component, inject } from '@angular/core';
->>>>>>> c0433ef5f1e407a86a7aa70b8549f194d827e51f
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
-<<<<<<< HEAD
 import { environment } from '../../../../environments/environment';
 
 declare global {
@@ -40,8 +35,6 @@ interface GoogleButtonOptions {
   text: 'signin_with' | 'signup_with' | 'continue_with' | 'signin';
   width: number;
 }
-=======
->>>>>>> c0433ef5f1e407a86a7aa70b8549f194d827e51f
 
 @Component({
   selector: 'app-login',
@@ -50,11 +43,7 @@ interface GoogleButtonOptions {
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-<<<<<<< HEAD
 export class LoginComponent implements AfterViewInit, OnDestroy {
-=======
-export class LoginComponent {
->>>>>>> c0433ef5f1e407a86a7aa70b8549f194d827e51f
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
@@ -66,8 +55,8 @@ export class LoginComponent {
   });
 
   public isLoading = false;
-<<<<<<< HEAD
   public isGoogleLoading = false;
+  public showPassword = false;
   public errorMessage = '';
   public returnUrl: string = this.route.snapshot.queryParams['returnUrl'] || '/';
   private googleButtonRendered = false;
@@ -79,10 +68,6 @@ export class LoginComponent {
   public ngOnDestroy(): void {
     window.google?.accounts.id.cancel();
   }
-=======
-  public errorMessage = '';
-  public returnUrl: string = this.route.snapshot.queryParams['returnUrl'] || '/';
->>>>>>> c0433ef5f1e407a86a7aa70b8549f194d827e51f
 
   public onSubmit(): void {
     if (this.loginForm.invalid) {
@@ -96,23 +81,18 @@ export class LoginComponent {
     this.authService.login(this.loginForm.value).subscribe({
       next: (res) => {
         this.isLoading = false;
-<<<<<<< HEAD
         this.redirectAfterLogin(res.user.role);
-=======
-        if (res.user.role === 'ADMIN') {
-          this.router.navigate(['/admin']);
-        } else {
-          this.router.navigateByUrl(this.returnUrl);
-        }
->>>>>>> c0433ef5f1e407a86a7aa70b8549f194d827e51f
       },
       error: (err) => {
         this.isLoading = false;
-        this.errorMessage = err.error?.message || err.error || 'Login failed. Please check your credentials.';
+        this.errorMessage = this.getLoginErrorMessage(err);
       }
     });
   }
-<<<<<<< HEAD
+
+  public togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
 
   public renderGoogleButton(): void {
     if (this.googleButtonRendered) {
@@ -173,6 +153,16 @@ export class LoginComponent {
       this.router.navigateByUrl(this.returnUrl);
     }
   }
-=======
->>>>>>> c0433ef5f1e407a86a7aa70b8549f194d827e51f
+
+  private getLoginErrorMessage(err: any): string {
+    if (err?.status === 0) {
+      return 'Cannot connect to backend. Please start the Spring Boot server on http://localhost:8081 and try again.';
+    }
+
+    if (typeof err?.error === 'string') {
+      return err.error;
+    }
+
+    return err?.error?.message || 'Login failed. Please check your credentials.';
+  }
 }

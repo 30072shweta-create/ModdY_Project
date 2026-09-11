@@ -61,7 +61,7 @@ public class Payment {
     )
     private Booking booking;
 
-    @Enumerated(EnumType.STRING)
+    @jakarta.persistence.Convert(converter = PaymentMethodConverter.class)
     @Column(
             name = "payment_method",
             length = 50,
@@ -79,13 +79,12 @@ public class Payment {
 
     @Column(
             name = "currency",
-            length = 10,
-            nullable = false
+            length = 10
     )
     @Builder.Default
     private String currency = "INR";
 
-    @Enumerated(EnumType.STRING)
+    @jakarta.persistence.Convert(converter = PaymentStatusConverter.class)
     @Column(
             name = "status",
             length = 50,

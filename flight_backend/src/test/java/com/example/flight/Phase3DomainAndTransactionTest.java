@@ -332,7 +332,40 @@ public class Phase3DomainAndTransactionTest {
     }
 
     @Test
-    @DisplayName("6. Transactional Booking Confirmation with Valid Redis Seat Lock")
+    @DisplayName("6. Booking response includes full ticket data with passengers and fare")
+    void testBookingResponseIncludesPassengersAndFare() {
+        BookingRequestDTO bookingRequest = new BookingRequestDTO();
+        bookingRequest.setFlightIds(List.of(testFlight.getFlightId()));
+        bookingRequest.setCabinClass(CabinClass.ECONOMY);
+
+        BookingResponseDTO bookingResponse = bookingService.createBooking(bookingRequest, testUser.getEmail());
+        Booking bookingEntity = bookingRepository.findByIdWithDetails(bookingResponse.getBookingId()).orElseThrow();
+
+        Passenger firstPassenger = new Passenger();
+        firstPassenger.setBooking(bookingEntity);
+        firstPassenger.setFirstName("John");
+        firstPassenger.setLastName("Doe");
+        firstPassenger.setSeatNumber("12A");
+        passengerRepository.save(firstPassenger);
+
+        Passenger secondPassenger = new Passenger();
+        secondPassenger.setBooking(bookingEntity);
+        secondPassenger.setFirstName("Jane");
+        secondPassenger.setLastName("Doe");
+        secondPassenger.setSeatNumber("12B");
+        passengerRepository.save(secondPassenger);
+
+        BookingResponseDTO loadedBooking = bookingService.getBookingById(bookingResponse.getBookingId());
+
+        assertNotNull(loadedBooking.getBookingCode());
+        assertEquals(2, loadedBooking.getPassengers().size());
+        assertEquals("John", loadedBooking.getPassengers().get(0).getFirstName());
+        assertEquals("Jane", loadedBooking.getPassengers().get(1).getFirstName());
+        assertNotNull(loadedBooking.getTotalAmount());
+    }
+
+    @Test
+    @DisplayName("7. Transactional Booking Confirmation with Valid Redis Seat Lock")
     void testBookingConfirmationWithRedisSeatLock() {
         // Create booking
         BookingRequestDTO bookingRequest = new BookingRequestDTO();

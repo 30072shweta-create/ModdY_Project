@@ -2,6 +2,8 @@ package com.example.flight.service;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
@@ -11,17 +13,33 @@ import com.example.flight.model.Domain;
 @Service
 public class KnowledgeService {
 
+    private final Map<Domain, String> knowledgeCache = new ConcurrentHashMap<>();
+
     public String getKnowledge(Domain domain) {
-        String mainKnowledge = readFile("knowledge/" + domain.getFileName());
-        String faqKnowledge = readFile("faq/" + domain.getFaqFileName());
+        if (domain == null) {
+            return getAllKnowledge();
+        }
+        return knowledgeCache.computeIfAbsent(domain, d -> {
+            String mainKnowledge = readFile("knowledge/" + d.getFileName());
+            String faqKnowledge = readFile("faq/" + d.getFaqFileName());
 
-        return """
-                MAIN KNOWLEDGE:
-                %s
+            return """
+                    === DOMAIN: %s ===
+                    MAIN KNOWLEDGE:
+                    %s
 
-                FREQUENTLY ASKED QUESTIONS:
-                %s
-                """.formatted(mainKnowledge, faqKnowledge);
+                    FREQUENTLY ASKED QUESTIONS:
+                    %s
+                    """.formatted(d.getDisplayName(), mainKnowledge, faqKnowledge);
+        });
+    }
+
+    public String getAllKnowledge() {
+        StringBuilder sb = new StringBuilder();
+        for (Domain d : Domain.values()) {
+            sb.append(getKnowledge(d)).append("\n\n");
+        }
+        return sb.toString();
     }
 
     private String readFile(String filePath) {
@@ -29,7 +47,7 @@ public class KnowledgeService {
             ClassPathResource resource = new ClassPathResource(filePath);
             return resource.getContentAsString(StandardCharsets.UTF_8);
         } catch (IOException e) {
-            throw new IllegalStateException("Unable to load knowledge file: " + filePath, e);
+            return "";
         }
     }
 }

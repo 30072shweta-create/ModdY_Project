@@ -34,6 +34,7 @@ public class BookingCancellationService {
     private final FlightRepository flightRepository;
     private final PaymentRepository paymentRepository;
     private final PaymentGateway paymentGateway;
+    private final NotificationService notificationService;
 
     @Transactional
     public BookingCancellationResponseDTO cancelBooking(
@@ -192,14 +193,25 @@ public class BookingCancellationService {
         }
 
         Flight flight = booking.getFlight();
+        if (flight != null) {
+            flight.setAvailableSeats(
+                    (short) (
+                            flight.getAvailableSeats() + 1
+                    )
+            );
+            flightRepository.save(flight);
+        } else if (booking.getSegments() != null) {
+            for (var seg : booking.getSegments()) {
+                if (seg.getFlight() != null) {
+                    Flight f = seg.getFlight();
+                    f.setAvailableSeats((short) (f.getAvailableSeats() + 1));
+                    flightRepository.save(f);
+                }
+            }
+        }
 
-        flight.setAvailableSeats(
-                (short) (
-                        flight.getAvailableSeats() + 1
-                )
-        );
-
-        flightRepository.save(flight);
+        notificationService.sendCancellationNotification(booking, dto.getReason());
+        notificationService.sendRefundNotification(booking, refundAmount);
 
         return convertToResponse(savedCancellation);
     }
@@ -218,6 +230,80 @@ public class BookingCancellationService {
                         );
 
         return convertToResponse(cancellation);
+    }
+
+    public BookingCancellationResponseDTO getCancellationByBookingReference(
+            String bookingReference
+    ) {
+        if (bookingReference == null || bookingReference.isBlank()) {
+            throw new RuntimeException("Booking reference is required");
+        }
+        String ref = bookingReference.trim();
+        try {
+            Long bookingId = Long.parseLong(ref);
+            var opt = cancellationRepository.findByBookingBookingId(bookingId);
+            if (opt.isPresent()) {
+                return convertToResponse(opt.get());
+            }
+        } catch (NumberFormatException ignored) {}
+
+        return cancellationRepository.findByBookingBookingCodeIgnoreCase(ref)
+                .map(this::convertToResponse)
+                .orElseThrow(() -> new RuntimeException("Cancellation not found for booking reference: " + ref));
+    }
+
+    public String calculateEstimatedRefund(String bookingReference) {
+        if (bookingReference == null || bookingReference.isBlank()) {
+            return "Booking reference is required to calculate estimated refund.";
+        }
+        Booking booking = null;
+        try {
+            Long bookingId = Long.parseLong(bookingReference.trim());
+            booking = bookingRepository.findById(bookingId).orElse(null);
+        } catch (NumberFormatException ignored) {}
+
+        if (booking == null) {
+            booking = bookingRepository.findByBookingCodeIgnoreCase(bookingReference.trim()).orElse(null);
+        }
+
+        if (booking == null) {
+            return "Booking not found with reference: " + bookingReference;
+        }
+
+        if (booking.getStatus() == BookingStatus.CANCELLED) {
+            return "Booking " + booking.getBookingCode() + " has already been cancelled.";
+        }
+
+        LocalDateTime departureTs = null;
+        if (booking.getFlight() != null) {
+            departureTs = booking.getFlight().getDepartureTs();
+        } else if (booking.getSegments() != null && !booking.getSegments().isEmpty() && booking.getSegments().get(0).getFlight() != null) {
+            departureTs = booking.getSegments().get(0).getFlight().getDepartureTs();
+        }
+
+        if (departureTs == null) {
+            return "Departure time not available to calculate refund for booking " + booking.getBookingCode();
+        }
+
+        long hoursToDeparture = Duration.between(LocalDateTime.now(), departureTs).toHours();
+        BigDecimal originalAmount = booking.getTotalAmount() != null ? booking.getTotalAmount() : BigDecimal.ZERO;
+        BigDecimal feePercentage;
+        if (hoursToDeparture > 24) {
+            feePercentage = new BigDecimal("0.10");
+        } else if (hoursToDeparture >= 6) {
+            feePercentage = new BigDecimal("0.25");
+        } else {
+            feePercentage = new BigDecimal("0.50");
+        }
+
+        BigDecimal fee = originalAmount.multiply(feePercentage).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal refund = originalAmount.subtract(fee).setScale(2, RoundingMode.HALF_UP);
+
+        int feePercentInt = feePercentage.multiply(BigDecimal.valueOf(100)).intValue();
+        return "Cancellation estimate for booking " + booking.getBookingCode() + " (" + hoursToDeparture + " hours before flight):\n"
+                + "• Original Booking Amount: ₹" + originalAmount + "\n"
+                + "• Cancellation Charge (" + feePercentInt + "%): ₹" + fee + "\n"
+                + "• Estimated Refund (" + (100 - feePercentInt) + "%): ₹" + refund;
     }
 
     private BookingCancellationResponseDTO convertToResponse(

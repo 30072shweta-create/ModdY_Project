@@ -17,6 +17,14 @@ public class ChatRequest {
     @Size(max = 1000, message = "Message cannot exceed 1000 characters")
     private String message;
 
+    public ChatRequest() {}
+
+    public ChatRequest(String conversationId, Domain domain, String message) {
+        this.conversationId = conversationId;
+        this.domain = domain;
+        this.message = message;
+    }
+
     public String getConversationId() {
         return conversationId;
     }

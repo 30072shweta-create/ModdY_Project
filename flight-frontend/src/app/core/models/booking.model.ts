@@ -41,6 +41,7 @@ export interface BookingResponseDTO {
   totalAmount: number;
   bookingTs: string;
   segments: BookingSegmentResponseDTO[];
+  passengers: PassengerResponseDTO[];
 }
 
 export interface PassengerRequestDTO {
@@ -87,10 +88,13 @@ export interface BookingCancellationRequestDTO {
 export interface BookingCancellationResponseDTO {
   cancellationId: number;
   bookingId: number;
-  cancellationCode: string;
-  reason: string;
-  cancelledAt: string;
+  cancellationCode?: string;
+  bookingCode?: string;
+  reason?: string;
+  cancelledAt?: string;
+  originalAmount?: number;
+  cancellationCharge?: number;
+  cancellationFee?: number;
   refundAmount: number;
-  cancellationFee: number;
   status: string;
 }

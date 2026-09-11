@@ -11,6 +11,7 @@ import { VerifyEmailComponent } from './features/auth/verify-email/verify-email.
 
 import { FlightListComponent } from './features/flights/flight-list/flight-list.component';
 import { FlightDetailComponent } from './features/flights/flight-detail/flight-detail.component';
+import { AboutComponent } from './features/about/about.component';
 
 import { BookingFlowComponent } from './features/booking/booking-flow.component';
 import { MyBookingsComponent } from './features/bookings/my-bookings/my-bookings.component';
@@ -34,6 +35,7 @@ import { AdminNotificationsComponent } from './features/admin/notifications/admi
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
+  { path: 'about', component: AboutComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },

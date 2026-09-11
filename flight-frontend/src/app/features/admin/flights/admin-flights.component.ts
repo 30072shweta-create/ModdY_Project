@@ -120,10 +120,11 @@ export class AdminFlightsComponent implements OnInit {
     return this.flights.filter((f) => {
       const matchSearch =
         !this.flightSearch ||
-        f.flightNumber.toLowerCase().includes(this.flightSearch.toLowerCase()) ||
-        f.airlineCode.toLowerCase().includes(this.flightSearch.toLowerCase()) ||
-        f.fromAirport.toLowerCase().includes(this.flightSearch.toLowerCase()) ||
-        f.toAirport.toLowerCase().includes(this.flightSearch.toLowerCase());
+        (f.flightNumber || '').toLowerCase().includes(this.flightSearch.toLowerCase()) ||
+        (f.airlineCode || '').toLowerCase().includes(this.flightSearch.toLowerCase()) ||
+        (f.airlineName || '').toLowerCase().includes(this.flightSearch.toLowerCase()) ||
+        (f.fromAirport || '').toLowerCase().includes(this.flightSearch.toLowerCase()) ||
+        (f.toAirport || '').toLowerCase().includes(this.flightSearch.toLowerCase());
       const matchStatus = !this.flightStatusFilter || f.status === this.flightStatusFilter;
       return matchSearch && matchStatus;
     });
@@ -190,10 +191,10 @@ export class AdminFlightsComponent implements OnInit {
     if (arr && arr.length === 16) arr += ':00';
 
     const payload = {
-      flightNumber: raw.flightNumber,
-      airlineCode: raw.airlineCode,
-      fromAirport: raw.fromAirport,
-      toAirport: raw.toAirport,
+      flightNumber: raw.flightNumber.trim().toUpperCase(),
+      airlineCode: raw.airlineCode.trim().toUpperCase(),
+      fromAirport: raw.fromAirport.trim().toUpperCase(),
+      toAirport: raw.toAirport.trim().toUpperCase(),
       aircraftId: raw.aircraftId ? Number(raw.aircraftId) : null,
       departureTs: dep,
       arrivalTs: arr,
@@ -206,23 +207,13 @@ export class AdminFlightsComponent implements OnInit {
 
     if (this.editingFlightId) {
       this.flightsService.updateFlight(this.editingFlightId, payload).subscribe({
-        next: () => {
-          this.isLoading = false;
-          this.closeFlightModal();
-          this.successMessage = 'Flight updated successfully!';
-          this.loadAllData(true);
-        },
-        error: (err) => this.handleError(err)
+        next: () => this.handleFlightSaveSuccess('Flight updated successfully!'),
+        error: (err) => this.handleFlightSaveError(err)
       });
     } else {
       this.flightsService.addFlight(payload).subscribe({
-        next: () => {
-          this.isLoading = false;
-          this.closeFlightModal();
-          this.successMessage = 'Flight added successfully!';
-          this.loadAllData(true);
-        },
-        error: (err) => this.handleError(err)
+        next: () => this.handleFlightSaveSuccess('Flight added successfully!'),
+        error: (err) => this.handleFlightSaveError(err)
       });
     }
   }
@@ -298,6 +289,10 @@ export class AdminFlightsComponent implements OnInit {
     return `${found.airlineName} (${found.airlineCode})`;
   }
 
+  public getFlightNumberLabel(flight: FlightResponseDTO): string {
+    return flight.flightNumber?.trim() || `#${flight.flightId}`;
+  }
+
   private routeValidator(group: AbstractControl): ValidationErrors | null {
     const from = group.get('fromAirport')?.value;
     const to = group.get('toAirport')?.value;
@@ -321,11 +316,50 @@ export class AdminFlightsComponent implements OnInit {
     if (err.status === 403) {
       this.errorMessage = 'You do not have permission to perform this action.';
     } else if (err.status === 409) {
-      this.errorMessage = err.error?.message || 'Flight schedule conflict.';
+      this.errorMessage = this.getErrorMessage(err, 'Flight schedule conflict.');
     } else if (err.status === 0) {
       this.errorMessage = 'Unable to connect to the server.';
     } else {
-      this.errorMessage = err.error?.message || err.error || 'Failed to process flight request.';
+      this.errorMessage = this.getErrorMessage(err, 'Failed to process flight request.');
     }
+  }
+
+  private handleFlightSaveSuccess(message: string): void {
+    this.isLoading = false;
+    this.closeFlightModal();
+    this.successMessage = message;
+    this.autoDismissToast();
+    this.loadAllData(true);
+  }
+
+  private autoDismissToast(): void {
+    setTimeout(() => {
+      this.successMessage = '';
+    }, 4000);
+  }
+
+  private handleFlightSaveError(err: any): void {
+    if (err?.status === 200 || err?.status === 201) {
+      this.handleFlightSaveSuccess(this.editingFlightId ? 'Flight updated successfully!' : 'Flight added successfully!');
+      return;
+    }
+
+    this.handleError(err);
+  }
+
+  private getErrorMessage(err: any, fallback: string): string {
+    if (typeof err?.error === 'string') {
+      return err.error;
+    }
+
+    if (typeof err?.error?.message === 'string') {
+      return err.error.message;
+    }
+
+    if (typeof err?.message === 'string') {
+      return err.message;
+    }
+
+    return fallback;
   }
 }

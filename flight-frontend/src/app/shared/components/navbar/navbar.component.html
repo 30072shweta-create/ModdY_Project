@@ -11,28 +11,20 @@
       <a routerLink="/flights"
          routerLinkActive="navbar__link--active"
          [routerLinkActiveOptions]="{exact: false}"
-         class="navbar__link">Flights</a>
+         class="navbar__link">Flight Search</a>
       <a routerLink="/my-bookings"
          routerLinkActive="navbar__link--active"
-         class="navbar__link">Manage Booking</a>
-      <a routerLink="/notifications"
+         class="navbar__link">My Trips</a>
+      <a routerLink="/about"
          routerLinkActive="navbar__link--active"
-         class="navbar__link"
-         *ngIf="authService.isAuthenticated()">Notifications</a>
-      <a class="navbar__link" (click)="scrollToAbout()">About</a>
-      <a class="navbar__link" (click)="scrollToHelp()">Help</a>
+         class="navbar__link">About</a>
     </nav>
 
     <!-- Desktop Right Actions -->
     <div class="navbar__actions-desktop">
       <!-- Search Icon -->
-      <a routerLink="/search" class="navbar__icon-btn" aria-label="Search flights">
+      <a routerLink="/flights" class="navbar__icon-btn" aria-label="Search flights" title="Flight Search">
         <span class="material-symbols-outlined">search</span>
-      </a>
-
-      <!-- Notification Bell -->
-      <a routerLink="/notifications" class="navbar__icon-btn" aria-label="Notifications" *ngIf="authService.isAuthenticated()">
-        <span class="material-symbols-outlined">notifications</span>
       </a>
 
       <!-- Unauthenticated: Login & Sign Up -->
@@ -77,21 +69,14 @@
          routerLinkActive="navbar__mobile-link--active"
          [routerLinkActiveOptions]="{exact: false}"
          class="navbar__mobile-link" (click)="closeMobileMenu()">
-        <span class="material-symbols-outlined">flight</span>
-        Flights
+        <span class="material-symbols-outlined">search</span>
+        Flight Search
       </a>
       <a routerLink="/my-bookings"
          routerLinkActive="navbar__mobile-link--active"
          class="navbar__mobile-link" (click)="closeMobileMenu()">
-        <span class="material-symbols-outlined">confirmation_number</span>
-        Manage Booking
-      </a>
-      <a routerLink="/notifications"
-         routerLinkActive="navbar__mobile-link--active"
-         class="navbar__mobile-link" (click)="closeMobileMenu()"
-         *ngIf="authService.isAuthenticated()">
-        <span class="material-symbols-outlined">notifications</span>
-        Notifications
+        <span class="material-symbols-outlined">luggage</span>
+        My Trips
       </a>
       <a routerLink="/profile"
          routerLinkActive="navbar__mobile-link--active"
@@ -100,13 +85,11 @@
         <span class="material-symbols-outlined">person</span>
         Profile
       </a>
-      <a class="navbar__mobile-link" (click)="scrollToAbout(); closeMobileMenu()">
-        <span class="material-symbols-outlined">info</span>
+      <a routerLink="/about"
+         routerLinkActive="navbar__mobile-link--active"
+         class="navbar__mobile-link" (click)="closeMobileMenu()">
+        <span class="material-symbols-outlined">corporate_fare</span>
         About
-      </a>
-      <a class="navbar__mobile-link" (click)="scrollToHelp(); closeMobileMenu()">
-        <span class="material-symbols-outlined">help</span>
-        Help
       </a>
 
       <!-- Admin in mobile -->

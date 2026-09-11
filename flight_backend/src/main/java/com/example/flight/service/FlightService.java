@@ -1,5 +1,6 @@
 package com.example.flight.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -18,13 +19,16 @@ import com.example.flight.dto.FlightStatusRequestDTO;
 import com.example.flight.entity.Aircraft;
 import com.example.flight.entity.Airline;
 import com.example.flight.entity.Airport;
+import com.example.flight.entity.CabinClass;
 import com.example.flight.entity.Flight;
+import com.example.flight.entity.FlightPricing;
 import com.example.flight.entity.FlightStatus;
 import com.example.flight.exception.AircraftNotFoundException;
 import com.example.flight.exception.InvalidAircraftException;
 import com.example.flight.repository.AircraftRepository;
 import com.example.flight.repository.AirlineRepository;
 import com.example.flight.repository.AirportRepository;
+import com.example.flight.repository.FlightPricingRepository;
 import com.example.flight.repository.FlightRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -37,12 +41,13 @@ public class FlightService {
     private final AirlineRepository airlineRepository;
     private final AirportRepository airportRepository;
     private final AircraftRepository aircraftRepository;
+    private final FlightPricingRepository flightPricingRepository;
     private final ModelMapper modelMapper;
 
     // Get All Flights
     @Transactional(readOnly = true)
     public List<FlightResponseDTO> getAllFlights() {
-        return flightRepository.findAll()
+        return flightRepository.findAllWithDetails()
                 .stream()
                 .map(this::convertToResponse)
                 .toList();
@@ -55,6 +60,17 @@ public class FlightService {
                 .orElseThrow(() -> new RuntimeException("Flight not found with ID: " + flightId));
 
         return convertToResponse(flight);
+    }
+
+    // Track Flight By Flight Number
+    @Transactional(readOnly = true)
+    public FlightResponseDTO trackFlight(String flightNumber) {
+        if (flightNumber == null || flightNumber.isBlank()) {
+            throw new RuntimeException("Flight number is required for tracking");
+        }
+        return flightRepository.findByFlightNumberWithDetails(flightNumber.trim())
+                .map(this::convertToResponse)
+                .orElseThrow(() -> new RuntimeException("Flight not found with flight number: " + flightNumber.trim()));
     }
 
     // Search Flights
@@ -101,13 +117,22 @@ public class FlightService {
     // Add Flight
     @Transactional
     public FlightResponseDTO addFlight(FlightRequestDTO dto) {
-        Airline airline = airlineRepository.findById(dto.getAirlineCode())
+        String flightNumber = dto.getFlightNumber().trim().toUpperCase();
+        String airlineCode = dto.getAirlineCode().trim().toUpperCase();
+        String fromAirportCode = dto.getFromAirport().trim().toUpperCase();
+        String toAirportCode = dto.getToAirport().trim().toUpperCase();
+
+        if (flightRepository.existsByFlightNumberIgnoreCase(flightNumber)) {
+            throw new RuntimeException("Flight already exists with number: " + flightNumber);
+        }
+
+        Airline airline = airlineRepository.findById(airlineCode)
                 .orElseThrow(() -> new RuntimeException("Airline not found"));
 
-        Airport sourceAirport = airportRepository.findById(dto.getFromAirport())
+        Airport sourceAirport = airportRepository.findById(fromAirportCode)
                 .orElseThrow(() -> new RuntimeException("Source Airport not found"));
 
-        Airport destinationAirport = airportRepository.findById(dto.getToAirport())
+        Airport destinationAirport = airportRepository.findById(toAirportCode)
                 .orElseThrow(() -> new RuntimeException("Destination Airport not found"));
 
         Aircraft aircraft = null;
@@ -122,6 +147,7 @@ public class FlightService {
 
         Flight flight = modelMapper.map(dto, Flight.class);
         flight.setFlightId(null);
+        flight.setFlightNumber(flightNumber);
         flight.setAirline(airline);
         flight.setFromAirport(sourceAirport);
         flight.setToAirport(destinationAirport);
@@ -133,6 +159,7 @@ public class FlightService {
         }
 
         Flight savedFlight = flightRepository.save(flight);
+        ensureEconomyPricing(savedFlight);
         return convertToResponse(savedFlight);
     }
 
@@ -142,13 +169,18 @@ public class FlightService {
         Flight flight = flightRepository.findById(flightId)
                 .orElseThrow(() -> new RuntimeException("Flight not found"));
 
-        Airline airline = airlineRepository.findById(dto.getAirlineCode())
+        String flightNumber = dto.getFlightNumber().trim().toUpperCase();
+        String airlineCode = dto.getAirlineCode().trim().toUpperCase();
+        String fromAirportCode = dto.getFromAirport().trim().toUpperCase();
+        String toAirportCode = dto.getToAirport().trim().toUpperCase();
+
+        Airline airline = airlineRepository.findById(airlineCode)
                 .orElseThrow(() -> new RuntimeException("Airline not found"));
 
-        Airport sourceAirport = airportRepository.findById(dto.getFromAirport())
+        Airport sourceAirport = airportRepository.findById(fromAirportCode)
                 .orElseThrow(() -> new RuntimeException("Source Airport not found"));
 
-        Airport destinationAirport = airportRepository.findById(dto.getToAirport())
+        Airport destinationAirport = airportRepository.findById(toAirportCode)
                 .orElseThrow(() -> new RuntimeException("Destination Airport not found"));
 
         Aircraft aircraft = null;
@@ -161,7 +193,7 @@ public class FlightService {
             }
         }
 
-        flight.setFlightNumber(dto.getFlightNumber());
+        flight.setFlightNumber(flightNumber);
         if (dto.getDepartureTs() != null) flight.setDepartureTs(dto.getDepartureTs());
         if (dto.getArrivalTs() != null) flight.setArrivalTs(dto.getArrivalTs());
         if (dto.getStops() != null) flight.setStops(dto.getStops());
@@ -176,6 +208,7 @@ public class FlightService {
         flight.setAircraft(aircraft);
 
         Flight updatedFlight = flightRepository.save(flight);
+        ensureEconomyPricing(updatedFlight);
         return convertToResponse(updatedFlight);
     }
 
@@ -226,6 +259,42 @@ public class FlightService {
             case "duration" -> "durationMins";
             default -> "departureTs";
         };
+    }
+
+    private void ensureEconomyPricing(Flight flight) {
+        if (flight.getFlightId() == null) {
+            return;
+        }
+
+        boolean hasEconomyPricing = flightPricingRepository
+                .findByFlightFlightIdAndSeatClass(flight.getFlightId(), CabinClass.ECONOMY)
+                .isPresent();
+
+        if (hasEconomyPricing) {
+            return;
+        }
+
+        LocalDateTime effectiveFrom = flight.getDepartureTs() != null
+                ? flight.getDepartureTs().minusDays(1)
+                : LocalDateTime.now();
+
+        FlightPricing pricing = FlightPricing.builder()
+                .flight(flight)
+                .seatClass(CabinClass.ECONOMY)
+                .baseFare(flight.getBasePrice() != null ? flight.getBasePrice() : BigDecimal.ZERO)
+                .tax(BigDecimal.ZERO)
+                .taxes(BigDecimal.ZERO)
+                .airportFee(BigDecimal.ZERO)
+                .convenienceFee(BigDecimal.ZERO)
+                .baggageFee(BigDecimal.ZERO)
+                .discount(BigDecimal.ZERO)
+                .currency("INR")
+                .effectiveFrom(effectiveFrom)
+                .effectiveTo(null)
+                .build();
+
+        pricing.calculateFinalPrice();
+        flightPricingRepository.save(pricing);
     }
 
     // Update Flight Status (Admin)

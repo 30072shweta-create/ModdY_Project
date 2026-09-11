@@ -74,7 +74,7 @@
               <td>{{ rule.adjustmentType }}</td>
               <td>
                 <span [class.text-danger]="rule.adjustmentValue < 0" [class.text-success]="rule.adjustmentValue > 0">
-                  {{ rule.adjustmentValue > 0 ? '+' : '' }}{{ rule.adjustmentType === 'PERCENTAGE' ? rule.adjustmentValue + '%' : (rule.adjustmentValue | currency) }}
+                  {{ rule.adjustmentValue > 0 ? '+' : '' }}{{ rule.adjustmentType === 'PERCENTAGE' ? rule.adjustmentValue + '%' : (rule.adjustmentValue | currency:'INR':'symbol':'1.2-2') }}
                 </span>
               </td>
               <td>{{ rule.priority || 1 }}</td>
@@ -138,7 +138,7 @@
             <label>Adjustment Type *</label>
             <select class="form-control" formControlName="adjustmentType">
               <option value="PERCENTAGE">PERCENTAGE (%)</option>
-              <option value="FIXED">FIXED AMOUNT ($)</option>
+              <option value="FIXED">FIXED AMOUNT (₹)</option>
             </select>
           </div>
 

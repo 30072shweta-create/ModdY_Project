@@ -3,7 +3,9 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FlightsService } from '../../../core/services/flights.service';
 import { AircraftService } from '../../../core/services/aircraft.service';
+import { WeatherService } from '../../../core/services/weather.service';
 import { FlightResponseDTO, AircraftResponseDTO } from '../../../core/models/flight.model';
+import { RouteWeather } from '../../../core/models/weather.model';
 
 @Component({
   selector: 'app-flight-detail',
@@ -17,9 +19,11 @@ export class FlightDetailComponent implements OnInit {
   private router = inject(Router);
   private flightsService = inject(FlightsService);
   private aircraftService = inject(AircraftService);
+  private weatherService = inject(WeatherService);
 
   public flight: FlightResponseDTO | null = null;
   public aircraft: AircraftResponseDTO | null = null;
+  public routeWeather: RouteWeather | null = null;
   public isLoading = true;
   public errorMessage = '';
 
@@ -38,6 +42,12 @@ export class FlightDetailComponent implements OnInit {
         this.isLoading = false;
         if (data.aircraftId) {
           this.loadAircraft(data.aircraftId);
+        }
+        if (data.fromAirport && data.toAirport) {
+          this.weatherService.getRouteWeather(data.fromAirport, data.toAirport).subscribe({
+            next: (rw) => this.routeWeather = rw,
+            error: () => {}
+          });
         }
       },
       error: (err) => {

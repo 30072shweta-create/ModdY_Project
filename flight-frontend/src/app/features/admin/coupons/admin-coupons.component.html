@@ -71,10 +71,10 @@
               </td>
               <td>{{ coupon.discountType }}</td>
               <td>
-                {{ coupon.discountType === 'PERCENTAGE' ? coupon.discountValue + '%' : (coupon.discountValue | currency) }}
+                {{ coupon.discountType === 'PERCENTAGE' ? coupon.discountValue + '%' : (coupon.discountValue | currency:'INR':'symbol':'1.2-2') }}
               </td>
-              <td>{{ coupon.minimumBookingAmount ? (coupon.minimumBookingAmount | currency) : '-' }}</td>
-              <td>{{ coupon.maximumDiscount ? (coupon.maximumDiscount | currency) : '-' }}</td>
+              <td>{{ coupon.minimumBookingAmount ? (coupon.minimumBookingAmount | currency:'INR':'symbol':'1.2-2') : '-' }}</td>
+              <td>{{ coupon.maximumDiscount ? (coupon.maximumDiscount | currency:'INR':'symbol':'1.2-2') : '-' }}</td>
               <td>
                 <small *ngIf="coupon.validFrom || coupon.validTo">
                   {{ coupon.validFrom | date:'shortDate' }} - {{ coupon.validTo | date:'shortDate' }}
@@ -126,7 +126,7 @@
             <label>Discount Type *</label>
             <select class="form-control" formControlName="discountType">
               <option value="PERCENTAGE">PERCENTAGE (%)</option>
-              <option value="FIXED">FIXED AMOUNT ($)</option>
+              <option value="FIXED">FIXED AMOUNT (₹)</option>
             </select>
           </div>
 

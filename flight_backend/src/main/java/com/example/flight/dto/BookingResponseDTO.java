@@ -3,6 +3,7 @@ package com.example.flight.dto;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+
 import com.example.flight.entity.BookingStatus;
 import com.example.flight.entity.PaymentStatus;
 
@@ -16,6 +17,7 @@ public class BookingResponseDTO {
     private BigDecimal totalAmount;
     private LocalDateTime bookingTs;
     private List<BookingSegmentResponseDTO> segments;
+    private List<PassengerResponseDTO> passengers;
 
     public Long getBookingId() { return bookingId; }
     public void setBookingId(Long bookingId) { this.bookingId = bookingId; }
@@ -40,4 +42,7 @@ public class BookingResponseDTO {
 
     public List<BookingSegmentResponseDTO> getSegments() { return segments; }
     public void setSegments(List<BookingSegmentResponseDTO> segments) { this.segments = segments; }
+
+    public List<PassengerResponseDTO> getPassengers() { return passengers; }
+    public void setPassengers(List<PassengerResponseDTO> passengers) { this.passengers = passengers; }
 }

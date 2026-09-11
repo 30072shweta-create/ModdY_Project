@@ -87,6 +87,66 @@
           }
         </div>
 
+        <!-- Live Route Weather Forecast Card -->
+        @if (routeWeather) {
+          <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-sky-900 text-white rounded-2xl p-5 shadow-md border border-sky-700/40 relative overflow-hidden">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              
+              <!-- Route Title & Overall Flying Condition -->
+              <div class="space-y-1">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="text-xs uppercase tracking-wider font-bold text-sky-300 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[16px]">air</span>
+                    Live Route Weather & Flight Conditions
+                  </span>
+                  <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold"
+                    [class.bg-emerald-500]="routeWeather.overallSuitability === 'OPTIMAL' || routeWeather.overallSuitability === 'GOOD'"
+                    [class.text-white]="routeWeather.overallSuitability === 'OPTIMAL' || routeWeather.overallSuitability === 'GOOD'"
+                    [class.bg-amber-500]="routeWeather.overallSuitability === 'MODERATE'"
+                    [class.text-white]="routeWeather.overallSuitability === 'MODERATE'"
+                    [class.bg-rose-500]="routeWeather.overallSuitability === 'CAUTION'"
+                    [class.text-white]="routeWeather.overallSuitability === 'CAUTION'">
+                    ● {{ routeWeather.summaryText }}
+                  </span>
+                </div>
+                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                  <span>{{ routeWeather.departure.cityName }} ({{ routeWeather.departure.airportCode }})</span>
+                  <span class="text-sky-400">✈</span>
+                  <span>{{ routeWeather.destination.cityName }} ({{ routeWeather.destination.airportCode }})</span>
+                </h3>
+              </div>
+
+              <!-- Weather Boxes for Origin & Destination -->
+              <div class="grid grid-cols-2 gap-3 w-full md:w-auto">
+                <!-- Departure Weather -->
+                <div class="bg-white/10 backdrop-blur-sm p-3 rounded-xl border border-white/10 flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-lg bg-sky-500/20 text-sky-300 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[24px]">{{ routeWeather.departure.icon }}</span>
+                  </div>
+                  <div>
+                    <div class="text-[10px] uppercase font-bold text-slate-300">Origin ({{ routeWeather.departure.airportCode }})</div>
+                    <div class="text-lg font-black text-white leading-tight">{{ routeWeather.departure.temperature }}°C</div>
+                    <div class="text-[11px] text-sky-200 font-medium">{{ routeWeather.departure.condition }} • {{ routeWeather.departure.windSpeed }} km/h</div>
+                  </div>
+                </div>
+
+                <!-- Destination Weather -->
+                <div class="bg-white/10 backdrop-blur-sm p-3 rounded-xl border border-white/10 flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-lg bg-amber-500/20 text-amber-300 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[24px]">{{ routeWeather.destination.icon }}</span>
+                  </div>
+                  <div>
+                    <div class="text-[10px] uppercase font-bold text-slate-300">Destination ({{ routeWeather.destination.airportCode }})</div>
+                    <div class="text-lg font-black text-white leading-tight">{{ routeWeather.destination.temperature }}°C</div>
+                    <div class="text-[11px] text-amber-200 font-medium">{{ routeWeather.destination.condition }} • {{ routeWeather.destination.windSpeed }} km/h</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        }
+
         <!-- Flight Results List -->
         @if (isLoading) {
           <div class="bg-surface-container-lowest rounded-xl p-3xl flight-card-shadow border border-outline-variant/50 flex flex-col items-center justify-center py-2xl text-center">

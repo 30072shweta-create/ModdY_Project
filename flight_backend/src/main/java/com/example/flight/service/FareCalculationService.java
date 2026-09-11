@@ -6,7 +6,6 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +19,6 @@ import com.example.flight.entity.FlightPricing;
 import com.example.flight.entity.PricingRule;
 import com.example.flight.entity.RuleType;
 import com.example.flight.exception.FlightNotFoundException;
-import com.example.flight.exception.PricingNotFoundException;
 import com.example.flight.repository.BookingRepository;
 import com.example.flight.repository.FlightPricingRepository;
 import com.example.flight.repository.FlightRepository;
@@ -52,8 +50,7 @@ public class FareCalculationService {
 
         FlightPricing pricing = flightPricingRepository.findActivePricing(flight.getFlightId(), seatClass, travelTs)
                 .orElseGet(() -> flightPricingRepository.findByFlightFlightIdAndSeatClass(flight.getFlightId(), seatClass)
-                        .orElseThrow(() -> new PricingNotFoundException(
-                                "No active pricing found for flight " + flight.getFlightId() + " and cabin class " + seatClass)));
+                        .orElseGet(() -> createDefaultPricingFromFlight(flight, seatClass, travelTs)));
 
         int passengerCount = (request.getPassengerCount() != null && request.getPassengerCount() > 0) ? request.getPassengerCount() : 1;
 
@@ -136,6 +133,26 @@ public class FareCalculationService {
                 .finalPrice(finalPrice.setScale(2, RoundingMode.HALF_UP))
                 .totalFare(finalPrice.setScale(2, RoundingMode.HALF_UP))
                 .build();
+    }
+
+    private FlightPricing createDefaultPricingFromFlight(Flight flight, CabinClass seatClass, LocalDateTime travelTs) {
+        FlightPricing pricing = FlightPricing.builder()
+                .flight(flight)
+                .seatClass(seatClass)
+                .baseFare(flight.getBasePrice() != null ? flight.getBasePrice() : BigDecimal.ZERO)
+                .tax(BigDecimal.ZERO)
+                .taxes(BigDecimal.ZERO)
+                .airportFee(BigDecimal.ZERO)
+                .convenienceFee(BigDecimal.ZERO)
+                .baggageFee(BigDecimal.ZERO)
+                .discount(BigDecimal.ZERO)
+                .currency("INR")
+                .effectiveFrom(travelTs != null ? travelTs.minusDays(1) : LocalDateTime.now())
+                .effectiveTo(null)
+                .build();
+
+        pricing.calculateFinalPrice();
+        return flightPricingRepository.save(pricing);
     }
 
     private BigDecimal calculateWeekendAdjustment(LocalDateTime travelTs, BigDecimal baseFare) {

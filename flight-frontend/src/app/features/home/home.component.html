@@ -125,7 +125,6 @@
             <input type="date" formControlName="returnDate" class="date-input" />
           </div>
 
-<<<<<<< HEAD
           <!-- AIRLINE -->
           <div class="form-card airline-card">
             <div class="card-label">
@@ -140,8 +139,6 @@
             </select>
           </div>
 
-=======
->>>>>>> c0433ef5f1e407a86a7aa70b8549f194d827e51f
           <!-- CABIN CLASS -->
           <div class="form-card class-card">
             <div class="card-label">
@@ -365,30 +362,115 @@
   </div>
 </section>
 
-<!-- About Section -->
-<section id="about" class="info-section bg-slate-50">
-  <div class="info-container">
-    <div class="info-text">
-      <span class="section-tag">ABOUT SKYROUTE</span>
-      <h2 class="section-title">Elevating Modern Air Travel</h2>
-      <p class="section-subtitle">
-        SkyRoute is a next-generation flight reservation platform engineered for speed, clarity, and reliability.
-        Whether you are booking transcontinental corporate travel or a weekend getaway, our system provides real-time route optimization, transparent fare calculations, and instant ticket confirmations.
+<!-- About Section with Company Showcase Photos -->
+<section id="about-section" class="py-20 bg-slate-50 border-t border-slate-200/80">
+  <div class="max-w-7xl mx-auto px-6 lg:px-8">
+    
+    <!-- Section Header -->
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-100 text-blue-800 mb-3">
+        <span class="material-symbols-outlined text-[16px]">corporate_fare</span>
+        About SkyRoute Airlines
+      </span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-4">
+        Connecting the World with Precision & Elegance
+      </h2>
+      <p class="text-base sm:text-lg text-slate-600 leading-relaxed">
+        Founded with a vision to redefine commercial aviation, SkyRoute combines state-of-the-art aircraft technology, exemplary passenger hospitality, and real-time smart booking infrastructure to deliver effortless journeys across the globe.
       </p>
     </div>
-  </div>
-</section>
 
-<!-- Help Section -->
-<section id="help" class="info-section bg-white border-t border-slate-200">
-  <div class="info-container">
-    <div class="info-text">
-      <span class="section-tag">HELP & SUPPORT</span>
-      <h2 class="section-title">We Are Here to Assist Your Journey</h2>
-      <p class="section-subtitle">
-        Need help managing a booking, updating passenger details, or checking baggage policies?
-        Our 24/7 passenger assistance center is ready to ensure your journey is effortless from takeoff to touchdown.
-      </p>
+    <!-- Company Stats Counter Grid -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
+      <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm text-center">
+        <div class="text-3xl sm:text-4xl font-black text-blue-600 mb-1 font-mono">250+</div>
+        <div class="text-xs sm:text-sm font-bold text-slate-700 uppercase tracking-wide">Global Routes</div>
+        <p class="text-xs text-slate-500 mt-1">Direct & connecting flights</p>
+      </div>
+
+      <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm text-center">
+        <div class="text-3xl sm:text-4xl font-black text-blue-600 mb-1 font-mono">1.2M+</div>
+        <div class="text-xs sm:text-sm font-bold text-slate-700 uppercase tracking-wide">Happy Passengers</div>
+        <p class="text-xs text-slate-500 mt-1">Flown with 5-star comfort</p>
+      </div>
+
+      <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm text-center">
+        <div class="text-3xl sm:text-4xl font-black text-blue-600 mb-1 font-mono">99.8%</div>
+        <div class="text-xs sm:text-sm font-bold text-slate-700 uppercase tracking-wide">On-Time Dispatch</div>
+        <p class="text-xs text-slate-500 mt-1">Industry-leading punctuality</p>
+      </div>
+
+      <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm text-center">
+        <div class="text-3xl sm:text-4xl font-black text-blue-600 mb-1 font-mono">24/7</div>
+        <div class="text-xs sm:text-sm font-bold text-slate-700 uppercase tracking-wide">Operations Control</div>
+        <p class="text-xs text-slate-500 mt-1">Continuous live support</p>
+      </div>
     </div>
+
+    <!-- Company Photos Gallery Bento Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      
+      <!-- Photo 1: Modern Fleet in Flight (Span 2 cols on md) -->
+      <div class="md:col-span-2 relative group overflow-hidden rounded-2xl shadow-md border border-slate-200 h-[280px] sm:h-[340px]">
+        <img 
+          src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=1200&q=80" 
+          alt="SkyRoute Modern Aircraft Fleet" 
+          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+        />
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent"></div>
+        <div class="absolute bottom-6 left-6 right-6 text-white">
+          <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-600 text-white uppercase tracking-wider">Our Modern Fleet</span>
+          <h3 class="text-xl sm:text-2xl font-bold mt-2">Next-Gen Boeing 787 & Airbus A350 Aircraft</h3>
+          <p class="text-xs sm:text-sm text-slate-200 mt-1 max-w-xl">Eco-efficient engines delivering 25% lower carbon emissions and whisper-quiet cabin cruising.</p>
+        </div>
+      </div>
+
+      <!-- Photo 2: Premium Cabin Experience -->
+      <div class="relative group overflow-hidden rounded-2xl shadow-md border border-slate-200 h-[280px] sm:h-[340px]">
+        <img 
+          src="https://images.unsplash.com/photo-1569154941061-e231b4725ef1?auto=format&fit=crop&w=800&q=80" 
+          alt="Premium Cabin Interior" 
+          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+        />
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent"></div>
+        <div class="absolute bottom-6 left-6 right-6 text-white">
+          <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-600 text-white uppercase tracking-wider">In-Flight Luxury</span>
+          <h3 class="text-lg sm:text-xl font-bold mt-2">Ergonomic Cabin Suites</h3>
+          <p class="text-xs text-slate-200 mt-1">Full lie-flat seats, 4K entertainment screens, and gourmet chef-curated dining.</p>
+        </div>
+      </div>
+
+      <!-- Photo 3: Flight Crew & Captains -->
+      <div class="relative group overflow-hidden rounded-2xl shadow-md border border-slate-200 h-[260px] sm:h-[300px]">
+        <img 
+          src="https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&w=800&q=80" 
+          alt="SkyRoute Certified Flight Crew" 
+          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+        />
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent"></div>
+        <div class="absolute bottom-6 left-6 right-6 text-white">
+          <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-600 text-white uppercase tracking-wider">Expert Aviation Team</span>
+          <h3 class="text-base sm:text-lg font-bold mt-1">World-Class Certified Crew</h3>
+          <p class="text-xs text-slate-200 mt-1">Trained to rigorous ICAO international aviation safety & hospitality standards.</p>
+        </div>
+      </div>
+
+      <!-- Photo 4: Operations Control & Airport Lounges (Span 2 cols on md) -->
+      <div class="md:col-span-2 relative group overflow-hidden rounded-2xl shadow-md border border-slate-200 h-[260px] sm:h-[300px]">
+        <img 
+          src="https://images.unsplash.com/photo-1506015391300-4802dc74de2e?auto=format&fit=crop&w=1200&q=80" 
+          alt="Global Operations Center & Terminal Lounge" 
+          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+        />
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent"></div>
+        <div class="absolute bottom-6 left-6 right-6 text-white">
+          <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-600 text-white uppercase tracking-wider">Ground Hospitality</span>
+          <h3 class="text-xl sm:text-2xl font-bold mt-1">Global Hubs & Exclusive Signature Lounges</h3>
+          <p class="text-xs sm:text-sm text-slate-200 mt-1 max-w-xl">Relax prior to boarding with high-speed Wi-Fi, private work pods, and refreshing signature beverages.</p>
+        </div>
+      </div>
+
+    </div>
+
   </div>
 </section>

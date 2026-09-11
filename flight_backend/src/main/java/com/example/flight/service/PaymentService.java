@@ -209,9 +209,8 @@ private final NotificationService notificationService;
 
         Payment savedPayment =
                 paymentRepository.save(payment);
-                notificationService.sendPaymentSuccessNotification(
-        booking
-);
+        notificationService.sendPaymentSuccessNotification(booking);
+        notificationService.sendBookingConfirmationNotification(booking);
 
 
         return convertToResponse(savedPayment);

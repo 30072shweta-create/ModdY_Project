@@ -11,10 +11,7 @@ const isPublicEndpoint = (url: string): boolean => {
   return url.includes('/auth/') ||
          url.includes('/api/airports') ||
          url.includes('/api/airlines') ||
-<<<<<<< HEAD
          url.includes('/api/chat') ||
-=======
->>>>>>> c0433ef5f1e407a86a7aa70b8549f194d827e51f
          url.includes('/api/flights');
 };
 

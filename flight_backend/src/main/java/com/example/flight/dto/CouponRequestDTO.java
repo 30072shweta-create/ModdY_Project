@@ -32,7 +32,10 @@ public class CouponRequestDTO {
     private BigDecimal minimumBookingAmount;
     private BigDecimal maximumDiscount;
 
+    @com.fasterxml.jackson.annotation.JsonFormat(pattern = "yyyy-MM-dd[ 'T'HH:mm[:ss]]")
     private LocalDateTime validFrom;
+
+    @com.fasterxml.jackson.annotation.JsonFormat(pattern = "yyyy-MM-dd[ 'T'HH:mm[:ss]]")
     private LocalDateTime validTo;
 
     private Integer usageLimit;

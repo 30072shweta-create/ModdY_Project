@@ -107,10 +107,10 @@ export class AdminAirportsComponent implements OnInit {
     this.successMessage = '';
 
     const dto = {
-      airportCode: this.airportForm.value.airportCode,
-      name: this.airportForm.value.name,
-      city: this.airportForm.value.city,
-      country: this.airportForm.value.country
+      airportCode: this.airportForm.value.airportCode.trim().toUpperCase(),
+      name: this.airportForm.value.name.trim(),
+      city: this.airportForm.value.city.trim(),
+      country: this.airportForm.value.country.trim()
     };
 
     if (this.editingCode) {
@@ -119,6 +119,7 @@ export class AdminAirportsComponent implements OnInit {
           this.isLoading = false;
           this.closeModal();
           this.successMessage = 'Airport updated successfully!';
+          this.autoDismissToast();
           this.loadAirports(true);
         },
         error: (err) => this.handleError(err)
@@ -129,6 +130,7 @@ export class AdminAirportsComponent implements OnInit {
           this.isLoading = false;
           this.closeModal();
           this.successMessage = 'Airport added successfully!';
+          this.autoDismissToast();
           this.loadAirports(true);
         },
         error: (err) => this.handleError(err)
@@ -149,6 +151,7 @@ export class AdminAirportsComponent implements OnInit {
             this.isLoading = false;
             this.confirmModal.show = false;
             this.successMessage = 'Airport deleted successfully!';
+            this.autoDismissToast();
             this.loadAirports(true);
           },
           error: (err) => this.handleError(err)
@@ -157,16 +160,39 @@ export class AdminAirportsComponent implements OnInit {
     };
   }
 
+  private autoDismissToast(): void {
+    setTimeout(() => {
+      this.successMessage = '';
+    }, 4000);
+  }
+
   private handleError(err: any): void {
     this.isLoading = false;
+
     if (err.status === 403) {
       this.errorMessage = 'You do not have permission to perform this action.';
     } else if (err.status === 409) {
-      this.errorMessage = err.error?.message || 'Airport code already exists.';
+      this.errorMessage = this.getErrorMessage(err, 'Airport code already exists.');
     } else if (err.status === 0) {
       this.errorMessage = 'Unable to connect to the server.';
     } else {
-      this.errorMessage = err.error?.message || err.error || 'Failed to process airport request.';
+      this.errorMessage = this.getErrorMessage(err, 'Failed to process airport request.');
     }
+  }
+
+  private getErrorMessage(err: any, fallback: string): string {
+    if (typeof err?.error === 'string') {
+      return err.error;
+    }
+
+    if (typeof err?.error?.message === 'string') {
+      return err.error.message;
+    }
+
+    if (typeof err?.message === 'string') {
+      return err.message;
+    }
+
+    return fallback;
   }
 }

@@ -71,15 +71,15 @@
               <td>
                 <span class="badge badge--completed">{{ item.cabinClass }}</span>
               </td>
-              <td>{{ item.baseFare | currency:(item.currency || 'USD') }}</td>
+              <td>{{ item.baseFare | currency:(item.currency || 'INR'):'symbol':'1.2-2' }}</td>
               <td>
-                {{ ((item.tax || 0) + (item.airportFee || 0) + (item.convenienceFee || 0) + (item.baggageFee || 0)) | currency:(item.currency || 'USD') }}
+                {{ ((item.tax || 0) + (item.airportFee || 0) + (item.convenienceFee || 0) + (item.baggageFee || 0)) | currency:(item.currency || 'INR'):'symbol':'1.2-2' }}
               </td>
-              <td>{{ item.discount ? (item.discount | currency:(item.currency || 'USD')) : '-' }}</td>
+              <td>{{ item.discount ? (item.discount | currency:(item.currency || 'INR'):'symbol':'1.2-2') : '-' }}</td>
               <td>
-                <strong>{{ item.finalPrice ? (item.finalPrice | currency:(item.currency || 'USD')) : (item.baseFare | currency:(item.currency || 'USD')) }}</strong>
+                <strong>{{ item.finalPrice ? (item.finalPrice | currency:(item.currency || 'INR'):'symbol':'1.2-2') : (item.baseFare | currency:(item.currency || 'INR'):'symbol':'1.2-2') }}</strong>
               </td>
-              <td>{{ item.currency || 'USD' }}</td>
+              <td>{{ item.currency || 'INR' }}</td>
               <td>
                 <div class="action-buttons">
                   <button class="btn-icon" (click)="openEditModal(item)" title="Edit">
@@ -126,17 +126,20 @@
               <option value="ECONOMY">ECONOMY</option>
               <option value="PREMIUM_ECONOMY">PREMIUM ECONOMY</option>
               <option value="BUSINESS">BUSINESS</option>
-              <option value="FIRST">FIRST</option>
+              <option value="FIRST">FIRST CLASS</option>
             </select>
           </div>
 
           <div class="form-group">
             <label>Base Fare *</label>
             <input type="number" class="form-control" formControlName="baseFare" step="0.01" />
+            <div class="error-text" *ngIf="pricingForm.get('baseFare')?.touched && pricingForm.get('baseFare')?.invalid">
+              Base fare is required.
+            </div>
           </div>
 
           <div class="form-group">
-            <label>Tax Amount</label>
+            <label>Tax / Surcharges</label>
             <input type="number" class="form-control" formControlName="tax" step="0.01" />
           </div>
 
@@ -162,13 +165,13 @@
 
           <div class="form-group">
             <label>Currency</label>
-            <input type="text" class="form-control" formControlName="currency" placeholder="USD" />
+            <input type="text" class="form-control" formControlName="currency" placeholder="INR" />
           </div>
         </div>
 
         <div class="modal__footer">
           <button type="button" class="btn btn--secondary" (click)="closeModal()">Cancel</button>
-          <button type="submit" class="btn btn--primary" [disabled]="isLoading">
+          <button type="submit" class="btn btn--primary" [disabled]="isSaving">
             {{ editingId ? 'Update Pricing' : 'Save Pricing' }}
           </button>
         </div>

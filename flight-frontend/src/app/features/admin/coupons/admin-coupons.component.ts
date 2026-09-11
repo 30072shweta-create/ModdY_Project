@@ -118,7 +118,29 @@ export class AdminCouponsComponent implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
     this.successMessage = '';
-    const dto = this.couponForm.value;
+
+    const raw = this.couponForm.value;
+    const dto: any = {
+      couponCode: raw.couponCode ? raw.couponCode.trim().toUpperCase() : '',
+      discountType: raw.discountType,
+      discountValue: Number(raw.discountValue),
+      minimumBookingAmount: Number(raw.minimumBookingAmount || 0),
+      maximumDiscount: Number(raw.maximumDiscount || 0),
+      usageLimit: Number(raw.usageLimit || 100),
+      active: raw.active !== false
+    };
+
+    if (raw.validFrom && raw.validFrom.trim()) {
+      dto.validFrom = raw.validFrom.includes('T') ? raw.validFrom : `${raw.validFrom}T00:00:00`;
+    } else {
+      dto.validFrom = null;
+    }
+
+    if (raw.validTo && raw.validTo.trim()) {
+      dto.validTo = raw.validTo.includes('T') ? raw.validTo : `${raw.validTo}T23:59:59`;
+    } else {
+      dto.validTo = null;
+    }
 
     if (this.editingId) {
       this.couponsService.updateCoupon(this.editingId, dto).subscribe({
@@ -126,6 +148,7 @@ export class AdminCouponsComponent implements OnInit {
           this.isLoading = false;
           this.closeModal();
           this.successMessage = 'Coupon updated successfully!';
+          this.autoDismissToast();
           this.loadCoupons(true);
         },
         error: (err) => this.handleError(err)
@@ -136,6 +159,7 @@ export class AdminCouponsComponent implements OnInit {
           this.isLoading = false;
           this.closeModal();
           this.successMessage = 'Coupon created successfully!';
+          this.autoDismissToast();
           this.loadCoupons(true);
         },
         error: (err) => this.handleError(err)
@@ -155,12 +179,19 @@ export class AdminCouponsComponent implements OnInit {
             this.isLoading = false;
             this.confirmModal.show = false;
             this.successMessage = 'Coupon deleted successfully!';
+            this.autoDismissToast();
             this.loadCoupons(true);
           },
           error: (err) => this.handleError(err)
         });
       }
     };
+  }
+
+  private autoDismissToast(): void {
+    setTimeout(() => {
+      this.successMessage = '';
+    }, 4000);
   }
 
   private handleError(err: any): void {

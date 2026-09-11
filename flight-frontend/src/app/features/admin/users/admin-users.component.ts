@@ -92,6 +92,7 @@ export class AdminUsersComponent implements OnInit {
             this.isLoading = false;
             this.closeEditModal();
             this.successMessage = `User #${userId} updated successfully!`;
+            this.autoDismissToast();
             this.loadUsers(true);
           },
           error: (err) => this.handleError(err)
@@ -99,6 +100,12 @@ export class AdminUsersComponent implements OnInit {
       },
       error: (err) => this.handleError(err)
     });
+  }
+
+  private autoDismissToast(): void {
+    setTimeout(() => {
+      this.successMessage = '';
+    }, 4000);
   }
 
   private handleError(err: any): void {

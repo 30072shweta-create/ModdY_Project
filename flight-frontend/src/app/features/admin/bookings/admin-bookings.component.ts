@@ -98,10 +98,17 @@ export class AdminBookingsComponent implements OnInit {
         this.isLoading = false;
         this.confirmCancelModal.show = false;
         this.successMessage = `Booking #${bookingId} cancelled successfully!`;
+        this.autoDismissToast();
         this.loadBookings(true);
       },
       error: (err) => this.handleError(err)
     });
+  }
+
+  private autoDismissToast(): void {
+    setTimeout(() => {
+      this.successMessage = '';
+    }, 4000);
   }
 
   private handleError(err: any): void {

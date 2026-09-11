@@ -31,7 +31,10 @@ public class PricingRuleRequestDTO {
     @NotNull(message = "Adjustment value is required")
     private BigDecimal adjustmentValue;
 
+    @com.fasterxml.jackson.annotation.JsonFormat(pattern = "yyyy-MM-dd[ 'T'HH:mm[:ss]]")
     private LocalDateTime effectiveFrom;
+
+    @com.fasterxml.jackson.annotation.JsonFormat(pattern = "yyyy-MM-dd[ 'T'HH:mm[:ss]]")
     private LocalDateTime effectiveTo;
 
     private Boolean active;

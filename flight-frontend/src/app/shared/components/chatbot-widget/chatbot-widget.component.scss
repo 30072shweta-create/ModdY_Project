@@ -117,6 +117,14 @@
   overflow-wrap: anywhere;
 }
 
+.chat-widget__message-content {
+  line-height: 1.45;
+
+  strong {
+    font-weight: 700;
+  }
+}
+
 .chat-widget__message--user {
   align-self: flex-end;
   background: #0058be;

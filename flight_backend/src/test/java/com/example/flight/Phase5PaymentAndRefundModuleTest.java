@@ -88,7 +88,8 @@ class Phase5PaymentAndRefundModuleTest {
                 cancellationRepository,
                 flightRepository,
                 paymentRepository,
-                paymentGateway
+                paymentGateway,
+                notificationService
         );
 
         User user = new User();

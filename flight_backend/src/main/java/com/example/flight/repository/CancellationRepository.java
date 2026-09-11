@@ -15,6 +15,10 @@ public interface CancellationRepository
             Long bookingId
     );
 
+    Optional<BookingCancellation> findByBookingBookingCodeIgnoreCase(
+            String bookingCode
+    );
+
     boolean existsByBookingBookingId(
             Long bookingId
     );

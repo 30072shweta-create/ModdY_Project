@@ -44,9 +44,11 @@ export class ChatbotWidgetComponent implements OnInit {
       },
       error: () => {
         this.domains = [
+          { name: 'Flights and Seats', value: 'FLIGHTS_AND_SEATS' },
           { name: 'Booking', value: 'BOOKING' },
           { name: 'Payment', value: 'PAYMENT' },
-          { name: 'Cancellation and Refund', value: 'CANCELLATION_AND_REFUND' }
+          { name: 'Cancellation and Refund', value: 'CANCELLATION_AND_REFUND' },
+          { name: 'Pricing and Coupons', value: 'PRICING_AND_COUPONS' }
         ];
       }
     });
@@ -54,6 +56,13 @@ export class ChatbotWidgetComponent implements OnInit {
 
   toggleChat(): void {
     this.isOpen = !this.isOpen;
+  }
+
+  formatMessage(text: string): string {
+    return this.escapeHtml(text)
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\\\*/g, '*')
+      .replace(/\n/g, '<br>');
   }
 
   sendMessage(): void {
@@ -97,5 +106,14 @@ export class ChatbotWidgetComponent implements OnInit {
     const newId = crypto.randomUUID();
     localStorage.setItem(storageKey, newId);
     return newId;
+  }
+
+  private escapeHtml(text: string): string {
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
   }
 }

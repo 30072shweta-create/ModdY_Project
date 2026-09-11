@@ -50,12 +50,12 @@ export class AdminPaymentsComponent implements OnInit {
       if (!this.search) return true;
       const term = this.search.toLowerCase();
       return (
-        p.paymentId.toString().includes(term) ||
-        p.bookingId.toString().includes(term) ||
-        p.paymentMethod.toLowerCase().includes(term) ||
-        (p.razorpayOrderId && p.razorpayOrderId.toLowerCase().includes(term)) ||
-        (p.razorpayPaymentId && p.razorpayPaymentId.toLowerCase().includes(term)) ||
-        (p.transactionRef && p.transactionRef.toLowerCase().includes(term))
+        (p.paymentId != null && p.paymentId.toString().includes(term)) ||
+        (p.bookingId != null && p.bookingId.toString().includes(term)) ||
+        (p.paymentMethod != null && p.paymentMethod.toString().toLowerCase().includes(term)) ||
+        (p.razorpayOrderId != null && p.razorpayOrderId.toLowerCase().includes(term)) ||
+        (p.razorpayPaymentId != null && p.razorpayPaymentId.toLowerCase().includes(term)) ||
+        (p.transactionRef != null && p.transactionRef.toLowerCase().includes(term))
       );
     });
   }

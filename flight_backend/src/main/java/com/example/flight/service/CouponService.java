@@ -142,6 +142,17 @@ public class CouponService {
         return convertToResponse(saved);
     }
 
+    @Transactional(readOnly = true)
+    public List<CouponResponseDTO> getActiveCoupons() {
+        LocalDateTime now = LocalDateTime.now();
+        return couponRepository.findByActiveTrue().stream()
+                .filter(c -> (c.getValidFrom() == null || !now.isBefore(c.getValidFrom()))
+                        && (c.getValidTo() == null || !now.isAfter(c.getValidTo()))
+                        && (c.getUsageLimit() == null || c.getUsedCount() < c.getUsageLimit()))
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional(readOnly = true)
     public List<CouponResponseDTO> getAllCoupons() {

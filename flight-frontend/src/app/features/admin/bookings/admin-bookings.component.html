@@ -76,7 +76,7 @@
               <td>User #{{ b.userId }}</td>
               <td>{{ b.bookingTs | date:'medium' }}</td>
               <td>
-                <strong>{{ b.totalAmount | currency }}</strong>
+                <strong>{{ b.totalAmount | currency:'INR':'symbol':'1.2-2' }}</strong>
               </td>
               <td>
                 <span class="badge" [class.badge--completed]="b.paymentStatus === 'PAID'" [class.badge--cancelled]="b.paymentStatus === 'FAILED' || b.paymentStatus === 'REFUNDED'">
@@ -127,7 +127,7 @@
             <div><strong>User ID:</strong> User #{{ selectedBooking.userId }}</div>
             <div><strong>Booking Status:</strong> {{ selectedBooking.status }}</div>
             <div><strong>Payment Status:</strong> {{ selectedBooking.paymentStatus }}</div>
-            <div><strong>Total Amount:</strong> {{ selectedBooking.totalAmount | currency }}</div>
+            <div><strong>Total Amount:</strong> {{ selectedBooking.totalAmount | currency:'INR':'symbol':'1.2-2' }}</div>
             <div><strong>Booking Time:</strong> {{ selectedBooking.bookingTs | date:'medium' }}</div>
           </div>
 

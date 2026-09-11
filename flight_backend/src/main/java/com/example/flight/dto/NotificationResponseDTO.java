@@ -7,11 +7,13 @@ public class NotificationResponseDTO {
     private Long notificationId;
     private Long userId;
     private Long bookingId;
+    private String recipientEmail;
     private String type;
     private String channel;
     private String message;
     private String status;
     private LocalDateTime createdAt;
+    private LocalDateTime sentAt;
 
     public Long getNotificationId() { return notificationId; }
     public void setNotificationId(Long notificationId) { this.notificationId = notificationId; }
@@ -21,6 +23,9 @@ public class NotificationResponseDTO {
 
     public Long getBookingId() { return bookingId; }
     public void setBookingId(Long bookingId) { this.bookingId = bookingId; }
+
+    public String getRecipientEmail() { return recipientEmail; }
+    public void setRecipientEmail(String recipientEmail) { this.recipientEmail = recipientEmail; }
 
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
@@ -36,4 +41,7 @@ public class NotificationResponseDTO {
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public LocalDateTime getSentAt() { return sentAt != null ? sentAt : createdAt; }
+    public void setSentAt(LocalDateTime sentAt) { this.sentAt = sentAt; }
 }

@@ -1,5 +1,6 @@
 package com.example.flight.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,4 +14,6 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
     Optional<Coupon> findByCouponCodeIgnoreCase(String couponCode);
 
     boolean existsByCouponCodeIgnoreCase(String couponCode);
+
+    List<Coupon> findByActiveTrue();
 }

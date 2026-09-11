@@ -2,7 +2,10 @@ package com.example.flight.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.security.access.AccessDeniedException;
@@ -14,9 +17,11 @@ import com.example.flight.dto.BookingResponseDTO;
 import com.example.flight.dto.BookingSegmentResponseDTO;
 import com.example.flight.dto.FareBreakdownDTO;
 import com.example.flight.dto.FareCalculationRequestDTO;
+import com.example.flight.dto.PassengerResponseDTO;
 import com.example.flight.entity.Booking;
 import com.example.flight.entity.BookingSegment;
 import com.example.flight.entity.BookingStatus;
+import com.example.flight.entity.CabinClass;
 import com.example.flight.entity.Flight;
 import com.example.flight.entity.PaymentStatus;
 import com.example.flight.entity.SeatLock;
@@ -27,6 +32,7 @@ import com.example.flight.repository.BookingRepository;
 import com.example.flight.repository.BookingSegmentRepository;
 import com.example.flight.repository.FlightPricingRepository;
 import com.example.flight.repository.FlightRepository;
+import com.example.flight.repository.PassengerRepository;
 import com.example.flight.repository.SeatLockRepository;
 import com.example.flight.repository.UserRepository;
 
@@ -41,11 +47,13 @@ public class BookingService {
     private final FlightRepository flightRepository;
     private final FlightPricingRepository flightPricingRepository;
     private final BookingSegmentRepository bookingSegmentRepository;
+    private final PassengerRepository passengerRepository;
     private final SeatLockRepository seatLockRepository;
     private final SeatLockService seatLockService;
     private final TripValidationService tripValidationService;
     private final FareCalculationService fareCalculationService;
     private final CouponService couponService;
+    private final NotificationService notificationService;
 
     // =========================================================
     // GET ALL BOOKINGS
@@ -74,8 +82,12 @@ public class BookingService {
     // =========================================================
     @Transactional(readOnly = true)
     public BookingResponseDTO getBookingByCode(String bookingCode) {
-        Booking booking = bookingRepository.findByBookingCode(bookingCode)
-                .orElseThrow(() -> new RuntimeException("Booking not found with code: " + bookingCode));
+        if (bookingCode == null || bookingCode.isBlank()) {
+            throw new RuntimeException("Booking code is required");
+        }
+        Booking booking = bookingRepository.findByBookingCodeIgnoreCaseWithDetails(bookingCode.trim())
+                .or(() -> bookingRepository.findByBookingCodeIgnoreCase(bookingCode.trim()))
+                .orElseThrow(() -> new RuntimeException("Booking not found with code: " + bookingCode.trim()));
 
         return convertToResponse(booking);
     }
@@ -217,6 +229,11 @@ public class BookingService {
 
                 lock.setStatus(SeatLockStatus.CONFIRMED);
                 seatLockRepository.save(lock);
+
+                if (lock.getPassenger() != null) {
+                    lock.getPassenger().setSeatNumber(seatNumber);
+                    passengerRepository.save(lock.getPassenger());
+                }
             }
         }
 
@@ -233,6 +250,7 @@ public class BookingService {
         }
 
         Booking saved = bookingRepository.save(booking);
+        notificationService.sendBookingConfirmationNotification(saved);
         return convertToResponse(saved);
     }
 
@@ -247,38 +265,101 @@ public class BookingService {
             response.setUserId(booking.getUser().getUserId());
         }
 
-        response.setSegments(
-                booking.getSegments()
-                        .stream()
-                        .map(segment -> {
-                            BookingSegmentResponseDTO dto = new BookingSegmentResponseDTO();
-                            dto.setSegmentId(segment.getSegmentId());
-                            dto.setBookingId(booking.getBookingId());
-                            dto.setFlightId(segment.getFlight().getFlightId());
+        List<BookingSegmentResponseDTO> segmentDTOs = new ArrayList<>();
+        if (booking.getSegments() != null && !booking.getSegments().isEmpty()) {
+            for (BookingSegment segment : booking.getSegments()) {
+                BookingSegmentResponseDTO dto = new BookingSegmentResponseDTO();
+                dto.setSegmentId(segment.getSegmentId());
+                dto.setBookingId(booking.getBookingId());
+                dto.setSegmentOrder(segment.getSegmentOrder());
+                dto.setCabinClass(CabinClass.ECONOMY.name());
 
-                            if (segment.getFlight().getAirline() != null) {
-                                dto.setAirlineCode(segment.getFlight().getAirline().getAirlineCode());
-                            }
-                            if (segment.getFlight().getFromAirport() != null) {
-                                dto.setFromAirport(segment.getFlight().getFromAirport().getAirportCode());
-                            }
-                            if (segment.getFlight().getToAirport() != null) {
-                                dto.setToAirport(segment.getFlight().getToAirport().getAirportCode());
-                            }
-
-                            dto.setDepartureTs(segment.getFlight().getDepartureTs());
-                            dto.setArrivalTs(segment.getFlight().getArrivalTs());
-                            dto.setSegmentOrder(segment.getSegmentOrder());
-                            return dto;
-                        })
-                        .toList()
-        );
+                Flight f = segment.getFlight() != null ? segment.getFlight() : booking.getFlight();
+                if (f != null) {
+                    dto.setFlightId(f.getFlightId());
+                    dto.setFlightNumber(f.getFlightNumber());
+                    if (f.getAirline() != null) {
+                        dto.setAirlineCode(f.getAirline().getAirlineCode());
+                        dto.setAirlineName(f.getAirline().getName());
+                    }
+                    if (f.getFromAirport() != null) {
+                        dto.setFromAirport(f.getFromAirport().getAirportCode());
+                    }
+                    if (f.getToAirport() != null) {
+                        dto.setToAirport(f.getToAirport().getAirportCode());
+                    }
+                    dto.setDepartureTs(f.getDepartureTs());
+                    dto.setArrivalTs(f.getArrivalTs());
+                    dto.setPrice(f.getBasePrice());
+                }
+                segmentDTOs.add(dto);
+            }
+        } else if (booking.getFlight() != null) {
+            Flight f = booking.getFlight();
+            BookingSegmentResponseDTO dto = new BookingSegmentResponseDTO();
+            dto.setBookingId(booking.getBookingId());
+            dto.setSegmentOrder(1);
+            dto.setCabinClass(CabinClass.ECONOMY.name());
+            dto.setFlightId(f.getFlightId());
+            dto.setFlightNumber(f.getFlightNumber());
+            if (f.getAirline() != null) {
+                dto.setAirlineCode(f.getAirline().getAirlineCode());
+                dto.setAirlineName(f.getAirline().getName());
+            }
+            if (f.getFromAirport() != null) {
+                dto.setFromAirport(f.getFromAirport().getAirportCode());
+            }
+            if (f.getToAirport() != null) {
+                dto.setToAirport(f.getToAirport().getAirportCode());
+            }
+            dto.setDepartureTs(f.getDepartureTs());
+            dto.setArrivalTs(f.getArrivalTs());
+            dto.setPrice(f.getBasePrice());
+            segmentDTOs.add(dto);
+        }
+        response.setSegments(segmentDTOs);
 
         response.setBookingCode(booking.getBookingCode());
         response.setStatus(booking.getStatus());
         response.setPaymentStatus(booking.getPaymentStatus());
         response.setTotalAmount(booking.getTotalAmount());
         response.setBookingTs(booking.getBookingTs());
+
+        // Lookup seat locks for this booking to ensure seat number is never lost
+        Map<Long, String> passengerSeatMap = new HashMap<>();
+        try {
+            List<SeatLock> locks = seatLockRepository.findByBookingBookingId(booking.getBookingId());
+            if (locks != null) {
+                for (SeatLock sl : locks) {
+                    if (sl.getPassenger() != null && sl.getSeatNumber() != null &&
+                            (sl.getStatus() == SeatLockStatus.CONFIRMED || sl.getStatus() == SeatLockStatus.LOCKED)) {
+                        passengerSeatMap.put(sl.getPassenger().getPassengerId(), sl.getSeatNumber());
+                    }
+                }
+            }
+        } catch (Exception ignored) {}
+
+        response.setPassengers(passengerRepository.findByBookingBookingId(booking.getBookingId())
+                .stream()
+                .map(passenger -> {
+                    PassengerResponseDTO passengerDto = new PassengerResponseDTO();
+                    passengerDto.setPassengerId(passenger.getPassengerId());
+                    passengerDto.setBookingId(passenger.getBooking().getBookingId());
+                    passengerDto.setFirstName(passenger.getFirstName());
+                    passengerDto.setLastName(passenger.getLastName());
+                    passengerDto.setAge(passenger.getAge());
+                    passengerDto.setGender(passenger.getGender());
+                    passengerDto.setDateOfBirth(passenger.getDateOfBirth());
+                    passengerDto.setPassportNumber(passenger.getPassportNumber());
+
+                    String seat = passenger.getSeatNumber();
+                    if ((seat == null || seat.isBlank()) && passengerSeatMap.containsKey(passenger.getPassengerId())) {
+                        seat = passengerSeatMap.get(passenger.getPassengerId());
+                    }
+                    passengerDto.setSeatNumber(seat);
+                    return passengerDto;
+                })
+                .toList());
 
         return response;
     }

@@ -99,8 +99,8 @@ export class AdminAirlinesComponent implements OnInit {
     this.successMessage = '';
 
     const dto = {
-      airlineCode: this.airlineForm.value.airlineCode,
-      airlineName: this.airlineForm.value.airlineName
+      airlineCode: this.airlineForm.value.airlineCode.trim().toUpperCase(),
+      airlineName: this.airlineForm.value.airlineName.trim()
     };
 
     if (this.editingCode) {
@@ -110,34 +110,24 @@ export class AdminAirlinesComponent implements OnInit {
           this.showModal = false;
           this.editingCode = null;
           this.successMessage = 'Airline updated successfully!';
+          this.autoDismissToast();
           this.loadAirlines(true);
         },
         error: (err) => this.handleError(err)
       });
     } else {
       this.airlinesService.addAirline(dto).subscribe({
-  next: (response) => {
-    console.log('Airline added successfully:', response);
-
-    this.isLoading = false;
-
-    // Close modal
-    this.showModal = false;
-    this.editingCode = null;
-
-    // Clear form
-    this.airlineForm.reset();
-
-    // Show success message
-    this.successMessage = 'Airline added successfully!';
-
-    // Reload airline list
-    this.loadAirlines();
-  },
-  error: (err) => {
-    this.handleError(err);
-  }
-});
+        next: () => {
+          this.isLoading = false;
+          this.showModal = false;
+          this.editingCode = null;
+          this.airlineForm.reset();
+          this.successMessage = 'Airline added successfully!';
+          this.autoDismissToast();
+          this.loadAirlines(true);
+        },
+        error: (err) => this.handleError(err)
+      });
     }
   }
 
@@ -153,12 +143,19 @@ export class AdminAirlinesComponent implements OnInit {
             this.isLoading = false;
             this.confirmModal.show = false;
             this.successMessage = 'Airline deleted successfully!';
+            this.autoDismissToast();
             this.loadAirlines(true);
           },
           error: (err) => this.handleError(err)
         });
       }
     };
+  }
+
+  private autoDismissToast(): void {
+    setTimeout(() => {
+      this.successMessage = '';
+    }, 4000);
   }
 
   private handleError(err: any): void {
