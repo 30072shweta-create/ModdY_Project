@@ -4,9 +4,8 @@ import { RouterLink } from '@angular/router';
 
 interface TeamMember {
   name: string;
-  role: string;
   image: string;
-  bio: string;
+  phrase: string;
 }
 
 interface FleetItem {
@@ -55,28 +54,24 @@ export class AboutComponent {
 
   public leadership: TeamMember[] = [
     {
-      name: 'Capt. Rajesh Varma',
-      role: 'Chief Executive Officer & Founder',
-      image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=500&q=80',
-      bio: 'Former commercial airline captain with 22+ years of aviation leadership across global airlines.'
-    },
-    {
-      name: 'Elena Rostova',
-      role: 'Chief Technology Officer',
+      name: 'Aparna Parashar',
       image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=500&q=80',
-      bio: 'Pioneered cloud-native reservation engines, real-time distributed seat locking, and AI flight dispatch systems.'
+      phrase: '“Crafting effortless, elevated journeys for every traveler who flies with Meridian.”'
     },
     {
-      name: 'Marcus Thorne',
-      role: 'VP of Flight Operations & Safety',
-      image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=500&q=80',
-      bio: 'Certified ICAO Flight Inspector with exemplary records in global route safety and fleet dispatch.'
-    },
-    {
-      name: 'Ananya Sharma',
-      role: 'Head of In-Flight Hospitality',
+      name: 'Shweta Rana',
       image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=500&q=80',
-      bio: 'Oversees 5-star passenger cabin comfort, culinary menus, and internationally recognized service training.'
+      phrase: '“Transforming modern air travel through seamless and intuitive digital innovation.”'
+    },
+    {
+      name: 'Spoorthi G Talanki',
+      image: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=500&q=80',
+      phrase: '“Redefining commercial aviation with unwavering precision, safety, and operational excellence.”'
+    },
+    {
+      name: 'Bhavana N K',
+      image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=80',
+      phrase: '“Delivering genuine warmth, luxury, and peace of mind across every single mile.”'
     }
   ];
 }
