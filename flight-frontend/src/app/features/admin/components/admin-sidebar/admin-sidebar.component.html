@@ -1,7 +1,7 @@
 <!-- Mobile Header Bar -->
 <div class="admin-mobile-bar">
   <button class="admin-mobile-bar__toggle" (click)="toggleMobileSidebar()">
-    <span class="material-symbols-outlined">{{ isMobileSidebarOpen ? 'close' : 'menu' }}</span>
+    <span>{{ isMobileSidebarOpen ? '[CLOSE]' : '[MENU]' }}</span>
   </button>
   <div class="admin-mobile-bar__brand">
     <img src="images/logo.png" alt="Meridian" class="admin-mobile-bar__brand-img" />
@@ -20,85 +20,74 @@
       <span class="admin-sidebar__logo-text" *ngIf="!isSidebarCollapsed">Meridian Admin</span>
     </a>
     <button class="admin-sidebar__collapse-btn" (click)="toggleSidebar()" title="Toggle Sidebar">
-      <span class="material-symbols-outlined">{{ isSidebarCollapsed ? 'chevron_right' : 'chevron_left' }}</span>
+      <span class="nav-toggle-arrow">{{ isSidebarCollapsed ? '>' : '<' }}</span>
     </button>
   </div>
 
   <nav class="admin-sidebar__nav">
-    <a routerLink="/admin" class="admin-sidebar__link" [class.admin-sidebar__link--active]="isActive('/admin')" (click)="isMobileSidebarOpen = false">
-      <span class="material-symbols-outlined">dashboard</span>
-      <span class="admin-sidebar__link-text" *ngIf="!isSidebarCollapsed">Dashboard</span>
+    <a routerLink="/admin" class="admin-sidebar__link" [class.admin-sidebar__link--active]="isActive('/admin')" (click)="isMobileSidebarOpen = false" title="Dashboard Overview">
+      <span class="material-symbols-outlined admin-sidebar__link-icon">dashboard</span>
+      <span class="admin-sidebar__link-text" *ngIf="!isSidebarCollapsed">Dashboard Overview</span>
     </a>
 
-    <div class="admin-sidebar__section-title" *ngIf="!isSidebarCollapsed">MANAGEMENT</div>
+    <div class="admin-sidebar__section-title" *ngIf="!isSidebarCollapsed">FLIGHT OPERATIONS</div>
 
     <a routerLink="/admin/flights" class="admin-sidebar__link" [class.admin-sidebar__link--active]="isActive('/admin/flights')" (click)="isMobileSidebarOpen = false">
-      <span class="material-symbols-outlined">flight</span>
-      <span class="admin-sidebar__link-text" *ngIf="!isSidebarCollapsed">Flights</span>
+      <span class="admin-sidebar__link-text" *ngIf="!isSidebarCollapsed">Flights &amp; Schedules</span>
     </a>
 
     <a routerLink="/admin/airlines" class="admin-sidebar__link" [class.admin-sidebar__link--active]="isActive('/admin/airlines')" (click)="isMobileSidebarOpen = false">
-      <span class="material-symbols-outlined">airlines</span>
       <span class="admin-sidebar__link-text" *ngIf="!isSidebarCollapsed">Airlines</span>
     </a>
 
     <a routerLink="/admin/airports" class="admin-sidebar__link" [class.admin-sidebar__link--active]="isActive('/admin/airports')" (click)="isMobileSidebarOpen = false">
-      <span class="material-symbols-outlined">connecting_airports</span>
-      <span class="admin-sidebar__link-text" *ngIf="!isSidebarCollapsed">Airports</span>
+      <span class="admin-sidebar__link-text" *ngIf="!isSidebarCollapsed">Airports &amp; Hubs</span>
     </a>
 
     <a routerLink="/admin/aircraft" class="admin-sidebar__link" [class.admin-sidebar__link--active]="isActive('/admin/aircraft')" (click)="isMobileSidebarOpen = false">
-      <span class="material-symbols-outlined">flight_land</span>
-      <span class="admin-sidebar__link-text" *ngIf="!isSidebarCollapsed">Aircraft</span>
+      <span class="admin-sidebar__link-text" *ngIf="!isSidebarCollapsed">Fleet &amp; Aircraft</span>
     </a>
 
-    <div class="admin-sidebar__section-title" *ngIf="!isSidebarCollapsed">OPERATIONS & PRICING</div>
+    <div class="admin-sidebar__section-title" *ngIf="!isSidebarCollapsed">REVENUE &amp; COMMERCE</div>
 
     <a routerLink="/admin/pricing" class="admin-sidebar__link" [class.admin-sidebar__link--active]="isActive('/admin/pricing')" (click)="isMobileSidebarOpen = false">
-      <span class="material-symbols-outlined">payments</span>
-      <span class="admin-sidebar__link-text" *ngIf="!isSidebarCollapsed">Pricing</span>
+      <span class="admin-sidebar__link-text" *ngIf="!isSidebarCollapsed">Pricing Matrix</span>
     </a>
 
     <a routerLink="/admin/coupons" class="admin-sidebar__link" [class.admin-sidebar__link--active]="isActive('/admin/coupons')" (click)="isMobileSidebarOpen = false">
-      <span class="material-symbols-outlined">sell</span>
-      <span class="admin-sidebar__link-text" *ngIf="!isSidebarCollapsed">Coupons</span>
+      <span class="admin-sidebar__link-text" *ngIf="!isSidebarCollapsed">Coupons &amp; Promos</span>
     </a>
 
     <a routerLink="/admin/holidays" class="admin-sidebar__link" [class.admin-sidebar__link--active]="isActive('/admin/holidays')" (click)="isMobileSidebarOpen = false">
-      <span class="material-symbols-outlined">event</span>
-      <span class="admin-sidebar__link-text" *ngIf="!isSidebarCollapsed">Holidays</span>
+      <span class="admin-sidebar__link-text" *ngIf="!isSidebarCollapsed">Holiday Surges</span>
     </a>
 
     <a routerLink="/admin/pricing-rules" class="admin-sidebar__link" [class.admin-sidebar__link--active]="isActive('/admin/pricing-rules')" (click)="isMobileSidebarOpen = false">
-      <span class="material-symbols-outlined">rule</span>
-      <span class="admin-sidebar__link-text" *ngIf="!isSidebarCollapsed">Pricing Rules</span>
+      <span class="admin-sidebar__link-text" *ngIf="!isSidebarCollapsed">Dynamic Rules</span>
     </a>
 
+    <div class="admin-sidebar__section-title" *ngIf="!isSidebarCollapsed">BOOKINGS &amp; USERS</div>
+
     <a routerLink="/admin/bookings" class="admin-sidebar__link" [class.admin-sidebar__link--active]="isActive('/admin/bookings')" (click)="isMobileSidebarOpen = false">
-      <span class="material-symbols-outlined">confirmation_number</span>
-      <span class="admin-sidebar__link-text" *ngIf="!isSidebarCollapsed">Bookings</span>
+      <span class="admin-sidebar__link-text" *ngIf="!isSidebarCollapsed">Reservations</span>
     </a>
 
     <a routerLink="/admin/payments" class="admin-sidebar__link" [class.admin-sidebar__link--active]="isActive('/admin/payments')" (click)="isMobileSidebarOpen = false">
-      <span class="material-symbols-outlined">account_balance_wallet</span>
-      <span class="admin-sidebar__link-text" *ngIf="!isSidebarCollapsed">Payments</span>
+      <span class="admin-sidebar__link-text" *ngIf="!isSidebarCollapsed">Transactions</span>
     </a>
 
     <a routerLink="/admin/users" class="admin-sidebar__link" [class.admin-sidebar__link--active]="isActive('/admin/users')" (click)="isMobileSidebarOpen = false">
-      <span class="material-symbols-outlined">group</span>
-      <span class="admin-sidebar__link-text" *ngIf="!isSidebarCollapsed">Users</span>
+      <span class="admin-sidebar__link-text" *ngIf="!isSidebarCollapsed">Users &amp; Access</span>
     </a>
 
     <a routerLink="/admin/notifications" class="admin-sidebar__link" [class.admin-sidebar__link--active]="isActive('/admin/notifications')" (click)="isMobileSidebarOpen = false">
-      <span class="material-symbols-outlined">notifications</span>
-      <span class="admin-sidebar__link-text" *ngIf="!isSidebarCollapsed">Notifications</span>
+      <span class="admin-sidebar__link-text" *ngIf="!isSidebarCollapsed">Dispatch Broadcasts</span>
     </a>
   </nav>
 
   <div class="admin-sidebar__footer">
     <a routerLink="/" class="admin-sidebar__link">
-      <span class="material-symbols-outlined">open_in_new</span>
-      <span class="admin-sidebar__link-text" *ngIf="!isSidebarCollapsed">Public Site</span>
+      <span class="admin-sidebar__link-text" *ngIf="!isSidebarCollapsed">Public Portal</span>
     </a>
   </div>
 </aside>

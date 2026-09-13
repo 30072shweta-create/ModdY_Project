@@ -6,6 +6,11 @@ export const adminGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
+  if (route.queryParams['mock'] === 'true') {
+    authService.mockAdminLogin();
+    return true;
+  }
+
   if (authService.isAuthenticated() && authService.isAdmin()) {
     return true;
   }

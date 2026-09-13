@@ -18,18 +18,13 @@
 
     <!-- Desktop Navigation -->
     <nav class="nav-links" [class.open]="isMobileMenuOpen">
-      @if (isAdminPage) {
-        <span class="admin-topbar-pill">ADMIN CONSOLE</span>
-        <a routerLink="/flights" (click)="closeMobileMenu()">Public Flights</a>
-      } @else {
-        <a routerLink="/flights" routerLinkActive="active" (click)="closeMobileMenu()">Search</a>
-        @if (authService.isAuthenticated() && !isAdminUser) {
-          <a routerLink="/my-bookings" routerLinkActive="active" (click)="closeMobileMenu()">My Trips</a>
-        }
-        <a routerLink="/about" routerLinkActive="active" (click)="closeMobileMenu()">About</a>
-        @if (authService.isAuthenticated() && isAdminUser) {
-          <a routerLink="/admin" routerLinkActive="active" (click)="closeMobileMenu()">Admin Console</a>
-        }
+      <a routerLink="/flights" routerLinkActive="active" (click)="closeMobileMenu()">Search</a>
+      @if (authService.isAuthenticated() && !isAdminUser) {
+        <a routerLink="/my-bookings" routerLinkActive="active" (click)="closeMobileMenu()">My Trips</a>
+      }
+      <a routerLink="/about" routerLinkActive="active" (click)="closeMobileMenu()">About</a>
+      @if (authService.isAuthenticated() && isAdminUser) {
+        <a routerLink="/admin" routerLinkActive="active" (click)="closeMobileMenu()">Admin Console</a>
       }
     </nav>
 

@@ -2,169 +2,307 @@
   <app-admin-sidebar></app-admin-sidebar>
 
   <main class="admin-main">
-    <header class="admin-header">
-      <div>
-        <h1 class="admin-header__title">Dashboard Overview</h1>
-        <p class="admin-header__subtitle">Real-time Meridian flight management metrics & operations</p>
+    <!-- Top Bar -->
+    <header class="admin-topbar">
+      <div class="topbar-left">
+        <h1 class="page-heading">Dashboard Overview</h1>
+        <span class="sub-label">Real-time Meridian telemetry and flight control</span>
       </div>
-      <div class="admin-header__actions">
-        <button class="btn btn--secondary btn--sm" (click)="loadDashboardData()" [disabled]="isLoading">
-          <span class="material-symbols-outlined">refresh</span>
-          Refresh Data
+
+      <div class="topbar-actions">
+        <div class="system-status-indicator">
+          <span class="status-dot"></span>
+          <span class="status-label">SYS: ONLINE</span>
+        </div>
+
+        <button
+          type="button"
+          class="btn-action-primary"
+          (click)="loadDashboardData()"
+          [disabled]="isLoading">
+          {{ isLoading ? '[UPDATING...]' : '[REFRESH TELEMETRY]' }}
         </button>
-        <div class="admin-header__user">
-          <div class="admin-header__avatar">
-            {{ authService.currentUser()?.firstName?.charAt(0) || 'A' }}
-          </div>
-          <div class="admin-header__user-info">
-            <span class="admin-header__user-name">{{ authService.currentUser()?.firstName }} {{ authService.currentUser()?.lastName }}</span>
-            <span class="admin-header__user-role">Administrator</span>
-          </div>
+
+        <div class="operator-chip">
+          <span class="operator-role">ROLE: SUPERADMIN</span>
+          <span class="operator-name">{{ authService.currentUser()?.firstName || 'Admin' }} {{ authService.currentUser()?.lastName || 'Meridian' }}</span>
         </div>
       </div>
     </header>
 
-    <!-- Alert Banner -->
-    <div class="admin-alert admin-alert--error" *ngIf="errorMessage">
-      <span class="material-symbols-outlined">error</span>
-      <span>{{ errorMessage }}</span>
-      <button class="admin-alert__close" (click)="errorMessage = ''">&times;</button>
-    </div>
+    <!-- System Alert (if any error) -->
+    @if (errorMessage) {
+      <div class="toast-banner alert">
+        <span class="toast-indicator">[ALERT]</span>
+        <span class="toast-text">{{ errorMessage }}</span>
+        <button type="button" class="toast-close" (click)="errorMessage = ''">[DISMISS]</button>
+      </div>
+    }
 
-    <!-- Loading Bar -->
-    <div class="admin-loading" *ngIf="isLoading">
-      <div class="admin-loading__spinner"></div>
-      <span>Loading dashboard data...</span>
-    </div>
-
-    <!-- Summary Cards -->
-    <div class="stats-grid">
-      <div class="stat-card" routerLink="/admin/flights">
-        <div class="stat-card__icon stat-card__icon--blue">
-          <span class="material-symbols-outlined">flight</span>
+    <!-- 1. HERO CARDS GRID -->
+    <section class="hero-cards-grid">
+      <!-- Card 1: Total Bookings -->
+      <div class="kpi-card" routerLink="/admin/bookings">
+        <div class="kpi-header">
+          <span class="kpi-title">TOTAL BOOKINGS</span>
         </div>
-        <div class="stat-card__content">
-          <span class="stat-card__label">Total Flights</span>
-          <span class="stat-card__value">{{ totalFlightsCount }}</span>
-          <span class="stat-card__sub">{{ activeFlightsCount }} Active / Scheduled</span>
+        <div class="kpi-value-row">
+          <span class="kpi-primary-number">{{ totalBookingsCount | number }}</span>
+        </div>
+        <div class="kpi-footer-note">
+          <span>{{ bookings.length > 0 ? bookings.length + ' total reservations in system' : 'Connect backend to view data' }}</span>
         </div>
       </div>
 
-      <div class="stat-card" routerLink="/admin/airlines">
-        <div class="stat-card__icon stat-card__icon--purple">
-          <span class="material-symbols-outlined">airlines</span>
+      <!-- Card 2: Gross Revenue with Target Progress Bar -->
+      <div class="kpi-card" routerLink="/admin/payments">
+        <div class="kpi-header">
+          <span class="kpi-title">GROSS REVENUE</span>
+          <span class="badge-neutral">{{ monthlyProgressPercent }}% of target</span>
         </div>
-        <div class="stat-card__content">
-          <span class="stat-card__label">Total Airlines</span>
-          <span class="stat-card__value">{{ airlinesCount }}</span>
-          <span class="stat-card__sub">Partner Carriers</span>
+        <div class="kpi-value-row">
+          <span class="kpi-primary-number">₹{{ totalRevenue | number:'1.0-0' }}</span>
         </div>
-      </div>
-
-      <div class="stat-card" routerLink="/admin/airports">
-        <div class="stat-card__icon stat-card__icon--indigo">
-          <span class="material-symbols-outlined">connecting_airports</span>
-        </div>
-        <div class="stat-card__content">
-          <span class="stat-card__label">Total Airports</span>
-          <span class="stat-card__value">{{ airportsCount }}</span>
-          <span class="stat-card__sub">Destinations</span>
-        </div>
-      </div>
-
-      <div class="stat-card" routerLink="/admin/aircraft">
-        <div class="stat-card__icon stat-card__icon--cyan">
-          <span class="material-symbols-outlined">flight_land</span>
-        </div>
-        <div class="stat-card__content">
-          <span class="stat-card__label">Total Aircraft</span>
-          <span class="stat-card__value">{{ aircraftCount }}</span>
-          <span class="stat-card__sub">Fleet Size</span>
+        <div class="progress-container">
+          <div class="progress-bar-track">
+            <div
+              class="progress-bar-fill"
+              [style.width.%]="monthlyProgressPercent">
+            </div>
+          </div>
+          <div class="progress-labels">
+            <span>Current: ₹{{ totalRevenue | number:'1.0-0' }}</span>
+            <span>Target: ₹{{ monthlyRevenueTarget | number:'1.0-0' }}</span>
+          </div>
         </div>
       </div>
 
-      <div class="stat-card" routerLink="/admin/bookings">
-        <div class="stat-card__icon stat-card__icon--emerald">
-          <span class="material-symbols-outlined">confirmation_number</span>
+      <!-- Card 3: Active Flights in the Air -->
+      <div class="kpi-card" routerLink="/admin/flights">
+        <div class="kpi-header">
+          <span class="kpi-title">ACTIVE SCHEDULED FLIGHTS</span>
         </div>
-        <div class="stat-card__content">
-          <span class="stat-card__label">Total Bookings</span>
-          <span class="stat-card__value">{{ bookings.length }}</span>
-          <span class="stat-card__sub">System Bookings</span>
+        <div class="kpi-value-row">
+          <span class="kpi-primary-number">{{ activeFlightsCount }}</span>
+        </div>
+        <div class="kpi-footer-note">
+          <span>{{ totalFlightsCount }} total flight routes registered in system</span>
         </div>
       </div>
 
-      <div class="stat-card" routerLink="/admin/payments">
-        <div class="stat-card__icon stat-card__icon--amber">
-          <span class="material-symbols-outlined">payments</span>
+      <!-- Card 4: Fleet & Network Infrastructure -->
+      <div class="kpi-card" routerLink="/admin/aircraft">
+        <div class="kpi-header">
+          <span class="kpi-title">NETWORK & FLEET</span>
         </div>
-        <div class="stat-card__content">
-          <span class="stat-card__label">Total Revenue</span>
-          <span class="stat-card__value">₹{{ totalRevenue | number:'1.2-2' }}</span>
-          <span class="stat-card__sub">Successful Payments</span>
+        <div class="kpi-value-row">
+          <span class="kpi-primary-number">{{ aircraftCount }} <span class="kpi-unit">AIRCRAFT</span></span>
+        </div>
+        <div class="kpi-footer-note">
+          <span>{{ airportsCount }} Global Hubs &middot; {{ airlinesCount }} Carriers</span>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- Quick Glance Tables -->
+    <!-- 2. DATA VISUALIZATION SECTION -->
+    <section class="visualizations-grid">
+      <!-- Line Chart: Booking Trends (30 Days) -->
+      <div class="chart-panel">
+        <div class="panel-header">
+          <div>
+            <h3 class="panel-title">BOOKING TRENDS</h3>
+            <span class="panel-subtitle">Daily reservation volume over past 30 days</span>
+          </div>
+          <div class="trend-summary-pill">
+            <span>{{ peakBookingsPerDay > 0 ? 'PEAK: ' + peakBookingsPerDay + '/DAY' : '30-DAY VIEW' }}</span>
+          </div>
+        </div>
+
+        <div class="chart-viewport">
+          <svg
+            class="line-chart-svg"
+            viewBox="0 0 620 190"
+            preserveAspectRatio="none">
+
+            <defs>
+              <linearGradient id="bookingAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#B58A4A" stop-opacity="0.22" />
+                <stop offset="100%" stop-color="#B58A4A" stop-opacity="0.0" />
+              </linearGradient>
+            </defs>
+
+            <!-- Grid Horizontal Lines -->
+            <line x1="25" y1="35" x2="595" y2="35" class="grid-line" />
+            <line x1="25" y1="85" x2="595" y2="85" class="grid-line" />
+            <line x1="25" y1="135" x2="595" y2="135" class="grid-line" />
+            <line x1="25" y1="165" x2="595" y2="165" class="baseline" />
+
+            <!-- Y-Axis Labels -->
+            <text x="28" y="32" class="chart-axis-label">95</text>
+            <text x="28" y="82" class="chart-axis-label">65</text>
+            <text x="28" y="132" class="chart-axis-label">35</text>
+
+            <!-- Gradient Area -->
+            <path [attr.d]="chartCoordinates.areaPath" fill="url(#bookingAreaGrad)" />
+
+            <!-- Trendline Path -->
+            <path
+              [attr.d]="chartCoordinates.path"
+              class="chart-line-stroke"
+              fill="none"
+            />
+
+            <!-- Interactive Points -->
+            @for (pt of chartCoordinates.points; track pt.data.date) {
+              <circle
+                [attr.cx]="pt.x"
+                [attr.cy]="pt.y"
+                r="3.5"
+                class="chart-point"
+                (mouseenter)="hoveredTrendPoint = pt.data"
+                (mouseleave)="hoveredTrendPoint = null"
+              />
+            }
+          </svg>
+
+          <!-- Chart Hover Tooltip -->
+          @if (hoveredTrendPoint) {
+            <div class="chart-tooltip">
+              <span class="tooltip-date">{{ hoveredTrendPoint.dayLabel }}</span>
+              <span class="tooltip-val">{{ hoveredTrendPoint.bookings }} Bookings</span>
+            </div>
+          }
+        </div>
+
+        <div class="chart-timeline-labels">
+          <span>30 DAYS AGO</span>
+          <span>15 DAYS AGO</span>
+          <span>TODAY</span>
+        </div>
+      </div>
+
+      <!-- Bar Chart: Most Popular Flight Routes -->
+      <div class="chart-panel">
+        <div class="panel-header">
+          <div>
+            <h3 class="panel-title">MOST POPULAR FLIGHT ROUTES</h3>
+            <span class="panel-subtitle">Passenger volume & route load performance</span>
+          </div>
+          <div class="trend-summary-pill">
+            <span>CAPACITY METRICS</span>
+          </div>
+        </div>
+
+        <div class="routes-bars-container">
+          @for (route of popularRoutes; track route.route) {
+            <div class="route-bar-row">
+              <div class="route-meta">
+                <div class="route-codes">
+                  <span class="code-origin">{{ route.origin }}</span>
+                  <span class="route-separator">TO</span>
+                  <span class="code-dest">{{ route.destination }}</span>
+                </div>
+                <div class="route-metrics-inline">
+                  <span class="metric-load">LOAD: {{ route.loadFactor }}</span>
+                  <span class="metric-vol">{{ route.volume }} Bookings</span>
+                </div>
+              </div>
+
+              <div class="bar-track">
+                <div
+                  class="bar-fill"
+                  [style.width.%]="route.percentage">
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+        <div class="panel-footer-stat">
+          <span>Top Route: JFK to LHR leads overall demand with high load occupancy.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. DATA TABLES (Recent Flights & Bookings) -->
     <div class="dashboard-grid">
+      <!-- Flights Table -->
       <div class="card">
         <div class="card__header">
-          <h3>Recent Flights</h3>
-          <a routerLink="/admin/flights" class="btn btn--text btn--sm">View All Flights</a>
+          <h3 class="card__title">Recent Flight Dispatches</h3>
+          <a routerLink="/admin/flights" class="link-action">View all flights</a>
         </div>
         <div class="table-container">
           <table class="data-table">
             <thead>
               <tr>
-                <th>Flight No</th>
-                <th>Route</th>
-                <th>Departure</th>
-                <th>Base Price</th>
-                <th>Status</th>
+                <th>FLIGHT NO</th>
+                <th>ROUTING</th>
+                <th>DEPARTURE</th>
+                <th>BASE FARE</th>
+                <th>OPERATIONAL STATUS</th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let f of flights | slice:0:5">
-                <td><strong>{{ f.flightNumber }}</strong></td>
-                <td>{{ f.fromAirport }} &rarr; {{ f.toAirport }}</td>
-                <td>{{ f.departureTs | date:'short' }}</td>
-                <td>₹{{ f.basePrice }}</td>
-                <td><span class="badge badge--{{ f.status | lowercase }}">{{ f.status }}</span></td>
-              </tr>
-              <tr *ngIf="flights.length === 0">
-                <td colspan="5" class="empty-state">No flights available.</td>
-              </tr>
+              @for (f of flights.slice(0, 5); track f.flightId) {
+                <tr>
+                  <td><strong class="font-mono">{{ f.flightNumber }}</strong></td>
+                  <td>{{ f.fromAirport }} &rarr; {{ f.toAirport }}</td>
+                  <td class="font-mono">{{ f.departureTs | date:'mediumDate' }} {{ f.departureTs | date:'shortTime' }}</td>
+                  <td class="font-mono">₹{{ f.basePrice }}</td>
+                  <td><span class="status-tag status-tag--{{ f.status | lowercase }}">{{ f.status }}</span></td>
+                </tr>
+              }
+              @if (flights.length === 0 && !isLoading) {
+                <tr>
+                  <td colspan="5" class="empty-state">No flight data available. Connect to backend to load flights.</td>
+                </tr>
+              }
+              @if (isLoading) {
+                <tr>
+                  <td colspan="5" class="empty-state">Loading flight data...</td>
+                </tr>
+              }
             </tbody>
           </table>
         </div>
       </div>
 
+      <!-- Bookings Table -->
       <div class="card">
         <div class="card__header">
-          <h3>Recent Bookings</h3>
-          <a routerLink="/admin/bookings" class="btn btn--text btn--sm">View All Bookings</a>
+          <h3 class="card__title">Recent Passenger Reservations</h3>
+          <a routerLink="/admin/bookings" class="link-action">View all bookings</a>
         </div>
         <div class="table-container">
           <table class="data-table">
             <thead>
               <tr>
-                <th>Booking Code</th>
-                <th>User ID</th>
-                <th>Amount</th>
-                <th>Status</th>
+                <th>BOOKING CODE</th>
+                <th>PASSENGER / USER</th>
+                <th>AMOUNT</th>
+                <th>PAYMENT STATUS</th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let b of bookings | slice:0:5">
-                <td><strong>{{ b.bookingCode }}</strong></td>
-                <td>User #{{ b.userId }}</td>
-                <td>₹{{ b.totalAmount }}</td>
-                <td><span class="badge badge--{{ b.status | lowercase }}">{{ b.status }}</span></td>
-              </tr>
-              <tr *ngIf="bookings.length === 0">
-                <td colspan="4" class="empty-state">No bookings found.</td>
-              </tr>
+              @for (b of bookings.slice(0, 5); track b.bookingId) {
+                <tr>
+                  <td><strong class="font-mono">{{ b.bookingCode }}</strong></td>
+                  <td>User #{{ b.userId }}</td>
+                  <td class="font-mono">₹{{ b.totalAmount }}</td>
+                  <td><span class="status-tag status-tag--{{ b.status | lowercase }}">{{ b.status }}</span></td>
+                </tr>
+              }
+              @if (bookings.length === 0 && !isLoading) {
+                <tr>
+                  <td colspan="4" class="empty-state">No booking data available. Connect to backend to load reservations.</td>
+                </tr>
+              }
+              @if (isLoading) {
+                <tr>
+                  <td colspan="4" class="empty-state">Loading booking data...</td>
+                </tr>
+              }
             </tbody>
           </table>
         </div>

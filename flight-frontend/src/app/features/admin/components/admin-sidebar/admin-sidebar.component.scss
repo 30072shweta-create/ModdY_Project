@@ -88,7 +88,11 @@ $shadow-md: 0 4px 12px rgba(16, 26, 43, 0.08);
     width: 72px;
 
     .admin-sidebar__section-title { display: none; }
-    .admin-sidebar__link { justify-content: center; padding: 12px; }
+    .admin-sidebar__link {
+      justify-content: center;
+      padding: 12px;
+      gap: 0;
+    }
   }
 
   &__header {
@@ -167,16 +171,31 @@ $shadow-md: 0 4px 12px rgba(16, 26, 43, 0.08);
       background: $primary-navy;
       color: #ffffff;
       font-weight: 600;
-
-      .material-symbols-outlined {
-        color: $primary-gold;
-      }
+      border-left: 3px solid $primary-gold;
 
       &:hover {
         background: $blue-hover;
         color: #ffffff;
       }
     }
+
+    &-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+  }
+
+  .nav-toggle-arrow {
+    font-family: monospace;
+    font-weight: 800;
+    font-size: 0.9rem;
+    color: $primary-navy;
   }
 
   &__footer {
