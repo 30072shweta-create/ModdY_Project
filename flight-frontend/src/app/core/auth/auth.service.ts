@@ -40,7 +40,7 @@ export class AuthService {
   constructor(private http: HttpClient, private router: Router) {
     const token = this.getStoredToken();
     // If real token exists, verify current user with backend
-    if (token && !this.isMockToken(token)) {
+    if (token) {
       this.fetchCurrentUser().subscribe({
         error: () => this.handleSessionExpired()
       });
@@ -148,28 +148,7 @@ export class AuthService {
     }
   }
 
-  public isMockToken(token: string | null): boolean {
-    return token === 'mock-admin-token';
-  }
-
-  public mockAdminLogin(): void {
-    const mockUser: UserResponseDTO = {
-      userId: 1,
-      email: 'admin@meridian.com',
-      firstName: 'Admin',
-      lastName: 'Meridian',
-      role: 'ADMIN',
-      emailVerified: true
-    };
-    this.setAccessToken('mock-admin-token');
-    this.setCurrentUser(mockUser);
-    this.router.navigate(['/admin']);
-  }
-
   private handleSessionExpired(): void {
-    if (this.isMockToken(this.getStoredToken())) {
-      return;
-    }
     this.clearAuthState();
   }
 

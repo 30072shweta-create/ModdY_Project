@@ -146,10 +146,6 @@ export class LoginComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  public loginAsMockAdmin(): void {
-    this.authService.mockAdminLogin();
-  }
-
   private redirectAfterLogin(role: string): void {
     if (role === 'ADMIN' || role === 'ROLE_ADMIN') {
       this.router.navigate(['/admin']);
